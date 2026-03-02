@@ -226,3 +226,119 @@ body {
   margin-top: 0.5rem;
   margin-bottom: 0;
 }
+
+/* --------------------------------------------------------------------------
+   Methodology Page
+   -------------------------------------------------------------------------- */
+
+.methodology-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.methodology-page h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.methodology-intro {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.accordion details {
+  background: var(--bg-card);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.accordion summary {
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion summary::after {
+  content: '+';
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+
+.accordion details[open] summary::after {
+  content: '\2212'; /* minus sign */
+}
+
+.accordion-body {
+  padding: 0 1.25rem 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.accordion-body em {
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Disclaimer
+   -------------------------------------------------------------------------- */
+
+.disclaimer {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border-left: 3px solid var(--text-secondary);
+}
+
+.disclaimer p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.disclaimer strong {
+  color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   About Section
+   -------------------------------------------------------------------------- */
+
+.about {
+  margin-top: 2rem;
+}
+
+.about p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.about a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.about a:hover {
+  border-bottom-color: var(--accent);
+}

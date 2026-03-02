@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import FactorsBreakdown from '../components/FactorsBreakdown.astro';
 import Gauge from '../components/Gauge.astro';
 import TrendChart from '../components/TrendChart.astro';
-import type { CurrentData, HistoryData, FactorsData } from '../lib/data';
+import { ZONES, type CurrentData, type HistoryData, type FactorsData } from '../lib/data';
 
 import currentRaw from '../../public/data/current.json';
 import historyRaw from '../../public/data/history.json';
@@ -30,14 +30,7 @@ const enrichedFactors = current.factors.map(f => ({
 const chartLabels = JSON.stringify(history.entries.map(e => e.date));
 const chartValues = JSON.stringify(history.entries.map(e => e.score));
 
-// Map zone to CSS color variable for inline styling
-const zoneColorMap: Record<string, string> = {
-  'Stable': 'var(--zone-stable)',
-  'Elevated Tension': 'var(--zone-elevated)',
-  'Crisis Territory': 'var(--zone-crisis)',
-  'Revolution Territory': 'var(--zone-revolution)',
-};
-const zoneColor = zoneColorMap[current.zone] ?? 'var(--text-primary)';
+const zoneColor = ZONES.find(z => z.label === current.zone)?.cssVar ?? 'var(--text-primary)';
 ---
 
 <BaseLayout title="Revolution Index">
@@ -85,6 +78,32 @@ const zoneColor = zoneColorMap[current.zone] ?? 'var(--text-primary)';
         <FactorsBreakdown factors={enrichedFactors} />
       </section>
     </div>
+
+    <!-- Disclaimer -->
+    <!-- TODO: review disclaimer copy before launch -->
+    <section class="disclaimer" aria-label="Score disclaimer">
+      <p>
+        <strong>Note:</strong> The Revolution Index is a data-driven indicator derived from
+        publicly available social, economic, and political signals. It is <em>not</em> a prediction
+        of future events, a call to action, or a statement of political advocacy. The score
+        reflects historical patterns and structural indicators — it does not forecast specific
+        outcomes. The data displayed is currently based on demonstration data and does not reflect
+        real-time research.
+      </p>
+    </section>
+
+    <!-- About -->
+    <section class="about" aria-label="About this project">
+      <h2 class="section-title">About</h2>
+      <p>
+        The Revolution Index is an analytical project that tracks structural indicators of political
+        instability in the United States. By aggregating publicly available economic, social, and
+        political data into a single composite score, it aims to make complex dynamics accessible
+        and understandable at a glance. This is a research and transparency tool — not a political
+        statement. For details on how the score is constructed, see the
+        <a href="/methodology">Methodology</a> page.
+      </p>
+    </section>
 
     <!-- Client-side chart scripts (bundled by Astro) -->
     <Gauge />
