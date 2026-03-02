@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Revolution Index — Global Styles
+   Dark theme with zone-specific color custom properties
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Zone colors */
+  --zone-stable: #40916c;
+  --zone-elevated: #f4a261;
+  --zone-crisis: #e76f51;
+  --zone-revolution: #c1121f;
+
+  /* Background / surface */
+  --bg-primary: #0f0f0f;
+  --bg-card: #1a1a1a;
+
+  /* Text */
+  --text-primary: #f5f5f5;
+  --text-secondary: #a0a0a0;
+
+  /* Accent */
+  --accent: #e85d04;
+}
+
+/* --------------------------------------------------------------------------
+   Base Reset
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+.dashboard-hero {
+  text-align: center;
+}
+
+.dashboard-lower {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-lower {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Hero / Score Display
+   -------------------------------------------------------------------------- */
+
+.score-display {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin: 0.5rem 0;
+}
+
+.zone-label {
+  font-size: 1.25rem;
+  margin: 0.25rem 0;
+}
+
+.timestamp {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0.5rem 0 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Mount Points (for Plan 02 D3 / Chart.js)
+   -------------------------------------------------------------------------- */
+
+.gauge-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.chart-container {
+  width: 100%;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   Section Headings
+   -------------------------------------------------------------------------- */
+
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Factors List (FactorsBreakdown component)
+   -------------------------------------------------------------------------- */
+
+.factors-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.factor-item {
+  background: var(--bg-card);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.factor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.factor-name {
+  font-weight: 600;
+}
+
+/* direction-up = bad (pushing score higher = more instability) */
+.direction-up {
+  color: #ef4444;
+}
+
+/* direction-down = good (pushing score lower = more stability) */
+.direction-down {
+  color: #22c55e;
+}
+
+.direction-neutral {
+  color: var(--text-secondary);
+}
+
+.factor-bar-track {
+  height: 8px;
+  background: #2a2a2a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.factor-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.factor-description {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
