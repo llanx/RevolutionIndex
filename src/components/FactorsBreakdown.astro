@@ -1,0 +1,46 @@
+---
+import type { Factor } from '../lib/data';
+
+interface FactorWithDescription extends Factor {
+  description: string;
+}
+
+export interface Props {
+  factors: FactorWithDescription[];
+}
+
+const { factors } = Astro.props;
+
+function directionArrow(direction: string): string {
+  if (direction === 'up') return '\u2191';
+  if (direction === 'down') return '\u2193';
+  return '\u2192';
+}
+---
+
+<ul class="factors-list">
+  {factors.map((f) => (
+    <li class="factor-item">
+      <div class="factor-header">
+        <span class="factor-name">{f.name}</span>
+        <span class={`factor-direction direction-${f.direction}`}>
+          {directionArrow(f.direction)}
+        </span>
+      </div>
+      <div
+        class="factor-bar-track"
+        role="meter"
+        aria-valuenow={Math.round(f.value * 100)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={f.name}
+      >
+        <div
+          class="factor-bar-fill"
+          style={`width: ${Math.round(f.value * 100)}%`}
+        ></div>
+      </div>
+      <p class="factor-description">{f.description}</p>
+    </li>
+  ))}
+</ul>

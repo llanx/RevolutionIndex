@@ -1,30 +1,114 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FactorsBreakdown from '../components/FactorsBreakdown.astro';
 import type { CurrentData, HistoryData, FactorsData } from '../lib/data';
 
 import currentRaw from '../../public/data/current.json';
 import historyRaw from '../../public/data/history.json';
 import factorsRaw from '../../public/data/factors.json';
 
-// Type assertions — if JSON shape does not match interfaces, build fails here.
-// This is intentional: the build IS the schema validation.
 const current = currentRaw as unknown as CurrentData;
 const history = historyRaw as unknown as HistoryData;
 const factors = factorsRaw as unknown as FactorsData;
 
-// Sanity checks surfaced in build logs
-const historyCount = history.entries.length;
-const factorCount = current.factors.length;
-const weightSum = current.factors.reduce((sum, f) => sum + f.weight, 0);
+// Format timestamp for display (static — runs at build time)
+const dateDisplay = new Date(current.timestamp).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Enrich current factors with descriptions from factors.json
+const enrichedFactors = current.factors.map(f => ({
+  ...f,
+  description: factors.factors.find(d => d.id === f.id)?.description ?? '',
+}));
+
+// Serialize data for client-side charts (Plan 02 will use these)
+const chartLabels = JSON.stringify(history.entries.map(e => e.date));
+const chartValues = JSON.stringify(history.entries.map(e => e.score));
+
+// Map zone to CSS color variable for inline styling
+const zoneColorMap: Record<string, string> = {
+  'Stable': 'var(--zone-stable)',
+  'Elevated Tension': 'var(--zone-elevated)',
+  'Crisis Territory': 'var(--zone-crisis)',
+  'Revolution Territory': 'var(--zone-revolution)',
+};
+const zoneColor = zoneColorMap[current.zone] ?? 'var(--text-primary)';
 ---
 
 <BaseLayout title="Revolution Index">
-  <main>
-    <h1>Revolution Index</h1>
-    <p>Current Score: {current.score} — {current.zone}</p>
-    <p>Last Updated: {current.timestamp}</p>
-    <p>History entries: {historyCount} (minimum 12 required)</p>
-    <p>Factors: {factorCount}</p>
-    <p>Weight sum: {weightSum.toFixed(2)} (must equal 1.00)</p>
+  <main class="dashboard">
+    <!-- Hero section: gauge + score (above fold) -->
+    <section class="dashboard-hero">
+      <h1 class="sr-only">Revolution Index Dashboard</h1>
+
+      <!-- Gauge mount point (Plan 02 injects D3 SVG here) -->
+      <div
+        id="gauge-mount"
+        class="gauge-container"
+        data-score={current.score}
+        role="img"
+        aria-label={`Revolution Index score: ${current.score} out of 100, ${current.zone}`}
+      >
+        <!-- D3 gauge will be rendered here by Plan 02 -->
+        <div class="gauge-placeholder">
+          Score: {current.score}
+        </div>
+      </div>
+
+      <!-- Score and metadata -->
+      <div class="score-display">{current.score}</div>
+      <div class="zone-label" style={`color: ${zoneColor}`}>{current.zone}</div>
+      <p class="timestamp">
+        Last updated: <time datetime={current.timestamp}>{dateDisplay}</time>
+      </p>
+    </section>
+
+    <!-- Below fold: trend chart + factors -->
+    <div class="dashboard-lower">
+      <!-- Trend chart section -->
+      <section class="dashboard-section">
+        <h2 class="section-title">Historical Trend</h2>
+        <div class="chart-container">
+          <canvas
+            id="trend-chart"
+            data-labels={chartLabels}
+            data-values={chartValues}
+          ></canvas>
+        </div>
+      </section>
+
+      <!-- Factors section -->
+      <section class="dashboard-section">
+        <h2 class="section-title">Contributing Factors</h2>
+        <FactorsBreakdown factors={enrichedFactors} />
+      </section>
+    </div>
   </main>
 </BaseLayout>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .gauge-placeholder {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 2rem;
+    font-weight: 700;
+  }
+</style>
