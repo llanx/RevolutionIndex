@@ -42,6 +42,28 @@ export type ZoneLabel =
 export type FactorDirection = 'up' | 'down' | 'neutral';
 
 // ---------------------------------------------------------------------------
+// Zone configuration — single source of truth
+// ---------------------------------------------------------------------------
+
+/** Zone boundary, color, and label used across the dashboard. */
+export interface ZoneConfig {
+  start: number;
+  end: number;
+  label: ZoneLabel;
+  /** Hex color for canvas/SVG rendering (D3, Chart.js). */
+  color: string;
+  /** CSS custom property for HTML element styling. */
+  cssVar: string;
+}
+
+export const ZONES: ZoneConfig[] = [
+  { start: 0,   end: 25,  label: 'Stable',             color: '#40916c', cssVar: 'var(--zone-stable)' },
+  { start: 25,  end: 50,  label: 'Elevated Tension',    color: '#f4a261', cssVar: 'var(--zone-elevated)' },
+  { start: 50,  end: 75,  label: 'Crisis Territory',    color: '#e76f51', cssVar: 'var(--zone-crisis)' },
+  { start: 75,  end: 100, label: 'Revolution Territory', color: '#c1121f', cssVar: 'var(--zone-revolution)' },
+];
+
+// ---------------------------------------------------------------------------
 // current.json — CurrentData
 // ---------------------------------------------------------------------------
 
@@ -52,7 +74,7 @@ export type FactorDirection = 'up' | 'down' | 'neutral';
 export interface Factor {
   /**
    * Stable machine-readable identifier.
-   * Pipeline must use this exact string — it is used as a React/UI key
+   * Pipeline must use this exact string — it is used as a UI key
    * and as the join key between current.json and factors.json.
    * Example: "economic_inequality"
    */

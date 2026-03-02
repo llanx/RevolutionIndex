@@ -1,5 +1,6 @@
 <script>
 import * as d3 from 'd3';
+import { ZONES } from '../lib/data';
 
 const mount = document.getElementById('gauge-mount');
 if (!mount) throw new Error('Gauge mount element not found');
@@ -9,21 +10,10 @@ const score = Number(mount.dataset.score);
 // Clear placeholder content
 mount.innerHTML = '';
 
-// SVG dimensions
-const width = 400;
-const height = 240;
-const cx = width / 2;
-const cy = height - 30;  // center near bottom for semicircle
-const outerR = 160;
-const innerR = 100;
-
-// Zone definitions matching data.ts thresholds and global.css colors
-const zones = [
-  { start: 0,   end: 25,  color: '#40916c', label: 'Stable' },
-  { start: 25,  end: 50,  color: '#f4a261', label: 'Elevated Tension' },
-  { start: 50,  end: 75,  color: '#e76f51', label: 'Crisis Territory' },
-  { start: 75,  end: 100, color: '#c1121f', label: 'Revolution Territory' },
-];
+// Gauge layout
+const gauge = { width: 400, height: 240, outerR: 160, innerR: 100, bottomPad: 30 };
+const cx = gauge.width / 2;
+const cy = gauge.height - gauge.bottomPad;
 
 // Map 0-100 score to semicircle angle (radians)
 // Left = -PI/2 (score 0), Right = +PI/2 (score 100)
@@ -35,7 +25,7 @@ const arcGen = d3.arc();
 
 const svg = d3.select(mount)
   .append('svg')
-  .attr('viewBox', `0 0 ${width} ${height}`)
+  .attr('viewBox', `0 0 ${gauge.width} ${gauge.height}`)
   .attr('aria-hidden', 'true')  // accessibility label on container div
   .style('width', '100%')
   .style('height', 'auto');
@@ -44,11 +34,11 @@ const g = svg.append('g')
   .attr('transform', `translate(${cx},${cy})`);
 
 // Draw zone arcs
-zones.forEach(z => {
+ZONES.forEach(z => {
   g.append('path')
     .attr('d', arcGen({
-      innerRadius: innerR,
-      outerRadius: outerR,
+      innerRadius: gauge.innerR,
+      outerRadius: gauge.outerR,
       startAngle: valueToAngle(z.start),
       endAngle: valueToAngle(z.end),
     }))
@@ -58,10 +48,10 @@ zones.forEach(z => {
 // Draw tick marks at zone boundaries (25, 50, 75)
 [25, 50, 75].forEach(tick => {
   const angle = valueToAngle(tick);
-  const x1 = (outerR + 5) * Math.sin(angle);
-  const y1 = -(outerR + 5) * Math.cos(angle);
-  const x2 = (outerR - 5) * Math.sin(angle);
-  const y2 = -(outerR - 5) * Math.cos(angle);
+  const x1 = (gauge.outerR + 5) * Math.sin(angle);
+  const y1 = -(gauge.outerR + 5) * Math.cos(angle);
+  const x2 = (gauge.outerR - 5) * Math.sin(angle);
+  const y2 = -(gauge.outerR - 5) * Math.cos(angle);
   g.append('line')
     .attr('x1', x1).attr('y1', y1)
     .attr('x2', x2).attr('y2', y2)
@@ -71,7 +61,7 @@ zones.forEach(z => {
 
 // Draw needle
 const needleAngle = valueToAngle(score);
-const needleLength = outerR - 15;
+const needleLength = gauge.outerR - 15;
 const tipX = needleLength * Math.sin(needleAngle);
 const tipY = -needleLength * Math.cos(needleAngle);
 
@@ -95,7 +85,7 @@ g.append('circle')
 
 // Min/max labels
 g.append('text')
-  .attr('x', -(outerR + 15))
+  .attr('x', -(gauge.outerR + 15))
   .attr('y', 15)
   .attr('fill', '#a0a0a0')
   .attr('font-size', '12px')
@@ -103,7 +93,7 @@ g.append('text')
   .text('0');
 
 g.append('text')
-  .attr('x', outerR + 15)
+  .attr('x', gauge.outerR + 15)
   .attr('y', 15)
   .attr('fill', '#a0a0a0')
   .attr('font-size', '12px')
