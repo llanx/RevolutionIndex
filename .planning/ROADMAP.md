@@ -12,7 +12,7 @@ This roadmap delivers a validated, data-backed political stress scoring system f
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Prior Work Validation** - Audit the existing 250 pages of theory and 18 data series to establish what holds up and what needs revision
+- [x] **Phase 1: Prior Work Validation** - Audit the existing 250 pages of theory and 18 data series to establish what holds up and what needs revision
 - [ ] **Phase 2: Literature Mining** - Exhaustive AI-assisted review across political science, economics, sociology, and conflict studies to discover predictive variables and candidate frameworks
 - [ ] **Phase 3: Data Sourcing** - Map every discovered variable to freely available data sources, classify availability, and identify proxies for gaps
 - [ ] **Phase 4: Model Building** - Select architecture(s) informed by literature findings and data availability, implement data pipeline and scoring models
@@ -32,9 +32,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Model assessments for PSI, PLI, and FSP with mathematical fix checklist
-- [ ] 01-02-PLAN.md — Data series audit for all 18 series (17 FRED + 1 WID)
-- [ ] 01-03-PLAN.md — Consolidated validation report synthesizing all findings
+- [x] 01-01-PLAN.md — Model assessments for PSI, PLI, and FSP with mathematical fix checklist
+- [x] 01-02-PLAN.md — Data series audit for all 18 series (17 FRED + 1 WID)
+- [x] 01-03-PLAN.md — Consolidated validation report synthesizing all findings
 
 ### Phase 2: Literature Mining
 **Goal**: Produce a comprehensive, evidence-ranked catalog of variables that predict revolution/instability, along with candidate theoretical frameworks -- so model selection is driven by the full weight of academic evidence rather than three pre-chosen models
@@ -111,7 +111,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Prior Work Validation | 0/3 | Not started | - |
+| 1. Prior Work Validation | 3/3 | Complete | 2026-03-02 |
 | 2. Literature Mining | 0/4 | Not started | - |
 | 3. Data Sourcing | 0/3 | Not started | - |
 | 4. Model Building | 0/3 | Not started | - |

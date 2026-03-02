@@ -14,7 +14,7 @@ Requirements for initial release. V1 delivers validated research and working mod
 - [ ] **VAL-03**: Review Financial Stress Pathway specification and confirm or revise the 2-stage transmission model
 - [ ] **VAL-04**: Apply mathematical fixes from critical review (geometric mean for PSI, K constant correction, additive bonuses for PLI, LOCF over interpolation)
 - [x] **VAL-05**: Audit all 18 data series (17 FRED + 1 WID) for current availability, series continuity, and definition changes
-- [ ] **VAL-06**: Produce a validation report documenting what was confirmed, revised, or flagged for further investigation
+- [x] **VAL-06**: Produce a validation report documenting what was confirmed, revised, or flagged for further investigation
 
 ### Literature Mining
 
@@ -107,7 +107,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VAL-03 | Phase 1 | Pending |
 | VAL-04 | Phase 1 | Pending |
 | VAL-05 | Phase 1 | Complete |
-| VAL-06 | Phase 1 | Pending |
+| VAL-06 | Phase 1 | Complete |
 | LIT-01 | Phase 2 | Pending |
 | LIT-02 | Phase 2 | Pending |
 | LIT-03 | Phase 2 | Pending |
