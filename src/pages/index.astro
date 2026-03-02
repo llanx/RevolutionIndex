@@ -1,8 +1,30 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import type { CurrentData, HistoryData, FactorsData } from '../lib/data';
+
+import currentRaw from '../../public/data/current.json';
+import historyRaw from '../../public/data/history.json';
+import factorsRaw from '../../public/data/factors.json';
+
+// Type assertions — if JSON shape does not match interfaces, build fails here.
+// This is intentional: the build IS the schema validation.
+const current = currentRaw as unknown as CurrentData;
+const history = historyRaw as unknown as HistoryData;
+const factors = factorsRaw as unknown as FactorsData;
+
+// Sanity checks surfaced in build logs
+const historyCount = history.entries.length;
+const factorCount = current.factors.length;
+const weightSum = current.factors.reduce((sum, f) => sum + f.weight, 0);
 ---
+
 <BaseLayout title="Revolution Index">
   <main>
-    <p>Revolution Index — coming soon.</p>
+    <h1>Revolution Index</h1>
+    <p>Current Score: {current.score} — {current.zone}</p>
+    <p>Last Updated: {current.timestamp}</p>
+    <p>History entries: {historyCount} (minimum 12 required)</p>
+    <p>Factors: {factorCount}</p>
+    <p>Weight sum: {weightSum.toFixed(2)} (must equal 1.00)</p>
   </main>
 </BaseLayout>
