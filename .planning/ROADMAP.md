@@ -40,7 +40,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Scrolling down reveals a historical trend line chart and a contributing factors breakdown showing 5-6 factors
   4. Page is usable and visually coherent on a 375px mobile screen and a 1440px desktop screen
   5. Page ships minimal JavaScript — charts hydrate client-side; static content requires no JS
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 02-01-PLAN.md -- Layout, global CSS, static content (score, timestamp, zone, factors)
+- [ ] 02-02-PLAN.md -- D3 needle gauge, Chart.js trend chart, visual verification
 
 ### Phase 3: Content and Launch
 **Goal**: The site is publicly accessible with supporting content that establishes credibility and enables social sharing
@@ -62,5 +64,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Data Contract | 1/1 | Complete | 2026-03-01 |
-| 2. Dashboard | 0/TBD | Not started | - |
+| 2. Dashboard | 0/2 | Planned | - |
 | 3. Content and Launch | 0/TBD | Not started | - |
