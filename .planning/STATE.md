@@ -59,5 +59,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-01
-Stopped at: `/gsd:plan-phase 1` invoked. Phase directory created. Research + planning pending. Context window full — resume with `/gsd:plan-phase 1` in fresh session.
-Resume file: .planning/ROADMAP.md
+Stopped at: Phase 1 planned (01-01-PLAN.md). Plan checker verification skipped due to context limits. Ready to execute.
+Resume file: .planning/phases/01-foundation-and-data-contract/01-01-PLAN.md
