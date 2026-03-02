@@ -54,7 +54,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. An About section explains the project's purpose and approach
   4. Sharing the site URL on social platforms shows a populated Open Graph card (site name, description, preview image)
   5. Site is live at a `*.pages.dev` URL and loads correctly in a fresh browser with no console errors
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 03-01-PLAN.md -- Content pages (methodology, disclaimer, about), OG meta tags, site-wide nav
+- [ ] 03-02-PLAN.md -- Build verification, GitHub push, Cloudflare Pages deployment
 
 ## Progress
 
