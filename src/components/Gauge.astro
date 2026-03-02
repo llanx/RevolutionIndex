@@ -1,0 +1,112 @@
+<script>
+import * as d3 from 'd3';
+
+const mount = document.getElementById('gauge-mount');
+if (!mount) throw new Error('Gauge mount element not found');
+
+const score = Number(mount.dataset.score);
+
+// Clear placeholder content
+mount.innerHTML = '';
+
+// SVG dimensions
+const width = 400;
+const height = 240;
+const cx = width / 2;
+const cy = height - 30;  // center near bottom for semicircle
+const outerR = 160;
+const innerR = 100;
+
+// Zone definitions matching data.ts thresholds and global.css colors
+const zones = [
+  { start: 0,   end: 25,  color: '#40916c', label: 'Stable' },
+  { start: 25,  end: 50,  color: '#f4a261', label: 'Elevated Tension' },
+  { start: 50,  end: 75,  color: '#e76f51', label: 'Crisis Territory' },
+  { start: 75,  end: 100, color: '#c1121f', label: 'Revolution Territory' },
+];
+
+// Map 0-100 score to semicircle angle (radians)
+// Left = -PI/2 (score 0), Right = +PI/2 (score 100)
+function valueToAngle(v: number): number {
+  return ((v / 100) - 0.5) * Math.PI;
+}
+
+const arcGen = d3.arc();
+
+const svg = d3.select(mount)
+  .append('svg')
+  .attr('viewBox', `0 0 ${width} ${height}`)
+  .attr('aria-hidden', 'true')  // accessibility label on container div
+  .style('width', '100%')
+  .style('height', 'auto');
+
+const g = svg.append('g')
+  .attr('transform', `translate(${cx},${cy})`);
+
+// Draw zone arcs
+zones.forEach(z => {
+  g.append('path')
+    .attr('d', arcGen({
+      innerRadius: innerR,
+      outerRadius: outerR,
+      startAngle: valueToAngle(z.start),
+      endAngle: valueToAngle(z.end),
+    }))
+    .attr('fill', z.color);
+});
+
+// Draw tick marks at zone boundaries (25, 50, 75)
+[25, 50, 75].forEach(tick => {
+  const angle = valueToAngle(tick);
+  const x1 = (outerR + 5) * Math.sin(angle);
+  const y1 = -(outerR + 5) * Math.cos(angle);
+  const x2 = (outerR - 5) * Math.sin(angle);
+  const y2 = -(outerR - 5) * Math.cos(angle);
+  g.append('line')
+    .attr('x1', x1).attr('y1', y1)
+    .attr('x2', x2).attr('y2', y2)
+    .attr('stroke', '#666')
+    .attr('stroke-width', 2);
+});
+
+// Draw needle
+const needleAngle = valueToAngle(score);
+const needleLength = outerR - 15;
+const tipX = needleLength * Math.sin(needleAngle);
+const tipY = -needleLength * Math.cos(needleAngle);
+
+// Needle base (triangle shape)
+const baseHalfWidth = 6;
+const leftAngle = needleAngle - Math.PI / 2;
+const rightAngle = needleAngle + Math.PI / 2;
+const lx = baseHalfWidth * Math.sin(leftAngle);
+const ly = -baseHalfWidth * Math.cos(leftAngle);
+const rx = baseHalfWidth * Math.sin(rightAngle);
+const ry = -baseHalfWidth * Math.cos(rightAngle);
+
+g.append('path')
+  .attr('d', `M ${lx} ${ly} L ${tipX} ${tipY} L ${rx} ${ry} Z`)
+  .attr('fill', '#f5f5f5');
+
+// Center pin
+g.append('circle')
+  .attr('r', 8)
+  .attr('fill', '#f5f5f5');
+
+// Min/max labels
+g.append('text')
+  .attr('x', -(outerR + 15))
+  .attr('y', 15)
+  .attr('fill', '#a0a0a0')
+  .attr('font-size', '12px')
+  .attr('text-anchor', 'middle')
+  .text('0');
+
+g.append('text')
+  .attr('x', outerR + 15)
+  .attr('y', 15)
+  .attr('fill', '#a0a0a0')
+  .attr('font-size', '12px')
+  .attr('text-anchor', 'middle')
+  .text('100');
+</script>
