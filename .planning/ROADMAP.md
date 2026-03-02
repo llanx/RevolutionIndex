@@ -12,7 +12,7 @@ Three phases from empty repo to publicly deployed dashboard. Phase 1 defines the
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation and Data Contract** - Scaffold the Astro project and define the JSON schema that all visualizations depend on
+- [x] **Phase 1: Foundation and Data Contract** - Scaffold the Astro project and define the JSON schema that all visualizations depend on
 - [ ] **Phase 2: Dashboard** - Build the complete interactive dashboard with gauge, charts, layout, and responsive design
 - [ ] **Phase 3: Content and Launch** - Add methodology page and supporting content, then deploy publicly on Cloudflare Pages
 
@@ -28,7 +28,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Mock history data contains at least 12 weekly entries so charts will render meaningfully
   4. Schema is documented (inline or README) as the contract a future pipeline must produce
   5. `npm run build` succeeds and outputs a valid `dist/` directory
-**Plans**: TBD
+**Plans**: 1 (01-01-PLAN.md completed 2026-03-01)
 
 ### Phase 2: Dashboard
 **Goal**: A visitor can land on the site and immediately understand the current score, what's driving it, and how it's been trending
@@ -61,6 +61,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Data Contract | 0/TBD | Not started | - |
+| 1. Foundation and Data Contract | 1/1 | Complete | 2026-03-01 |
 | 2. Dashboard | 0/TBD | Not started | - |
 | 3. Content and Launch | 0/TBD | Not started | - |

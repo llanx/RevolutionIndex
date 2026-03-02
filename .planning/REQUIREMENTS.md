@@ -19,11 +19,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Data Contract
 
-- [ ] **DATA-01**: JSON schema is defined for current score data (score, timestamp, zone, factors)
-- [ ] **DATA-02**: JSON schema is defined for historical score data (time series of past scores)
-- [ ] **DATA-03**: Mock data files exist in the repo matching the defined schemas
-- [ ] **DATA-04**: Mock data includes enough data points for charts to render meaningfully (minimum 12 weeks)
-- [ ] **DATA-05**: JSON schema is documented as the contract for the future data pipeline
+- [x] **DATA-01**: JSON schema is defined for current score data (score, timestamp, zone, factors)
+- [x] **DATA-02**: JSON schema is defined for historical score data (time series of past scores)
+- [x] **DATA-03**: Mock data files exist in the repo matching the defined schemas
+- [x] **DATA-04**: Mock data includes enough data points for charts to render meaningfully (minimum 12 weeks)
+- [x] **DATA-05**: JSON schema is documented as the contract for the future data pipeline
 
 ### Content
 
@@ -78,11 +78,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 1 | Pending |
-| DATA-02 | Phase 1 | Pending |
-| DATA-03 | Phase 1 | Pending |
-| DATA-04 | Phase 1 | Pending |
-| DATA-05 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | Complete (01-01) |
+| DATA-02 | Phase 1 | Complete (01-01) |
+| DATA-03 | Phase 1 | Complete (01-01) |
+| DATA-04 | Phase 1 | Complete (01-01) |
+| DATA-05 | Phase 1 | Complete (01-01) |
 | DASH-01 | Phase 2 | Pending |
 | DASH-02 | Phase 2 | Pending |
 | DASH-03 | Phase 2 | Pending |
@@ -107,4 +107,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-01*
-*Last updated: 2026-03-01 after roadmap creation — traceability complete*
+*Last updated: 2026-03-01 after 01-01 execution — DATA-01 through DATA-05 complete*
