@@ -55,7 +55,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Sharing the site URL on social platforms shows a populated Open Graph card (site name, description, preview image)
   5. Site is live at a `*.pages.dev` URL and loads correctly in a fresh browser with no console errors
 **Plans**: 2 plans
-- [ ] 03-01-PLAN.md -- Content pages (methodology, disclaimer, about), OG meta tags, site-wide nav
+- [x] 03-01-PLAN.md -- Content pages (methodology, disclaimer, about), OG meta tags, site-wide nav -- completed 2026-03-02
 - [ ] 03-02-PLAN.md -- Build verification, GitHub push, Cloudflare Pages deployment
 
 ## Progress
@@ -67,4 +67,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Foundation and Data Contract | 1/1 | Complete | 2026-03-01 |
 | 2. Dashboard | 1/2 | In Progress | - |
-| 3. Content and Launch | 0/TBD | Not started | - |
+| 3. Content and Launch | 1/2 | In Progress | - |

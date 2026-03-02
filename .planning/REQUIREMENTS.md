@@ -27,16 +27,16 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Content
 
-- [ ] **CONT-01**: Methodology page exists with expandable sections and placeholder structure
-- [ ] **CONT-02**: Methodology page sections cover: data sources, model approach, score calculation, limitations
-- [ ] **CONT-03**: Disclaimer text is visible on the dashboard explaining what the score is and isn't
-- [ ] **CONT-04**: About section explains the project's purpose and approach
+- [x] **CONT-01**: Methodology page exists with expandable sections and placeholder structure
+- [x] **CONT-02**: Methodology page sections cover: data sources, model approach, score calculation, limitations
+- [x] **CONT-03**: Disclaimer text is visible on the dashboard explaining what the score is and isn't
+- [x] **CONT-04**: About section explains the project's purpose and approach
 
 ### Site Infrastructure
 
 - [x] **SITE-01**: Site is responsive and usable on mobile devices (375px+) and desktop
 - [x] **SITE-02**: Design meets basic accessibility standards (sufficient color contrast, semantic HTML, screen reader basics)
-- [ ] **SITE-03**: Open Graph meta tags are set so shared links display site name, description, and preview image
+- [x] **SITE-03**: Open Graph meta tags are set so shared links display site name, description, and preview image
 - [ ] **SITE-04**: Site is deployed and publicly accessible on Cloudflare Pages
 - [x] **SITE-05**: Site loads with minimal JavaScript (static HTML by default, JS only for interactive charts)
 
@@ -93,11 +93,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SITE-01 | Phase 2 | Complete (02-01) |
 | SITE-02 | Phase 2 | Complete (02-01) |
 | SITE-05 | Phase 2 | Complete (02-01) |
-| CONT-01 | Phase 3 | Pending |
-| CONT-02 | Phase 3 | Pending |
-| CONT-03 | Phase 3 | Pending |
-| CONT-04 | Phase 3 | Pending |
-| SITE-03 | Phase 3 | Pending |
+| CONT-01 | Phase 3 | Complete |
+| CONT-02 | Phase 3 | Complete |
+| CONT-03 | Phase 3 | Complete |
+| CONT-04 | Phase 3 | Complete |
+| SITE-03 | Phase 3 | Complete |
 | SITE-04 | Phase 3 | Pending |
 
 **Coverage:**
