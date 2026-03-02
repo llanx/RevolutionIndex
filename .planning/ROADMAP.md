@@ -29,12 +29,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. All mathematical fixes from the critical review are either applied with documented rationale or explicitly rejected with documented reasoning
   3. Each of the 18 data series has a current availability status (active, discontinued, changed definition) verified against the actual source
   4. A validation report exists that a new reader could use to understand the state of prior work without reading the original 250 pages
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
-- [ ] 01-03: TBD
+- [ ] 01-01-PLAN.md — Model assessments for PSI, PLI, and FSP with mathematical fix checklist
+- [ ] 01-02-PLAN.md — Data series audit for all 18 series (17 FRED + 1 WID)
+- [ ] 01-03-PLAN.md — Consolidated validation report synthesizing all findings
 
 ### Phase 2: Literature Mining
 **Goal**: Produce a comprehensive, evidence-ranked catalog of variables that predict revolution/instability, along with candidate theoretical frameworks -- so model selection is driven by the full weight of academic evidence rather than three pre-chosen models
