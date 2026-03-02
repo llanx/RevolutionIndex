@@ -1,0 +1,44 @@
+{
+  "_schema": "src/lib/data.ts#CurrentData",
+  "_note": "Pipeline must produce JSON matching this exact structure. See src/lib/data.ts for field semantics.",
+  "score": 47,
+  "timestamp": "2026-03-01T00:00:00Z",
+  "zone": "Elevated Tension",
+  "factors": [
+    {
+      "id": "economic_inequality",
+      "name": "Economic Inequality",
+      "value": 0.72,
+      "direction": "up",
+      "weight": 0.22
+    },
+    {
+      "id": "political_polarization",
+      "name": "Political Polarization",
+      "value": 0.78,
+      "direction": "up",
+      "weight": 0.20
+    },
+    {
+      "id": "protest_intensity",
+      "name": "Protest Activity",
+      "value": 0.58,
+      "direction": "up",
+      "weight": 0.25
+    },
+    {
+      "id": "institutional_trust",
+      "name": "Institutional Trust",
+      "value": 0.31,
+      "direction": "down",
+      "weight": 0.18
+    },
+    {
+      "id": "unemployment_stress",
+      "name": "Unemployment & Economic Stress",
+      "value": 0.44,
+      "direction": "neutral",
+      "weight": 0.15
+    }
+  ]
+}

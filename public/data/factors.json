@@ -1,0 +1,60 @@
+{
+  "_schema": "src/lib/data.ts#FactorsData",
+  "factors": [
+    {
+      "id": "economic_inequality",
+      "name": "Economic Inequality",
+      "description": "Measures the concentration of wealth and income disparities. Elevated inequality correlates with historical preconditions for mass unrest.",
+      "current_value": 0.72,
+      "historical": [
+        { "date": "2026-02-01", "value": 0.70 },
+        { "date": "2026-02-15", "value": 0.71 },
+        { "date": "2026-03-01", "value": 0.72 }
+      ]
+    },
+    {
+      "id": "political_polarization",
+      "name": "Political Polarization",
+      "description": "Tracks the degree of ideological divergence between major political factions. High polarization reduces the possibility of negotiated resolution to grievances.",
+      "current_value": 0.78,
+      "historical": [
+        { "date": "2026-02-01", "value": 0.74 },
+        { "date": "2026-02-15", "value": 0.76 },
+        { "date": "2026-03-01", "value": 0.78 }
+      ]
+    },
+    {
+      "id": "protest_intensity",
+      "name": "Protest Activity",
+      "description": "Tracks frequency, size, and geographic spread of organized public demonstrations. A leading indicator of mass mobilization capacity.",
+      "current_value": 0.58,
+      "historical": [
+        { "date": "2026-02-01", "value": 0.49 },
+        { "date": "2026-02-15", "value": 0.53 },
+        { "date": "2026-03-01", "value": 0.58 }
+      ]
+    },
+    {
+      "id": "institutional_trust",
+      "name": "Institutional Trust",
+      "description": "Measures public confidence in government, judiciary, media, and law enforcement. Declining trust removes the legitimating mechanisms that prevent political violence.",
+      "current_value": 0.31,
+      "historical": [
+        { "date": "2026-02-01", "value": 0.36 },
+        { "date": "2026-02-15", "value": 0.33 },
+        { "date": "2026-03-01", "value": 0.31 }
+      ]
+    },
+    {
+      "id": "unemployment_stress",
+      "name": "Unemployment & Economic Stress",
+      "description": "Combines unemployment rate, underemployment, and household economic insecurity. Economic precarity creates conditions for political radicalization.",
+      "current_value": 0.44,
+      "historical": [
+        { "date": "2026-02-01", "value": 0.42 },
+        { "date": "2026-02-15", "value": 0.43 },
+        { "date": "2026-03-01", "value": 0.44 }
+      ]
+    }
+  ]
+}
