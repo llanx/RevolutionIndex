@@ -12,10 +12,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DASH-01**: Visitor sees a needle-style gauge (0-100) as the visual centerpiece of the page
 - [ ] **DASH-02**: Gauge displays color-coded zones indicating severity levels (e.g., green/yellow/orange/red)
 - [ ] **DASH-03**: Each zone has a plain-language label (e.g., "Stable", "Elevated Tension", "Crisis Territory")
-- [ ] **DASH-04**: Current score is displayed as a prominent number alongside the gauge
-- [ ] **DASH-05**: Last-updated timestamp is visible near the score
+- [x] **DASH-04**: Current score is displayed as a prominent number alongside the gauge
+- [x] **DASH-05**: Last-updated timestamp is visible near the score
 - [ ] **DASH-06**: Visitor sees a historical trend line chart showing score over time (weeks/months)
-- [ ] **DASH-07**: Visitor sees a contributing factors breakdown showing 5-6 factors pushing the score up or down
+- [x] **DASH-07**: Visitor sees a contributing factors breakdown showing 5-6 factors pushing the score up or down
 
 ### Data Contract
 
@@ -34,11 +34,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Site Infrastructure
 
-- [ ] **SITE-01**: Site is responsive and usable on mobile devices (375px+) and desktop
-- [ ] **SITE-02**: Design meets basic accessibility standards (sufficient color contrast, semantic HTML, screen reader basics)
+- [x] **SITE-01**: Site is responsive and usable on mobile devices (375px+) and desktop
+- [x] **SITE-02**: Design meets basic accessibility standards (sufficient color contrast, semantic HTML, screen reader basics)
 - [ ] **SITE-03**: Open Graph meta tags are set so shared links display site name, description, and preview image
 - [ ] **SITE-04**: Site is deployed and publicly accessible on Cloudflare Pages
-- [ ] **SITE-05**: Site loads with minimal JavaScript (static HTML by default, JS only for interactive charts)
+- [x] **SITE-05**: Site loads with minimal JavaScript (static HTML by default, JS only for interactive charts)
 
 ## v2 Requirements
 
@@ -86,13 +86,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DASH-01 | Phase 2 | Pending |
 | DASH-02 | Phase 2 | Pending |
 | DASH-03 | Phase 2 | Pending |
-| DASH-04 | Phase 2 | Pending |
-| DASH-05 | Phase 2 | Pending |
+| DASH-04 | Phase 2 | Complete (02-01) |
+| DASH-05 | Phase 2 | Complete (02-01) |
 | DASH-06 | Phase 2 | Pending |
-| DASH-07 | Phase 2 | Pending |
-| SITE-01 | Phase 2 | Pending |
-| SITE-02 | Phase 2 | Pending |
-| SITE-05 | Phase 2 | Pending |
+| DASH-07 | Phase 2 | Complete (02-01) |
+| SITE-01 | Phase 2 | Complete (02-01) |
+| SITE-02 | Phase 2 | Complete (02-01) |
+| SITE-05 | Phase 2 | Complete (02-01) |
 | CONT-01 | Phase 3 | Pending |
 | CONT-02 | Phase 3 | Pending |
 | CONT-03 | Phase 3 | Pending |
@@ -107,4 +107,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-01*
-*Last updated: 2026-03-01 after 01-01 execution — DATA-01 through DATA-05 complete*
+*Last updated: 2026-03-01 after 02-01 execution — DASH-04, DASH-05, DASH-07, SITE-01, SITE-02, SITE-05 complete*

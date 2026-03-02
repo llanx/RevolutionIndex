@@ -41,7 +41,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Page is usable and visually coherent on a 375px mobile screen and a 1440px desktop screen
   5. Page ships minimal JavaScript — charts hydrate client-side; static content requires no JS
 **Plans**: 2 plans
-- [ ] 02-01-PLAN.md -- Layout, global CSS, static content (score, timestamp, zone, factors)
+- [x] 02-01-PLAN.md -- Layout, global CSS, static content (score, timestamp, zone, factors) -- completed 2026-03-01
 - [ ] 02-02-PLAN.md -- D3 needle gauge, Chart.js trend chart, visual verification
 
 ### Phase 3: Content and Launch
@@ -64,5 +64,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Data Contract | 1/1 | Complete | 2026-03-01 |
-| 2. Dashboard | 0/2 | Planned | - |
+| 2. Dashboard | 1/2 | In Progress | - |
 | 3. Content and Launch | 0/TBD | Not started | - |
