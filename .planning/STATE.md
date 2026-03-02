@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 ## Current Position
 
 Phase: 1 of 5 (Prior Work Validation)
-Plan: 2 of 3 in current phase
+Plan: 2 of 3 in current phase (01-01 and 01-02 complete, 01-03 remaining)
 Status: Executing
-Last activity: 2026-03-02 -- Completed 01-02-PLAN.md (Data Series Audit)
+Last activity: 2026-03-02 -- Completed 01-01-PLAN.md (Model Assessments & Math Fix Checklist)
 
-Progress: [██░░░░░░░░] 13%
+Progress: [███░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 4min
-- Total execution time: 0.07 hours
+- Total plans completed: 2
+- Average duration: 15min
+- Total execution time: 0.50 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 - Prior Work Validation | 1 | 4min | 4min |
+| 1 - Prior Work Validation | 2 | 29min | 15min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (4min)
+- Last 5 plans: 01-02 (4min), 01-01 (25min)
 - Trend: -
 
 *Updated after each plan completion*
@@ -48,6 +48,10 @@ Recent decisions affecting current work:
 - [01-02]: CSCICP03USM665S classified as DISCONTINUED -- needs replacement in Phase 3, recommended against UMCSENT to preserve zero-overlap design
 - [01-02]: DRSFRMACBS classified as CHANGED due to 2023 MBA methodology revision -- level adjustment may be needed in Phase 4
 - [01-02]: WID sptinc992j classified as UNVERIFIED (method risk, not data risk) -- API test needed in Phase 3
+- [01-01]: Min-max normalization bug (impl A1) is the most critical open issue -- pins 2 of 3 PSI components near 1.0
+- [01-01]: PLI has undocumented sqrt+*10 transformation beyond critical review scope -- needs empirical backtesting
+- [01-01]: FSP config/code ETI weight divergence (6 config vs. 4 code series) is a maintenance hazard
+- [01-01]: Of 27 total critical review issues: 4 resolved, 18 open (Phase 4), 5 deferred (non-selected models)
 
 ### Pending Todos
 
@@ -61,5 +65,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 01-02-PLAN.md (Data Series Audit)
+Stopped at: Completed 01-01-PLAN.md (Model Assessments & Math Fix Checklist); executing Wave 2
 Resume file: None
