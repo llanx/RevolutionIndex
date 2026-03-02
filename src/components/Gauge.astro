@@ -10,7 +10,7 @@ const score = Number(mount.dataset.score);
 // Clear placeholder content
 mount.innerHTML = '';
 
-// Gauge layout
+// Gauge layout — sized for a 400px-wide semicircle with a 60px-thick arc band
 const gauge = { width: 400, height: 240, outerR: 160, innerR: 100, bottomPad: 30 };
 const cx = gauge.width / 2;
 const cy = gauge.height - gauge.bottomPad;

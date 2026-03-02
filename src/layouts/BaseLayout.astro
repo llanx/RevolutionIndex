@@ -44,10 +44,12 @@ const ogImageURL = new URL(ogImage, Astro.site ?? 'http://localhost:4321');
   </head>
   <body>
     <nav class="site-nav" aria-label="Main navigation">
-      <a href="/" class="nav-logo">Revolution Index</a>
-      <div class="nav-links">
-        <a href="/">Dashboard</a>
-        <a href="/methodology">Methodology</a>
+      <div class="site-nav-inner">
+        <a href="/" class="nav-logo">Revolution Index</a>
+        <div class="nav-links">
+          <a href="/">Dashboard</a>
+          <a href="/methodology">Methodology</a>
+        </div>
       </div>
     </nav>
     <slot />

@@ -21,9 +21,10 @@ const dateDisplay = new Date(current.timestamp).toLocaleDateString('en-US', {
 });
 
 // Enrich current factors with descriptions from factors.json
+const descMap = new Map(factors.factors.map(d => [d.id, d.description]));
 const enrichedFactors = current.factors.map(f => ({
   ...f,
-  description: factors.factors.find(d => d.id === f.id)?.description ?? '',
+  description: descMap.get(f.id) ?? '',
 }));
 
 // Serialize data for client-side charts (Plan 02 will use these)
