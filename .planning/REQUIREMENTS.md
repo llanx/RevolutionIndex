@@ -1,7 +1,7 @@
 # Requirements: Revolution Probability Tracker
 
 **Defined:** 2026-03-01
-**Core Value:** Produce a defensible, data-backed political stress score from freely available data — one number that synthesizes what academic research says matters into something actionable and understandable.
+**Core Value:** Produce a defensible, data-backed political stress score from freely available data -- one number that synthesizes what academic research says matters into something actionable and understandable.
 
 ## v1 Requirements
 
@@ -102,42 +102,42 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VAL-01 | TBD | Pending |
-| VAL-02 | TBD | Pending |
-| VAL-03 | TBD | Pending |
-| VAL-04 | TBD | Pending |
-| VAL-05 | TBD | Pending |
-| VAL-06 | TBD | Pending |
-| LIT-01 | TBD | Pending |
-| LIT-02 | TBD | Pending |
-| LIT-03 | TBD | Pending |
-| LIT-04 | TBD | Pending |
-| LIT-05 | TBD | Pending |
-| LIT-06 | TBD | Pending |
-| LIT-07 | TBD | Pending |
-| DATA-01 | TBD | Pending |
-| DATA-02 | TBD | Pending |
-| DATA-03 | TBD | Pending |
-| DATA-04 | TBD | Pending |
-| DATA-05 | TBD | Pending |
-| MOD-01 | TBD | Pending |
-| MOD-02 | TBD | Pending |
-| MOD-03 | TBD | Pending |
-| MOD-04 | TBD | Pending |
-| MOD-05 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
-| TEST-03 | TBD | Pending |
-| TEST-04 | TBD | Pending |
-| TEST-05 | TBD | Pending |
-| TEST-06 | TBD | Pending |
-| TEST-07 | TBD | Pending |
+| VAL-01 | Phase 1 | Pending |
+| VAL-02 | Phase 1 | Pending |
+| VAL-03 | Phase 1 | Pending |
+| VAL-04 | Phase 1 | Pending |
+| VAL-05 | Phase 1 | Pending |
+| VAL-06 | Phase 1 | Pending |
+| LIT-01 | Phase 2 | Pending |
+| LIT-02 | Phase 2 | Pending |
+| LIT-03 | Phase 2 | Pending |
+| LIT-04 | Phase 2 | Pending |
+| LIT-05 | Phase 2 | Pending |
+| LIT-06 | Phase 2 | Pending |
+| LIT-07 | Phase 2 | Pending |
+| DATA-01 | Phase 3 | Pending |
+| DATA-02 | Phase 3 | Pending |
+| DATA-03 | Phase 3 | Pending |
+| DATA-04 | Phase 3 | Pending |
+| DATA-05 | Phase 3 | Pending |
+| MOD-01 | Phase 4 | Pending |
+| MOD-02 | Phase 4 | Pending |
+| MOD-03 | Phase 4 | Pending |
+| MOD-04 | Phase 4 | Pending |
+| MOD-05 | Phase 4 | Pending |
+| TEST-01 | Phase 5 | Pending |
+| TEST-02 | Phase 5 | Pending |
+| TEST-03 | Phase 5 | Pending |
+| TEST-04 | Phase 5 | Pending |
+| TEST-05 | Phase 5 | Pending |
+| TEST-06 | Phase 5 | Pending |
+| TEST-07 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 30 total
-- Mapped to phases: 0
-- Unmapped: 30
+- Mapped to phases: 30
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-01*
-*Last updated: 2026-03-01 after initial definition*
+*Last updated: 2026-03-01 after roadmap creation*
