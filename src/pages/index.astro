@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FactorsBreakdown from '../components/FactorsBreakdown.astro';
+import Gauge from '../components/Gauge.astro';
+import TrendChart from '../components/TrendChart.astro';
 import type { CurrentData, HistoryData, FactorsData } from '../lib/data';
 
 import currentRaw from '../../public/data/current.json';
@@ -52,10 +54,7 @@ const zoneColor = zoneColorMap[current.zone] ?? 'var(--text-primary)';
         role="img"
         aria-label={`Revolution Index score: ${current.score} out of 100, ${current.zone}`}
       >
-        <!-- D3 gauge will be rendered here by Plan 02 -->
-        <div class="gauge-placeholder">
-          Score: {current.score}
-        </div>
+        <!-- D3 gauge renders here (Gauge.astro replaces this content) -->
       </div>
 
       <!-- Score and metadata -->
@@ -86,6 +85,10 @@ const zoneColor = zoneColorMap[current.zone] ?? 'var(--text-primary)';
         <FactorsBreakdown factors={enrichedFactors} />
       </section>
     </div>
+
+    <!-- Client-side chart scripts (bundled by Astro) -->
+    <Gauge />
+    <TrendChart />
   </main>
 </BaseLayout>
 
@@ -100,15 +103,5 @@ const zoneColor = zoneColorMap[current.zone] ?? 'var(--text-primary)';
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
-  }
-
-  .gauge-placeholder {
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    font-size: 2rem;
-    font-weight: 700;
   }
 </style>

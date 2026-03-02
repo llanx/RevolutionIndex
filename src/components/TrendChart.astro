@@ -1,0 +1,70 @@
+<script>
+import Chart from 'chart.js/auto';
+
+const canvas = document.getElementById('trend-chart') as HTMLCanvasElement;
+if (!canvas) throw new Error('Trend chart canvas not found');
+
+const labels: string[] = JSON.parse(canvas.dataset.labels!);
+const values: number[] = JSON.parse(canvas.dataset.values!);
+
+// Format date labels for display (e.g., "Dec 7" instead of "2025-12-07")
+const displayLabels = labels.map(d => {
+  const date = new Date(d + 'T00:00:00');  // Force UTC parse
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+});
+
+new Chart(canvas, {
+  type: 'line',
+  data: {
+    labels: displayLabels,
+    datasets: [{
+      label: 'Revolution Index Score',
+      data: values,
+      borderColor: '#e85d04',
+      backgroundColor: 'rgba(232, 93, 4, 0.1)',
+      tension: 0.3,
+      fill: true,
+      pointRadius: 3,
+      pointBackgroundColor: '#e85d04',
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: '#1a1a1a',
+        titleColor: '#f5f5f5',
+        bodyColor: '#f5f5f5',
+        borderColor: '#333',
+        borderWidth: 1,
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          maxTicksLimit: 6,
+          color: '#a0a0a0',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.05)',
+        }
+      },
+      y: {
+        min: 0,
+        max: 100,
+        ticks: {
+          stepSize: 25,
+          color: '#a0a0a0',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.05)',
+        }
+      }
+    }
+  }
+});
+</script>
