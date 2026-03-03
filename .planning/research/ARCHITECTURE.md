@@ -1,464 +1,379 @@
-# Architecture Research
+# Architecture Patterns
 
-**Domain:** Static data dashboard (Astro + JSON + Cloudflare Pages)
+**Domain:** Data-driven political instability index / composite score dashboard
 **Researched:** 2026-03-01
-**Confidence:** HIGH — sourced from official Astro docs, official Cloudflare Pages docs, and verified patterns
 
----
+## Recommended Architecture
 
-## Standard Architecture
+### Overview
 
-### System Overview
+A **batch-oriented data pipeline** with a **layered architecture**: data ingestion at the bottom, transformation and alignment in the middle, model computation above that, score storage/persistence, and a frontend dashboard on top. This is a classic ETL-to-dashboard pattern, not a microservices system. The project is a personal research tool with weekly batch updates, so keep it simple: a Python pipeline that writes to local storage, and a lightweight web dashboard that reads from it.
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                       BUILD TIME (Astro SSG)                      │
-│                                                                   │
-│  ┌─────────────┐   import   ┌─────────────────────────────────┐  │
-│  │ data/*.json │ ─────────> │  src/pages/index.astro           │  │
-│  │             │            │  (frontmatter reads JSON,        │  │
-│  │ current.json│            │   serializes to data-* attrs     │  │
-│  │ history.json│            │   and passes as props)           │  │
-│  │ factors.json│            └────────────┬────────────────────┘  │
-│  └─────────────┘                         │                       │
-│                                          │ renders                │
-│                             ┌────────────▼────────────────────┐  │
-│                             │  Layout Component               │  │
-│                             │  (BaseLayout.astro)             │  │
-│                             │  - <head>, meta, CSS            │  │
-│                             │  - <slot /> for page content    │  │
-│                             └────────────┬────────────────────┘  │
-│                                          │                       │
-│              ┌───────────────────────────┼──────────────────┐    │
-│              │                           │                  │    │
-│   ┌──────────▼──────────┐  ┌─────────────▼──────┐  ┌────────▼─┐ │
-│   │  Static Astro        │  │  Chart Islands      │  │  Static  │ │
-│   │  Components          │  │  (client:visible)   │  │  Content │ │
-│   │  - ScoreDisplay      │  │  - GaugeChart       │  │  Sections│ │
-│   │  - FactorList        │  │  - TrendChart       │  │          │ │
-│   │  - SiteHeader        │  │  - FactorsChart     │  │          │ │
-│   │  - SiteFooter        │  │                     │  │          │ │
-│   └─────────────────────┘  └─────────────────────┘  └──────────┘ │
-└──────────────────────────────────────────────────────────────────┘
-                              │
-                              │ npm run build → dist/
-                              ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                    DEPLOY: Cloudflare Pages CDN                   │
-│                                                                   │
-│   dist/                                                           │
-│   ├── index.html          (pre-rendered, no server needed)        │
-│   ├── methodology/index.html                                      │
-│   ├── _astro/             (bundled JS for islands only)           │
-│   └── data/               (JSON files, copied from public/)       │
-└──────────────────────────────────────────────────────────────────┘
-```
-
-### Component Responsibilities
-
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| `BaseLayout.astro` | Shared HTML shell, `<head>`, nav, footer | Astro layout with `<slot />` |
-| `src/pages/index.astro` | Dashboard page, reads JSON, passes data to children | Astro page with frontmatter `import` |
-| `src/pages/methodology.astro` | Static methodology page with expandable sections | Astro page, minimal JS |
-| `ScoreDisplay.astro` | Renders the current score number, date, label | Pure static Astro component |
-| `FactorList.astro` | Renders factor names and values as static HTML | Pure static Astro component |
-| `GaugeChart` island | Interactive needle gauge SVG/D3, client-side only | Vanilla JS `<script>` or `client:visible` |
-| `TrendChart` island | Interactive line chart of historical scores | `<script>` tag with Chart.js |
-| `FactorsChart` island | Bar/breakdown chart of contributing factors | `<script>` tag with Chart.js |
-| `SiteHeader.astro` | Site navigation and title bar | Static Astro component |
-| `SiteFooter.astro` | Footer links, data freshness timestamp | Static Astro component |
-
----
-
-## Recommended Project Structure
+The existing `revolution-index/` codebase already has solid scaffolding for layers 1-3 (ingestion, transformation, computation). The new project should learn from that code's strengths (clean separation of concerns, centralized config, base model pattern) while addressing its documented bugs (critical-review-implementation.md) and adding the missing layers (persistence, scheduling, dashboard).
 
 ```
-revolutionindex/
-├── public/
-│   ├── data/
-│   │   ├── current.json       # Current score + factor snapshot
-│   │   ├── history.json       # Time series of all past scores
-│   │   └── factors.json       # Detailed factor data
-│   └── favicon.svg
-├── src/
-│   ├── pages/
-│   │   ├── index.astro        # Main dashboard page
-│   │   └── methodology.astro  # Methodology/about page
-│   ├── layouts/
-│   │   └── BaseLayout.astro   # Shared HTML shell (head, nav, footer)
-│   ├── components/
-│   │   ├── charts/
-│   │   │   ├── GaugeChart.astro     # Gauge island wrapper
-│   │   │   ├── TrendChart.astro     # Trend line island wrapper
-│   │   │   └── FactorsChart.astro   # Factors bar island wrapper
-│   │   ├── ScoreDisplay.astro       # Static score hero display
-│   │   ├── FactorList.astro         # Static factor list
-│   │   ├── SiteHeader.astro         # Navigation header
-│   │   └── SiteFooter.astro         # Footer with timestamp
-│   ├── styles/
-│   │   └── global.css               # Base styles, CSS variables, color zones
-│   └── lib/
-│       └── data.ts                  # Type definitions + data loading helpers
-├── astro.config.mjs
-├── tsconfig.json
-└── package.json
++------------------------------------------------------------------+
+|                      FRONTEND DASHBOARD                          |
+|  Gauge + Trend Chart + Factor Breakdown + Model Comparison       |
++------------------------------------------------------------------+
+        |  reads from                            |  reads from
+        v                                        v
++---------------------------+    +---------------------------+
+|   SCORE STORE (JSON/DB)   |    |  HISTORICAL STORE (Parq)  |
+|   Latest composite score  |    |  Full time series for     |
+|   + per-model scores      |    |  all models, components,  |
+|   + component breakdowns  |    |  and raw indicators       |
+|   + metadata/timestamps   |    |                           |
++---------------------------+    +---------------------------+
+        ^  writes                        ^  writes
+        |                                |
++------------------------------------------------------------------+
+|                    MODEL COMPUTATION LAYER                        |
+|  Turchin PSI | Prospect Theory PLI | Financial Stress Pathway    |
+|  Ensemble combiner | Uncertainty quantification                  |
++------------------------------------------------------------------+
+        ^  reads aligned data
+        |
++------------------------------------------------------------------+
+|                 TRANSFORMATION / ALIGNMENT LAYER                 |
+|  Frequency alignment (LOCF) | Derived series | Normalization    |
+|  Data quality / freshness tracking                               |
++------------------------------------------------------------------+
+        ^  reads raw data
+        |
++------------------------------------------------------------------+
+|                    DATA INGESTION LAYER                           |
+|  FRED API client | WID.world loader | (Future: World Bank, etc)  |
+|  Rate limiting | Local CSV caching | Staleness detection         |
++------------------------------------------------------------------+
+        ^  fetches from
+        |
++------------------------------------------------------------------+
+|                    EXTERNAL DATA SOURCES                          |
+|  FRED API (17 series) | WID.world API/CSV (1 series)            |
++------------------------------------------------------------------+
 ```
 
-### Structure Rationale
+### Component Boundaries
 
-- **`public/data/`:** JSON data files placed in `public/` are copied to `dist/` untouched by Astro's build pipeline. This means they are also fetchable at runtime by JavaScript if needed, and they remain readable on the deployed CDN. Do not put them in `src/` unless you only need them at build time — `src/` imports are bundled and tree-shaken.
-- **`src/components/charts/`:** Grouping all chart islands under a `charts/` subdirectory isolates the interactive/JS-heavy components from the purely static ones. Easier to audit JavaScript weight at a glance.
-- **`src/lib/data.ts`:** Centralizes TypeScript interfaces for JSON shapes and any data transformation logic. Pages import from here rather than re-parsing inline. Defines the JSON contract once.
-- **`src/layouts/`:** Single layout file for now. As pages grow, layouts absorb shared structure without repeating it.
-- **`src/styles/`:** Global CSS (color tokens, zone colors, typography) lives here. Component-scoped styles live in the `.astro` files themselves.
+| Component | Responsibility | Communicates With | State Owned |
+|-----------|---------------|-------------------|-------------|
+| **FRED Client** | Fetches raw time series from FRED API. Rate-limiting. Local CSV caching with staleness detection. | FRED API (outbound HTTP), raw data cache (filesystem) | `data/raw/fred/*.csv` |
+| **WID Loader** | Fetches top-1% income share from WID.world API or manual CSV. | WID API (outbound HTTP), raw data cache (filesystem) | `data/raw/wid/*.csv` |
+| **Data Pipeline** | Aligns mixed-frequency data to monthly timeline via LOCF. Computes derived series (real wage change). Tracks freshness metadata. Produces unified monthly DataFrame. | Raw data cache (reads), processed data store (writes) | `data/processed/unified_monthly.parquet`, `data/processed/freshness_metadata.parquet` |
+| **Normalization** | Percentile rank, min-max, z-score functions against reference distributions. Stateless utility. | Called by models | None (stateless) |
+| **Turchin PSI Model** | Computes structural-demographic Political Stress Indicator from 3 components (MMP, EMP, SFD) via geometric mean. | Data pipeline output (reads) | None (stateless) |
+| **Prospect Theory PLI** | Computes Perceived Loss Index across 5 life domains using prospect theory value function. | Data pipeline output (reads) | None (stateless) |
+| **Financial Stress Pathway** | Computes 2-stage financial-to-economic stress transmission. Weighted z-score composites. Lag analysis. | Data pipeline output (reads) | None (stateless) |
+| **Ensemble Combiner** | Weighted average of 3 model scores. Divergence alerting. | Model outputs (reads) | None (stateless) |
+| **Uncertainty Engine** | Bootstrap parameter perturbation for confidence intervals. | Models (instantiates with varied params) | None (stateless) |
+| **Backtester** | Evaluates models against historical episodes and quiet periods. Sensitivity, specificity, inter-model correlation. | Model outputs (reads), config (episodes) | None (stateless) |
+| **Score Store** | Persists latest and historical scores. Source of truth for dashboard. | Computation layer (writes), dashboard (reads) | `data/scores/latest.json`, `data/scores/history.parquet` |
+| **Scheduler** | Triggers weekly pipeline run (ingest, transform, compute, store). | All pipeline components (orchestrates) | Cron/task scheduler state |
+| **Dashboard** | Web-based read-only display: gauge, trend chart, factor breakdown, data freshness. | Score store (reads) | None (read-only) |
+| **Config** | Central source of truth for all series IDs, model parameters, thresholds, weights, backtesting episodes. | All components (reads) | `config.py` (or `config.yaml`) |
 
----
+### Data Flow
 
-## Architectural Patterns
+**Weekly batch pipeline (happy path):**
 
-### Pattern 1: Build-Time JSON Import
+```
+1. SCHEDULER triggers pipeline run (cron job or manual)
+       |
+2. INGEST: FRED Client fetches 17 series (skips if cache < 7 days old)
+   INGEST: WID Loader fetches 1 series
+       |
+3. TRANSFORM: Data Pipeline reads raw CSVs
+   -> Aligns all series to monthly frequency (LOCF for upsampling, averaging for downsampling)
+   -> Computes derived series (real_wage_change = CES0500000003 / CPIAUCSL, YoY)
+   -> Tracks freshness metadata (months since last actual observation per series)
+   -> Writes unified_monthly.parquet
+       |
+4. COMPUTE: Each model reads unified_monthly.parquet
+   -> TurchinPSI.compute(data, latest_date) -> ModelOutput (score, MMP/EMP/SFD, flags)
+   -> ProspectTheoryPLI.compute(data, latest_date) -> ModelOutput (score, domain losses, flags)
+   -> FinancialStressPathway.compute(data, latest_date) -> ModelOutput (score, FSSI/ETI, flags)
+       |
+5. ENSEMBLE: Weighted average of 3 model scores
+   -> Divergence check (alert if models disagree by >20 points)
+   -> Uncertainty: bootstrap_all_models() for 95% CI
+       |
+6. STORE: Write latest composite + per-model scores to latest.json
+   Append to history.parquet
+       |
+7. DASHBOARD: Reads latest.json and history.parquet on page load
+   -> Renders gauge, trend chart, factor breakdown
+```
 
-**What:** Import JSON files directly in frontmatter. Astro resolves them at build time — no fetch call, no API layer.
+**Data freshness cascade:** Each FRED series updates at different frequencies (daily VIX vs. annual life expectancy). The pipeline's freshness tracking tells the dashboard which components are based on recent data vs. carried-forward values. The dashboard should display freshness alongside scores, not hide it.
 
-**When to use:** For data that is pre-computed and committed to the repo. The entire JSON is available as a typed object in the component script.
+**Historical backfill (one-time on setup):**
 
-**Trade-offs:** Data is baked into the HTML at build time. An update requires a redeploy. Perfectly fine for weekly-updated data.
+```
+1. INGEST: Fetch all series with start date = 1947-01-01
+2. TRANSFORM: Build full unified_monthly.parquet
+3. COMPUTE: compute_historical() for each model over full date range
+4. VALIDATE: Run Backtester.full_report() against historical episodes
+5. STORE: Write full history.parquet
+```
+
+## Patterns to Follow
+
+### Pattern 1: Config-Driven Data Catalog
+
+**What:** Define all external series, their frequencies, model assignments, component roles, and inversion flags in a single config file. Models discover their inputs from config, not hardcoded constants.
+
+**When:** Always. The existing `config.py` already does this well, but the financial stress model's ETI weights diverge from config (documented bug A3 in critical-review-implementation.md). Fix this.
+
+**Why:** Adding a new data source should require changing one file, not hunting through model code. Data catalog changes should be testable in isolation.
 
 **Example:**
-```astro
----
-// src/pages/index.astro
-import currentData from '../../public/data/current.json';
-import historyData from '../../public/data/history.json';
-import type { CurrentData, HistoryData } from '../lib/data';
-
-const score = (currentData as CurrentData).score;
-const history = (historyData as HistoryData).entries;
----
-
-<ScoreDisplay score={score} />
-<TrendChart data={history} />
-```
-
-Confidence: HIGH — verified in official Astro imports docs.
-
-### Pattern 2: Data Bridging via data-* Attributes
-
-**What:** Pass server-side data to client-side scripts using HTML `data-*` attributes on a wrapper element, then read them with `dataset` in the script.
-
-**When to use:** When a vanilla JS script (Chart.js, D3) needs data that was loaded in Astro frontmatter. Avoids the quadratic serialization problem with deeply nested props on framework islands (verified as a real issue: GitHub #7978).
-
-**Trade-offs:** Works cleanly for flat or shallow-nested data. For very large data sets, consider fetching the JSON directly from `/data/history.json` on the client instead of embedding in HTML.
-
-**Example:**
-```astro
----
-// src/components/charts/TrendChart.astro
-import historyData from '../../../public/data/history.json';
-const serialized = JSON.stringify(historyData.entries);
----
-
-<canvas id="trend-chart" data-history={serialized}></canvas>
-
-<script>
-  const canvas = document.getElementById('trend-chart') as HTMLCanvasElement;
-  const history = JSON.parse(canvas.dataset.history!);
-  // Initialize Chart.js with `history`
-  new Chart(canvas, { type: 'line', data: { datasets: [{ data: history }] } });
-</script>
-```
-
-Confidence: HIGH — official Astro client-side scripts docs.
-
-### Pattern 3: client:visible for Below-Fold Islands
-
-**What:** Use `client:visible` on chart components so their JavaScript only loads when the element scrolls into the viewport.
-
-**When to use:** Any interactive component that is not immediately visible on page load. For a dashboard with a hero gauge at the top and charts below, this applies to TrendChart and FactorsChart.
-
-**Trade-offs:** Slightly delays chart render when user scrolls. Not noticeable for charts — users see the static canvas placeholder first, then the chart hydrates. Better than `client:load` which downloads all chart JS immediately.
-
-**Example:**
-```astro
----
-import TrendChart from '../components/charts/TrendChart.astro';
----
-
-<!-- GaugeChart is hero element - load immediately -->
-<GaugeChart client:load score={score} />
-
-<!-- Charts are below fold - defer until visible -->
-<TrendChart client:visible data={history} />
-<FactorsChart client:visible data={factors} />
-```
-
-Confidence: HIGH — official Astro islands docs.
-
-### Pattern 4: Vanilla JS Islands (No Framework)
-
-**What:** Use plain `<script>` tags in `.astro` files instead of React/Vue/Svelte components for chart initialization. Astro processes and bundles these automatically.
-
-**When to use:** When the only interactivity needed is library initialization (Chart.js, D3). Avoids shipping a full UI framework for a use case that doesn't need component reactivity.
-
-**Trade-offs:** Less structured than a React component, but produces dramatically less JavaScript. Chart.js and D3 both work perfectly as vanilla JS. Note: `<script>` tags in Astro are deduplicated per page — use custom HTML elements (`connectedCallback`) when the same component appears multiple times and each needs its own initialization.
-
-**Example:**
-```astro
-<!-- src/components/charts/GaugeChart.astro -->
-<div id="gauge-container" data-score={score}></div>
-
-<script>
-  import * as d3 from 'd3';
-  const container = document.getElementById('gauge-container')!;
-  const score = Number(container.dataset.score);
-  // D3 gauge rendering logic here
-</script>
-```
-
-Confidence: MEDIUM — pattern documented in Astro client-side scripts docs and confirmed by community usage.
-
-### Pattern 5: Static Cloudflare Pages Deploy (No Adapter)
-
-**What:** Deploy as a fully static site (`output: 'static'` in astro.config.mjs) with no `@astrojs/cloudflare` adapter. Connect repo to Cloudflare Pages via git integration, set build command to `npm run build`, output dir to `dist`.
-
-**When to use:** Any Astro site with no SSR or server functions. This project is fully static — adapter is not needed and adds unnecessary complexity.
-
-**Trade-offs:** Cannot use Cloudflare Workers or D1 bindings from Astro routes. Not relevant here since there are no server routes.
-
-**Example:**
-```js
-// astro.config.mjs
-import { defineConfig } from 'astro/config';
-
-export default defineConfig({
-  output: 'static',  // default, can be omitted
-  site: 'https://revolutionindex.com',
-});
-```
-
-Confidence: HIGH — official Cloudflare Pages Astro deployment docs.
-
----
-
-## Data Flow
-
-### Build-Time Flow (JSON to HTML)
-
-```
-data/current.json         (committed to repo, weekly update)
-      │
-      │ import (at build time)
-      ▼
-src/pages/index.astro     (frontmatter reads typed JSON)
-      │
-      │ props / data-* attrs
-      ├────────────────────────────────────────┐
-      ▼                                        ▼
-ScoreDisplay.astro                   TrendChart.astro
-(renders static HTML with score)     (serializes history → data-* attr)
-                                              │
-                                      <canvas data-history="[...]">
-                                              │
-                                       <script> reads dataset,
-                                       initializes Chart.js
-```
-
-### Runtime Flow (Page Load in Browser)
-
-```
-Browser requests page
-      │
-      ▼
-Cloudflare CDN serves pre-built index.html
-      │
-      │ parse HTML
-      ▼
-Static content visible immediately
-(score text, factor list, header, footer)
-      │
-      │ JS modules load (only for islands)
-      ▼
-GaugeChart JS loads → D3 draws needle gauge
-      │
-      │ user scrolls down
-      ▼
-TrendChart enters viewport → client:visible triggers
-Chart.js initializes → reads data-history attribute → renders line chart
-      │
-FactorsChart enters viewport → same pattern → renders bar chart
-```
-
-### JSON Data Contract
-
-The JSON schema defined now becomes the contract for the future data pipeline. Structure it for the frontend, not the model:
-
-```
-public/data/current.json
-{
-  "score": 47,
-  "timestamp": "2026-03-01T00:00:00Z",
-  "label": "Partial Revolution Territory",
-  "factors": [
-    { "id": "economic_inequality", "name": "Economic Inequality",
-      "value": 0.72, "direction": "up", "weight": 0.18 }
-  ]
-}
-
-public/data/history.json
-{
-  "entries": [
-    { "date": "2026-03-01", "score": 47 },
-    { "date": "2026-02-22", "score": 45 }
-  ]
-}
-
-public/data/factors.json
-{
-  "factors": [
-    { "id": "economic_inequality", "name": "Economic Inequality",
-      "description": "...", "current_value": 0.72,
-      "historical": [{ "date": "2026-03-01", "value": 0.72 }] }
-  ]
+```python
+# config.py — single source of truth
+FRED_SERIES = {
+    "UNRATE": {
+        "description": "Civilian unemployment rate",
+        "frequency": "monthly",
+        "model": "financial_stress",
+        "component": "eti",
+        "invert": False,
+        "weight": 0.25,  # Move weights INTO the catalog, not models
+    },
 }
 ```
 
----
+### Pattern 2: Stateless Models, Stateful Pipeline
 
-## Build Order (Phase Dependencies)
+**What:** Models are pure functions: `(data, date, params) -> ModelOutput`. They hold no state between calls. All statefulness lives in the data pipeline (caching, freshness tracking) and score store (persistence).
 
-The component dependencies dictate a natural build order:
+**When:** Always. The existing `BaseModel` pattern already enforces this cleanly.
 
-```
-1. Data schema + JSON files        (no dependencies — everything depends on this)
-      ↓
-2. BaseLayout + global styles      (no content dependencies, just structural shell)
-      ↓
-3. Static components               (depend on layout, independent of charts)
-   (ScoreDisplay, FactorList,
-    SiteHeader, SiteFooter)
-      ↓
-4. GaugeChart island               (depends on D3, score data schema)
-      ↓
-5. TrendChart island               (depends on Chart.js, history data schema)
-6. FactorsChart island             (depends on Chart.js, factors data schema)
-      ↓
-7. Dashboard page assembly         (composes all components, depends on all above)
-   (src/pages/index.astro)
-      ↓
-8. Methodology page                (independent of charts, just static content)
-   (src/pages/methodology.astro)
-      ↓
-9. Cloudflare Pages deploy config  (depends on working build)
+**Why:** Makes backtesting trivial (same model, different dates). Makes uncertainty quantification clean (same model, different params). Makes testing easy (mock data in, check output).
+
+**Example:**
+```python
+# Good: stateless model
+class TurchinPSI(BaseModel):
+    def compute(self, data: pd.DataFrame, date: pd.Timestamp) -> ModelOutput:
+        # Pure function of inputs
+        ...
+
+# Bad: model with internal state
+class BadModel:
+    def __init__(self):
+        self.last_score = None  # State! Breaks backtesting.
+    def compute(self, data):
+        self.last_score = ...
 ```
 
----
+### Pattern 3: Structured Model Output
 
-## Scaling Considerations
+**What:** Every model returns a `ModelOutput` dataclass with: score (0-100), confidence interval, component breakdown dict, data quality metadata, and alert flags. Uniform interface regardless of model internals.
 
-This is a static site served from CDN. Traditional scaling concerns (database connections, server load) do not apply. The relevant scaling axis is content/data complexity.
+**When:** Always. The existing `ModelOutput` dataclass is well-designed.
 
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| v1: mock data, 1 page | Current architecture — no changes needed |
-| v2: real data, weekly pipeline | Add GitHub Actions workflow; JSON schema already defined |
-| v3: multiple metrics pages | Add dynamic routes `src/pages/factors/[id].astro` with `getStaticPaths()` |
-| v4: public API | Add Cloudflare Worker in separate service; static site unchanged |
+**Why:** The ensemble combiner, backtester, uncertainty engine, and dashboard all consume model outputs. A common interface means adding a new model requires only implementing `compute()` -- everything downstream works automatically.
 
-### Scaling Priorities
+### Pattern 4: LOCF Alignment with Freshness Tracking
 
-1. **First bottleneck:** JSON file size. At 52 entries/year, `history.json` stays tiny indefinitely. Only becomes an issue if daily granularity is adopted (~3,650 entries after 10 years — still under 500KB).
-2. **Second bottleneck:** Build time. Astro's static build is fast. Not a concern until hundreds of pages exist.
+**What:** Mixed-frequency data (daily VIX, monthly unemployment, annual income share) is aligned to a common monthly timeline. High-frequency data is downsampled by averaging. Low-frequency data is upsampled via Last Observation Carried Forward (LOCF). Every value in the unified dataset tracks how many months stale it is.
 
----
+**When:** For all multi-frequency data alignment. Never use linear interpolation for economic data (it implies knowledge of intermediate values that does not exist).
 
-## Anti-Patterns
+**Why:** Critical review B1: "step function is more honest than linear interpolation." Annual data (e.g., top 1% income share) forward-filled for 12 months should be flagged as increasingly stale, not presented as current.
 
-### Anti-Pattern 1: Fetching JSON at Runtime Instead of Import
+### Pattern 5: Separate Latest vs. Historical Score Storage
 
-**What people do:** Use `fetch('/data/current.json')` inside a `useEffect` or script to load data after page paint.
+**What:** Maintain two stores: (1) `latest.json` -- a small JSON file with the current composite score, per-model scores, component breakdowns, timestamps, and data freshness metadata. (2) `history.parquet` -- a Parquet file with the full historical time series of all scores and components.
 
-**Why it's wrong:** Causes a flash of empty content on every page load. The data is static and available at build time — there is no reason to defer it to runtime. Users see a blank gauge or empty charts before the fetch resolves.
+**When:** Always. The dashboard needs both fast-loading current state (JSON, <1KB) and efficient historical data for charts (Parquet, compressed columnar).
 
-**Do this instead:** Import JSON in Astro frontmatter at build time. The data is baked into the HTML. Zero network round-trips for data on page load.
+**Why:** The dashboard should load the current score instantly (one JSON read) and load historical charts asynchronously. Parquet is the right format for time series -- it compresses well, supports column selection, and reads into pandas with zero conversion overhead.
 
----
+**Example `latest.json` structure:**
+```json
+{
+  "computed_at": "2026-03-01T08:00:00Z",
+  "composite": {
+    "score": 47.3,
+    "ci_lower": 38.1,
+    "ci_upper": 55.8,
+    "label": "elevated",
+    "flags": ["FINANCIAL_STRESS_NOT_YET_TRANSMITTED"]
+  },
+  "models": {
+    "turchin_psi": {
+      "score": 62.1,
+      "components": {"MMP": 58.3, "EMP": 71.0, "SFD": 57.8},
+      "flags": []
+    },
+    "prospect_theory": {
+      "score": 38.2,
+      "components": {"wages_loss": 22.0, "housing_loss": 45.1, "...": "..."},
+      "flags": []
+    },
+    "financial_stress": {
+      "score": 41.5,
+      "components": {"FSSI": 55.2, "ETI": 27.8},
+      "flags": ["FINANCIAL_STRESS_NOT_YET_TRANSMITTED"]
+    }
+  },
+  "data_freshness": {
+    "most_recent_update": "2026-02-28",
+    "stalest_series": {"id": "SPDYNLE00INUSA", "months_stale": 14, "description": "Life expectancy"},
+    "series_count": 18,
+    "series_current": 15
+  }
+}
+```
 
-### Anti-Pattern 2: Shipping a Full JS Framework for Charts
+### Pattern 6: Dashboard Reads Files, Not Databases
 
-**What people do:** Install React or Vue, wrap Chart.js in a React component, use `client:load` on everything.
+**What:** For a V1 personal research dashboard, skip the database entirely. The dashboard reads `latest.json` (current score) and `history.parquet` (trend charts) directly from the filesystem. No PostgreSQL, no Redis, no ORM.
 
-**Why it's wrong:** Ships the entire React runtime (~40KB gzipped) just to initialize a chart library that works fine with vanilla JS. Increases Time-to-Interactive unnecessarily.
+**When:** For V1 with a single user and weekly updates. Add a database when/if the project goes public (multi-user, concurrent writes, API access).
 
-**Do this instead:** Use `<script>` tags in `.astro` files to initialize Chart.js and D3 directly. The result is the same chart with a fraction of the JavaScript. Only add a framework if you need reactive state, form handling, or complex component composition.
+**Why:** A database adds deployment complexity, operational overhead, and migration burden for zero benefit when there is one user and one writer. A JSON file and a Parquet file are the entire "database." The pipeline writes them, the dashboard reads them. Done.
 
----
+## Anti-Patterns to Avoid
 
-### Anti-Pattern 3: Putting Data Files in src/ Instead of public/
+### Anti-Pattern 1: Premature Microservices
 
-**What people do:** Put `current.json` in `src/data/` and import it only in frontmatter.
+**What:** Splitting the pipeline into separate services (data service, model service, API service, frontend service) with HTTP/gRPC between them.
 
-**Why it's wrong:** Files in `src/` are processed by Vite and may not be directly accessible at a URL path. The future pipeline needs to write JSON to a predictable location that is also accessible as a static asset URL. `public/data/` is both importable at build time AND accessible at `/data/current.json` from the deployed site.
+**Why bad:** This is a single-user research tool with weekly batch updates. Microservices add network hops, deployment complexity, distributed system failure modes, and observability requirements -- all for zero benefit when everything runs on one machine. The pipeline is inherently sequential (ingest -> transform -> compute -> store) with no need for independent scaling.
 
-**Do this instead:** Put JSON data files in `public/data/`. Import them in frontmatter with a path like `../../public/data/current.json`. They will be available at `/data/current.json` on the deployed CDN, enabling future client-side fetching if needed.
+**Instead:** One Python package with clear module boundaries (the existing `src/data/`, `src/models/`, `src/analysis/` structure is correct). One process runs the full pipeline. One process serves the dashboard. They share a filesystem.
 
----
+### Anti-Pattern 2: Real-Time Architecture for Batch Workloads
 
-### Anti-Pattern 4: Using @astrojs/cloudflare Adapter for a Static Site
+**What:** Using WebSockets, streaming data, event-driven architecture, or message queues for a system that updates weekly.
 
-**What people do:** Install the Cloudflare adapter following SSR tutorials, set `output: 'server'`.
+**Why bad:** The underlying data sources (FRED, WID.world) update on daily-to-annual schedules. The most frequent is daily (VIX, yield curve). Weekly batch runs capture all updates with days to spare. Real-time infrastructure adds complexity for a cadence that a cron job handles perfectly.
 
-**Why it's wrong:** The adapter is for server-side rendering via Cloudflare Workers. A static dashboard doesn't need it. Using it adds a Workers execution layer, complicates the build, and may introduce costs.
+**Instead:** A cron job (or `schedule` library, or OS task scheduler) triggers the pipeline once per week. The dashboard reloads data on page load. If a user wants to see the latest score, they refresh the page.
 
-**Do this instead:** Deploy with `output: 'static'` (the default). Set build command to `npm run build` and output directory to `dist` in Cloudflare Pages settings. No adapter needed.
+### Anti-Pattern 3: Shared Mutable DataFrame State
 
----
+**What:** Passing a single mutable DataFrame through the pipeline where each model modifies it in place (adding columns, mutating values).
 
-### Anti-Pattern 5: Prop Serialization for Deeply Nested Data
+**Why bad:** Makes the computation order-dependent. Model B's results change if Model A ran first and added columns. Debugging becomes impossible when you cannot tell which component modified a value.
 
-**What people do:** Pass large nested JSON as props to framework island components (e.g., `<TrendChart client:load data={largeDataset} />`).
+**Instead:** The existing pattern is correct: the Data Pipeline produces an immutable unified DataFrame. Each model receives it read-only and returns a ModelOutput. The ensemble combiner reads ModelOutputs. No component modifies the unified data.
 
-**Why it's wrong:** Astro serializes island props into the HTML as an escaped JSON string inside the `astro-island` element. Deeply nested objects produce quadratic quote escaping (confirmed bug: withastro/astro #7978), bloating the HTML.
+### Anti-Pattern 4: Database-Per-Model Score Storage
 
-**Do this instead:** Use `data-*` attributes on a plain HTML element and read them with `dataset` in the client script. Or have the client script fetch the JSON file directly from `/data/history.json` — this is a clean separation since the file is already in `public/`.
+**What:** Each model writing its own output files in its own format to its own location.
 
----
+**Why bad:** The dashboard and ensemble combiner need to read all model outputs together. If each model has its own storage format, the dashboard becomes a multi-format parser. Versioning and rollback become model-specific.
 
-## Integration Points
+**Instead:** One score store module handles all persistence. Models return `ModelOutput` objects. The store module serializes them consistently.
 
-### External Services
+### Anti-Pattern 5: Coupling Dashboard Framework to Data Computation
 
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| Cloudflare Pages | Git push → automatic build+deploy | Static output only; no adapter needed |
-| GitHub (future) | GitHub Actions writes JSON → commit triggers Cloudflare deploy | Pipeline separate from frontend |
+**What:** Running model computations inside dashboard request handlers (e.g., computing the score on page load).
 
-### Internal Boundaries
+**Why bad:** Model computation can take minutes (especially with bootstrap uncertainty). The dashboard would be unresponsive during computation. The user's browser refresh triggers expensive API calls to FRED.
 
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| JSON data ↔ Astro pages | Direct `import` in frontmatter at build time | Type definitions in `src/lib/data.ts` |
-| Astro frontmatter ↔ client scripts | `data-*` HTML attributes on wrapper elements | Avoids prop serialization issues |
-| Chart islands ↔ each other | No cross-island communication needed for this project | Each chart reads its own data independently |
-| Future pipeline ↔ frontend | JSON schema contract in `public/data/` | Schema is the API; pipeline must match it |
+**Instead:** Strict separation: the batch pipeline runs independently (scheduled or manual). It writes results to the score store. The dashboard only reads from the score store. The dashboard never imports model code.
 
----
+## Component Interaction Matrix
+
+Shows which components depend on which others. Read as "row depends on column."
+
+|                     | Config | FRED Client | WID Loader | Data Pipeline | Normalization | Models | Ensemble | Uncertainty | Backtester | Score Store | Dashboard |
+|---------------------|--------|-------------|------------|---------------|---------------|--------|----------|-------------|------------|-------------|-----------|
+| **Config**          | --     |             |            |               |               |        |          |             |            |             |           |
+| **FRED Client**     | YES    | --          |            |               |               |        |          |             |            |             |           |
+| **WID Loader**      | YES    |             | --         |               |               |        |          |             |            |             |           |
+| **Data Pipeline**   | YES    |             |            | --            |               |        |          |             |            |             |           |
+| **Normalization**   |        |             |            |               | --            |        |          |             |            |             |           |
+| **Models**          | YES    |             |            |               | YES           | --     |          |             |            |             |           |
+| **Ensemble**        | YES    |             |            |               |               | YES    | --       |             |            |             |           |
+| **Uncertainty**     | YES    |             |            |               |               | YES    |          | --          |            |             |           |
+| **Backtester**      | YES    |             |            |               |               | YES    |          |             | --         |             |           |
+| **Score Store**     |        |             |            |               |               |        | YES      | YES         |            | --          |           |
+| **Dashboard**       |        |             |            |               |               |        |          |             |            | YES         | --        |
+
+Key insight: **The dashboard depends ONLY on the score store.** It has zero transitive dependency on data ingestion, transformation, or model computation. This is the critical boundary that keeps the system simple.
+
+## Suggested Build Order
+
+Based on the dependency matrix above, the natural build order is bottom-up:
+
+### Phase 1: Data Foundation (no dependencies except external APIs)
+1. **Config** -- series catalog, model params, thresholds
+2. **FRED Client** -- API integration with caching
+3. **WID Loader** -- API integration with caching
+4. **Data Pipeline** -- frequency alignment, LOCF, derived series, quality report
+
+*Rationale:* Everything downstream depends on having aligned data. Cannot validate models without data. The existing codebase has most of this done but needs bug fixes from critical-review-implementation.md.
+
+### Phase 2: Model Computation (depends on Phase 1)
+5. **Normalization utilities** -- percentile rank, z-score, min-max
+6. **Base Model interface** -- ModelOutput dataclass, BaseModel ABC
+7. **Three models** -- Turchin PSI, Prospect Theory PLI, Financial Stress Pathway
+8. **Ensemble combiner** -- weighted average, divergence detection
+
+*Rationale:* Models are the intellectual core but worthless without data. Build and validate each model individually against historical episodes before combining.
+
+### Phase 3: Validation (depends on Phases 1-2)
+9. **Backtesting framework** -- episode detection, quiet period assessment, distribution checks
+10. **Uncertainty quantification** -- bootstrap parameter perturbation
+11. **Historical backfill** -- compute full time series for all models
+
+*Rationale:* Must validate models produce meaningful signal before building a dashboard. This phase answers "do these models actually detect historical crises?" If not, iterate on models before proceeding.
+
+### Phase 4: Persistence and Scheduling (depends on Phases 1-3)
+12. **Score Store** -- write latest.json and history.parquet
+13. **Pipeline orchestrator** -- single entry point that runs ingest -> transform -> compute -> store
+14. **Scheduler** -- weekly cron job or task scheduler
+
+*Rationale:* Only after models are validated does it make sense to persist scores and schedule updates. The orchestrator is the "glue" script that ties all components together.
+
+### Phase 5: Dashboard (depends on Phase 4)
+15. **Dashboard backend** -- serve latest.json and history.parquet as API endpoints
+16. **Dashboard frontend** -- gauge, trend chart, factor breakdown, data freshness display
+
+*Rationale:* Dashboard is the last thing built because it depends on everything else. It is also the least risky -- standard web development with well-understood patterns. The hard problems are all in Phases 1-3.
+
+### Critical Path
+
+```
+Config -> FRED Client -> Data Pipeline -> Models -> Backtesting -> Score Store -> Dashboard
+                   \                         |
+                    WID Loader -------->-----+
+```
+
+The longest dependency chain runs through data ingestion and model validation. Dashboard work cannot begin until the score store exists and has data in it. However, dashboard **design** (wireframes, component selection) can happen in parallel with Phases 1-3.
+
+## Technology Decisions with Architectural Implications
+
+| Decision | Choice | Architectural Impact |
+|----------|--------|---------------------|
+| Data storage format | Parquet for time series, JSON for latest score | No database needed. Dashboard reads files directly. |
+| Dashboard framework | To be decided -- but must support reading Parquet and rendering charts | If Python: Streamlit or Panel (read Parquet natively). If JS: need an API layer. |
+| Scheduler | OS-level cron (Linux) or Task Scheduler (Windows) | No orchestration framework needed. Pipeline is one Python script. |
+| Model interface | ABC with `compute(data, date) -> ModelOutput` | New models slot in by implementing one method. Ensemble/backtesting work automatically. |
+| Normalization reference period | Expanding window from 1970 to current date | All models share the same historical baseline. Scores are comparable across models. |
+
+## Scalability Considerations
+
+| Concern | V1 (1 user) | Future (public dashboard) | Notes |
+|---------|-------------|---------------------------|-------|
+| Data volume | ~18 series x 600 months = ~11K data points | Same (data doesn't grow with users) | Parquet handles this trivially |
+| Computation time | ~10 sec for full historical backfill, <1 sec for single date | Same (computation is user-independent) | Bootstrap uncertainty is the bottleneck (~30 sec for 500 samples x 3 models) |
+| Concurrent reads | 1 | Many | V1: file reads. Future: add a read-only API layer or CDN for static JSON |
+| Score storage | ~1 MB total | Same | Even 50 years of monthly scores at 18 columns is tiny |
+| Dashboard serving | `python -m http.server` or Streamlit | Proper web server (nginx + gunicorn, or static site on CDN) | The score data is pre-computed; serving is cheap |
+| API access | Not needed | Add FastAPI or similar thin layer over score store | The pipeline and API are separate processes; API is read-only |
+
+The system fundamentally does not have scaling problems. The data is small (18 time series), the computation is fast (<1 minute even with uncertainty), and the output is tiny (<1MB). The only scaling concern is concurrent dashboard reads, which is trivially solved by serving pre-computed static files.
 
 ## Sources
 
-- [Astro Islands Architecture — Official Docs](https://docs.astro.build/en/concepts/islands/) — HIGH confidence
-- [Astro Client-Side Scripts — Official Docs](https://docs.astro.build/en/guides/client-side-scripts/) — HIGH confidence
-- [Astro Imports Reference — Official Docs](https://docs.astro.build/en/guides/imports/) — HIGH confidence
-- [Astro Project Structure — Official Docs](https://docs.astro.build/en/basics/project-structure/) — HIGH confidence
-- [Astro Layouts — Official Docs](https://docs.astro.build/en/basics/layouts/) — HIGH confidence
-- [Astro Share State Between Islands — Official Docs](https://docs.astro.build/en/recipes/sharing-state-islands/) — HIGH confidence
-- [Deploy Astro to Cloudflare Pages — Official Astro Docs](https://docs.astro.build/en/guides/deploy/cloudflare/) — HIGH confidence
-- [Prop Serialization Bloat Issue — withastro/astro #7978](https://github.com/withastro/astro/issues/7978) — HIGH confidence (verified issue)
-- [Building Static Websites with JSON Data in Astro — dev.solita.fi](https://dev.solita.fi/2024/12/02/building-static-websites-with-astro.html) — MEDIUM confidence
-- [Building a Multi-Framework Dashboard with Astro — LogRocket](https://blog.logrocket.com/building-multi-framework-dashboard-with-astro/) — MEDIUM confidence
-- [Adding Interactive Charts to Astro — David Teather](https://dteather.com/blogs/astro-interactive-charts/) — MEDIUM confidence (uses data-* pattern)
-
----
-
-*Architecture research for: Static data dashboard (Astro + JSON + Cloudflare Pages)*
-*Researched: 2026-03-01*
+- Existing codebase: `revolution-index/` (config.py, src/data/, src/models/, src/analysis/, src/visualization/) -- HIGH confidence, direct inspection
+- Prior theory documents: model-specifications.md, critical-review-model-specs.md, critical-review-implementation.md -- HIGH confidence, project-specific
+- Data source inventory: revolution-metrics-data-sources.md -- HIGH confidence, project-specific
+- Architectural patterns: training data knowledge of ETL pipeline architecture, composite index systems (e.g., Fragile States Index, Human Development Index), batch data processing patterns -- MEDIUM confidence (training data, not verified against current sources due to web access restrictions)
+- Dashboard architecture: training data knowledge of Streamlit, Panel, Plotly Dash for Python data dashboards -- MEDIUM confidence (training data, verify specific library capabilities during implementation phase)

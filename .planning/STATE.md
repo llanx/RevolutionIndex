@@ -1,52 +1,37 @@
----
-gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: in_progress
-last_updated: "2026-03-02T07:24:00.000Z"
-progress:
-  total_phases: 3
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 3
----
-
 # Project State
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-03-01)
 
-**Core value:** A visitor lands on the site and immediately understands the current revolution probability score, what's driving it, and how it's been trending — no jargon, no clicks, no friction.
-**Current focus:** Phase 3 — Content and Launch
+**Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
+**Current focus:** Phase 1 complete. Ready for Phase 2: Literature Mining.
 
 ## Current Position
 
-Phase: 3 of 3 (Content and Launch)
-Plan: 1 of 2 in current phase (Plan 03-01 complete)
-Status: Phase 3 in progress — Plan 03-01 done, Plan 03-02 (deployment) ready to execute
-Last activity: 2026-03-02 — Plan 03-01 executed, all tasks committed
+Phase: 1 of 5 (Prior Work Validation) -- COMPLETE
+Plan: 3 of 3 in current phase (all plans complete)
+Status: Phase 1 Complete
+Last activity: 2026-03-02 -- Completed 01-03-PLAN.md (Consolidated Validation Report)
 
-Progress: [██████░░░░] 60%
+Progress: [███░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
 - Total plans completed: 3
-- Average duration: 4 min
-- Total execution time: 13 min
+- Average duration: 14min
+- Total execution time: 0.72 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation-and-data-contract | 1 | 5 min | 5 min |
-| 02-dashboard | 1 (of 2) | 5 min | 5 min |
-| 03-content-and-launch | 1 (of 2) | 3 min | 3 min |
+| 1 - Prior Work Validation | 3 | 43min | 14min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (5 min), 02-01 (5 min), 03-01 (3 min)
-- Trend: Consistent 3-5 min per plan
+- Last 5 plans: 01-03 (14min), 01-02 (4min), 01-01 (25min)
+- Trend: stable
 
 *Updated after each plan completion*
 
@@ -57,21 +42,20 @@ Progress: [██████░░░░] 60%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Init]: Static-first architecture (Astro + Cloudflare Pages free tier)
-- [Init]: JSON schema defined first — it is the contract for all visualizations and future pipeline
-- [Init]: Chart.js for trend/factors charts, D3.js for custom needle gauge
-- [Init]: Mock data for v1; real pipeline is a separate workstream
-- [01-01]: Astro scaffold created manually (npm create astro interactive when dir not empty)
-- [01-01]: resolveJsonModule: true enables direct JSON imports for type-assertion pattern
-- [01-01]: JSON in public/data/ (not src/data/) — Astro copies public/ verbatim to dist/
-- [01-01]: Build-as-validator pattern: index.astro type-asserts JSON; build failure = schema mismatch
-- [02-01]: D3 and Chart.js installed in Plan 01 of Phase 02 to avoid extra npm install in Plan 02
-- [02-01]: Zone color applied via inline style using CSS var() references on .zone-label element
-- [02-01]: data-* bridge pattern: #gauge-mount (data-score) and #trend-chart (data-labels, data-values) hold serialized data for Plan 02 client scripts
-- [02-01]: factor-bar-track uses role=meter with aria-valuenow for accessible progress indication without JavaScript
-- [03-01]: Use /og.svg instead of /og.png — no image library available without adding dependencies; SVG works in browsers and most OG debuggers; TODO convert to PNG before launch
-- [03-01]: Accordion uses name=methodology for exclusive-open behavior (HTML native, no JS required, degrades gracefully)
-- [03-01]: OG image URL uses new URL(ogImage, Astro.site) pattern to guarantee absolute URLs in production
+- [Roadmap]: V1 scope is research + validated models, NOT dashboard (dashboard deferred to v2)
+- [Roadmap]: Models are not locked in -- literature mining in Phase 2 may change which models get built
+- [Roadmap]: 5-phase structure follows natural dependency chain: validate -> mine literature -> source data -> build models -> validate models
+- [01-03]: PLI identified as most validated model; FSP most novel theory but weakest implementation; PSI most critical bug (normalization pinning)
+- [01-03]: 3-model selection confirmed as still valid -- no issues fundamentally invalidate any model
+- [01-03]: All three models implement significantly fewer variables than spec (pragmatic FRED-only constraint)
+- [01-03]: 5 honest limitations of validation documented (no models run, no data downloaded, no academic verification, no backtesting, single reviewer)
+- [01-02]: CSCICP03USM665S classified as DISCONTINUED -- needs replacement in Phase 3, recommended against UMCSENT to preserve zero-overlap design
+- [01-02]: DRSFRMACBS classified as CHANGED due to 2023 MBA methodology revision -- level adjustment may be needed in Phase 4
+- [01-02]: WID sptinc992j classified as UNVERIFIED (method risk, not data risk) -- API test needed in Phase 3
+- [01-01]: Min-max normalization bug (impl A1) is the most critical open issue -- pins 2 of 3 PSI components near 1.0
+- [01-01]: PLI has undocumented sqrt+*10 transformation beyond critical review scope -- needs empirical backtesting
+- [01-01]: FSP config/code ETI weight divergence (6 config vs. 4 code series) is a maintenance hazard
+- [01-01]: Of 27 total critical review issues: 4 resolved, 18 open (Phase 4), 5 deferred (non-selected models)
 
 ### Pending Todos
 
@@ -79,12 +63,11 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 2]: D3 v7 needle animation + Astro island pattern has subtleties — research flag from SUMMARY.md. Consider `/gsd:research-phase` before gauge implementation. (Plan 02-02 addresses this.)
-- [Phase 3]: Responsible communication copy (disclaimer, framing language) requires editorial judgment — flag for content review before launch. (Disclaimer added in 03-01; TODO comment placed in index.astro.)
-- [Phase 3]: og.svg needs conversion to og.png before launch for maximum social media crawler compatibility.
+- User needs a FRED API key (free) before data pipeline work in Phase 4
+- Literature mining (Phase 2) may significantly change the model landscape -- Phases 3-5 plans should not be detailed until Phase 2 completes
 
 ## Session Continuity
 
 Last session: 2026-03-02
-Stopped at: Completed 03-01-PLAN.md (Phase 3 Plan 1: Content pages, OG meta, nav). All tasks done.
-Resume file: Phase 3 Plan 02 — Build verification, GitHub push, Cloudflare Pages deployment (03-02-PLAN.md)
+Stopped at: Completed 01-03-PLAN.md (Consolidated Validation Report). Phase 1 complete.
+Resume file: None

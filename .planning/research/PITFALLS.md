@@ -1,267 +1,228 @@
 # Pitfalls Research
 
-**Domain:** Static data visualization dashboard (Astro + Chart.js + D3.js + Cloudflare Pages)
+**Domain:** Political instability prediction / revolution probability dashboard
 **Researched:** 2026-03-01
-**Confidence:** MEDIUM-HIGH (verified with official docs and multiple community sources)
-
----
+**Confidence:** HIGH (grounded in project's own critical review and gap analysis documents)
 
 ## Critical Pitfalls
 
-### Pitfall 1: Chart.js Breaks with "window is not defined" Error
+### P1: Index vs Probability Confusion (CRITICAL)
 
-**What goes wrong:**
-Chart.js accesses browser globals (`window`, `document`, `HTMLCanvasElement`) when the module is imported. Astro components execute server-side by default during the build step. Importing Chart.js into an Astro component frontmatter or a non-hydrated script tag triggers a `ReferenceError: window is not defined` at build time, which silently breaks the build or crashes the dev server.
-
-**Why it happens:**
-Astro's static build runs Node.js, not a browser. Developers familiar with standard HTML/JS projects assume `import Chart from 'chart.js/auto'` is safe anywhere. It is not — it must live in browser-only execution context. The default assumption is wrong for Astro.
-
-**How to avoid:**
-Place all Chart.js code inside a `<script>` tag in the Astro component body (not frontmatter), or use `client:only` on any framework component wrapping Chart.js. The `<script>` tag approach is simplest for a static-only project:
-
-```astro
----
-// frontmatter: NO Chart.js imports here
----
-<canvas id="trend-chart"></canvas>
-<script>
-  import Chart from 'chart.js/auto';
-  // chart init code here
-</script>
-```
+**What:** The 0-100 scale invites users to interpret the composite score as a calibrated probability ("47% chance of revolution"). It is not. It's a weighted composite of normalized indicators — an index, not a probability. The prior work's logistic regression framing with fabricated coefficients compounds this risk.
 
 **Warning signs:**
-- Build output includes `ReferenceError: window is not defined`
-- Dev server crashes on route with chart component
-- Chart renders in dev but is missing in production (async loading issue)
+- Documentation or UI labels use the word "probability" for the composite score
+- Users treat small score changes (e.g., 45 → 47) as meaningful when they're within noise range
+- Score appears without confidence intervals
 
-**Phase to address:** Project setup / first chart component build — must be established before any visualization work begins.
+**Prevention strategy:**
+- Label as "Political Stress Index" or "Structural Pressure Index," not "Revolution Probability"
+- Always display confidence intervals alongside point estimates
+- Use integer scores (no decimals — false precision)
+- Include a persistent "What this score means" tooltip
+
+**Phase mapping:** Phase 1 (framing/naming) and Dashboard phase (UI labels)
 
 ---
 
-### Pitfall 2: Cloudflare Pages Silently Routes Deployment to Workers Instead of Pages
+### P2: Overfitting to N=6 Historical Episodes (CRITICAL)
 
-**What goes wrong:**
-Cloudflare is consolidating Pages and Workers into a unified platform. During project creation via the dashboard UI, static Astro sites can be silently routed to Workers instead of Pages. The deployment URL shows `*.workers.dev` instead of `*.pages.dev`. The build "succeeds" but the routing, preview deployments, and URL structure are wrong. This costs significant debugging time because nothing appears broken at first glance.
-
-**Why it happens:**
-Cloudflare's UI detects certain build artifacts or adapter configurations and defaults to Workers. The platform migration is ongoing and the UI is ambiguous. There is a "Shift to Pages" link buried in project settings but it is extremely subtle — one developer reported spending 90 minutes finding it.
-
-**How to avoid:**
-After creating the Pages project, immediately verify the deployment URL domain ends in `*.pages.dev`. If it shows `*.workers.dev`, navigate to project settings and use the "Shift to Pages" option. Do not install `@astrojs/cloudflare` adapter for a purely static site — the adapter is SSR-only and its presence can trigger Workers routing.
+**What:** With 50+ tunable parameters and only 6 US-specific historical episodes for backtesting (1968, 1970, 1992, 2001, 2008, 2020), any parameter fit is a tautology. The model can perfectly "predict" 6 events with enough knobs.
 
 **Warning signs:**
-- Post-deploy URL is `yourproject.workers.dev` not `yourproject.pages.dev`
-- No automatic preview deployments visible for PRs
-- Deployment logs reference Worker configuration instead of Pages build
+- Perfect backtesting scores (100% sensitivity, 100% specificity)
+- Parameters tuned to optimize backtest results
+- No out-of-sample validation
 
-**Phase to address:** Deployment setup phase — verify URL domain immediately after first deploy.
+**Prevention strategy:**
+- Freeze all parameters BEFORE running backtests (document parameter choices with theoretical justification, not empirical optimization)
+- Use sensitivity analysis as the primary validation tool, not point accuracy
+- Cross-validate against non-US countries if possible (but see P5)
+- Report sensitivity to parameter perturbation honestly
+
+**Phase mapping:** Validation phase — this is the critical quality gate
 
 ---
 
-### Pitfall 3: Wrong Build Output Directory ("Deployment Successful" but Blank Page)
+### P3: Spurious Upward Trends (CRITICAL)
 
-**What goes wrong:**
-Cloudflare Pages requires knowing where your build tool writes its output. Astro writes to `dist/`. If the Pages configuration points to a wrong directory (commonly `public/` — which is Astro's static assets input folder, not output), Cloudflare deploys an empty or wrong directory. The dashboard shows green "deployment successful" but the site is blank or serves only static assets with no HTML.
-
-**Why it happens:**
-Hugo, Gatsby, and many SSGs use `public/` as output. Developers switching from those frameworks, or following generic Cloudflare Pages tutorials, set the wrong directory. Astro's `public/` directory has the opposite meaning: it is where unprocessed static assets go *in*, not where the build goes *out*.
-
-**How to avoid:**
-Set the Cloudflare Pages build output directory to `dist` — no leading slash needed, no trailing slash. Confirm by running `npm run build` locally and verifying `dist/index.html` exists before configuring Cloudflare.
+**What:** Most input variables trend in the same direction over 50+ years: inequality up, institutional trust down, debt-to-GDP up, life expectancy flattening. A simple composite will mechanically trend upward regardless of actual instability dynamics. This makes the index look like it's "predicting" growing crisis when it's just reflecting secular trends.
 
 **Warning signs:**
-- Cloudflare shows green build status but visiting the URL shows a blank page or 404
-- The deployed site shows only images/files from `public/` with no styled HTML
-- Build logs show "success" but no HTML files listed in upload step
+- Composite score rises monotonically over the historical period
+- Score correlates heavily with time itself
+- No quiet periods (e.g., 1990s) show low scores
 
-**Phase to address:** Deployment setup phase — must be set correctly before any deployment testing.
+**Prevention strategy:**
+- Compute detrended variant alongside raw score
+- Run placebo tests: does the model produce high scores during genuinely stable periods?
+- Use expanding-window normalization (percentile rank against all prior history) rather than fixed reference
+- The backtesting quiet-period evaluation is essential — the model MUST produce low scores during the 1990s
+
+**Phase mapping:** Model building phase and validation phase
 
 ---
 
-### Pitfall 4: D3.js Needle Gauge Has Fixed Pixel Dimensions — Breaks on Mobile
+### P4: Dashboard Before Model Validation (CRITICAL)
 
-**What goes wrong:**
-D3.js gauge charts are commonly implemented with hardcoded `width` and `height` values (e.g., `width: 400, height: 300`). The SVG renders correctly on desktop but is clipped, tiny, or overflows its container on mobile. The viewBox attribute must be set correctly or the SVG will not scale with the container.
-
-**Why it happens:**
-D3 requires explicit dimensions to calculate arc radii, needle length, and center coordinates — so developers hardcode them. They test on desktop, it looks fine, and the mobile case is not caught until later. The difference between SVG `width`/`height` attributes and `viewBox` scaling behavior is non-obvious.
-
-**How to avoid:**
-Use `viewBox` and remove hardcoded `width`/`height` on the SVG element, allowing CSS to control container sizing:
-```javascript
-const svg = d3.select('#gauge')
-  .append('svg')
-  .attr('viewBox', `0 0 ${width} ${height}`)
-  .attr('preserveAspectRatio', 'xMidYMid meet')
-  .style('width', '100%')
-  .style('height', 'auto');
-```
-Calculate all internal D3 coordinates relative to `width` and `height` constants, then let CSS handle the actual rendered size.
+**What:** Building a polished dashboard before confirming the models produce meaningful signal. If models fail backtesting, all dashboard work is wasted.
 
 **Warning signs:**
-- Gauge looks perfect on 1440px viewport, broken on 375px
-- SVG has `width="400" height="300"` attributes directly on the element
-- Container has `overflow: hidden` to hide clipping (a band-aid, not a fix)
+- Dashboard wireframes or code exist before backtesting results are reviewed
+- Model bugs discovered after dashboard is partially built
+- "Just put something on screen" mentality overrides validation discipline
 
-**Phase to address:** Gauge component build phase — implement responsive viewBox from day one, not as a retrofit.
+**Prevention strategy:**
+- Set an explicit validation gate: models must pass backtesting (detect ≥4/6 crises, score low during ≥1/2 quiet periods) before any dashboard code is written
+- v1.0 output should be a Jupyter notebook or static HTML report, not a live dashboard
+- Dashboard is the LAST phase, not a parallel effort
+
+**Phase mapping:** This is a phase ORDERING constraint, not a feature in any single phase
 
 ---
 
-### Pitfall 5: JSON Data Schema Changes Break the Frontend
+### P5: Wealthy Democracy Gap (CRITICAL)
 
-**What goes wrong:**
-The v1 site uses mock JSON data. When the real data pipeline is plugged in later (Phase 4+ of the broader project), if the JSON schema has drifted from what the frontend expects, every visualization breaks simultaneously. This is the most likely source of a complete frontend regression at pipeline integration time.
-
-**Why it happens:**
-Mock data is created casually during frontend build — fields are added, renamed, or structured differently than what the pipeline will actually produce. Since the frontend and pipeline are built in separate workstreams with no enforced contract, schema drift accumulates silently.
-
-**How to avoid:**
-Define the JSON schema explicitly before writing a single line of frontend code. Treat it as a contract document, not implementation detail. Store schema definitions alongside the mock data files. Use the same field names, nesting structure, and data types as the future pipeline will produce. Consider adding a simple JSON schema validation step (e.g., `ajv`) that runs in CI against the committed data files.
-
-Example schema contract (establish this in Phase 1):
-```json
-{
-  "current": {
-    "score": 42.7,
-    "timestamp": "2026-02-23T00:00:00Z",
-    "factors": [
-      { "id": "economic_inequality", "label": "Economic Inequality", "weight": 0.23, "direction": "up" }
-    ]
-  }
-}
-```
+**What:** Cross-national instability models (PITF, CoupCast) were developed for developing countries and authoritarian regimes. They either underpredict (US always looks stable by developing-world standards) or overpredict (US inequality exceeds many developing-world thresholds). The US is a unique case — wealthy, democratic, armed population, federalized — and cross-national calibration may be misleading.
 
 **Warning signs:**
-- Frontend code uses field names like `data.score` while mock JSON has `data.revolution_score`
-- Mock data was created by copying from a visualization example rather than designed for this project
-- No documented schema in the repo — only the JSON files themselves
+- Thresholds borrowed from cross-national literature without US-specific calibration
+- Score consistently near 0 or consistently near 100 with no variation
+- Model cannot distinguish between 1968 (riots) and 1995 (stability)
 
-**Phase to address:** Phase 1 (project setup / data structure design) — schema must be locked before frontend build begins.
+**Prevention strategy:**
+- Define the target variable explicitly: "structural pressure relative to US historical baseline," NOT "revolution probability compared to global norms"
+- Use US-only historical distribution for normalization (expanding window from 1970)
+- Acknowledge this limitation prominently in methodology docs
+
+**Phase mapping:** Phase 1 (target variable definition) — this must be resolved before any modeling begins
+
+---
+
+### P6: Data Source Fragility (HIGH)
+
+**What:** FRED series get discontinued or redefined (e.g., STLFSI replaced by STLFSI4). WID.world has no SLA and may change API format. Annual data lags 6-18 months. Building a pipeline that assumes data sources are permanent is a recipe for silent failure.
+
+**Warning signs:**
+- Pipeline fails silently when a series returns empty
+- No monitoring for series discontinuation or definition changes
+- Annual series treated as "current" when they're 18 months stale
+
+**Prevention strategy:**
+- Build a data dependency matrix: for each model, which series are required vs. optional?
+- Implement graceful degradation: if a series is unavailable, the model can still compute with reduced confidence
+- Surface freshness metadata prominently (already designed in pipeline)
+- Have fallback series identified for critical inputs
+
+**Phase mapping:** Data pipeline phase
 
 ---
 
-## Technical Debt Patterns
+### P7: Uncalibrated Model Parameters (HIGH)
 
-| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
-|----------|-------------------|----------------|-----------------|
-| Hardcode gauge dimensions in pixels | Works fast in dev | Mobile layout broken, requires full SVG refactor | Never — use viewBox from start |
-| Skip Chart.js `.destroy()` on chart re-renders | Simpler code | Memory leak + ghost event handlers causing hover flicker | Never — always destroy before recreating |
-| Use `client:load` on all interactive components | Simple mental model | All JS hydrates immediately, defeating Astro's lazy loading | Only for above-the-fold critical elements |
-| Put JSON data fetch in Astro frontmatter | Clean separation | Data is frozen at build time, stale between deploys without rebuild | Acceptable for static-first approach (this project's intent) |
-| Skip `output: 'static'` explicit config in astro.config.mjs | Relies on default | Default can change across Astro versions; ambiguous when reading config | Never — always declare explicitly |
-| Use inline style tags instead of CSS variables for gauge colors | Faster to write | Color zone changes require hunting through JS instead of a config object | Never — define color zones as named constants |
+**What:** The 3 models have parameters (weights, thresholds, normalization windows) that were set by theoretical reasoning, not empirical estimation. Critical review D2 identified this as a major issue — the parameters look precise but are actually researcher degrees of freedom.
+
+**Warning signs:**
+- Parameters specified to 2+ decimal places without empirical justification
+- Sensitivity analysis shows score swings wildly with small parameter changes
+- Different "reasonable" parameter choices produce contradictory conclusions
+
+**Prevention strategy:**
+- Document the theoretical justification for every parameter
+- Run sensitivity analysis across plausible parameter ranges
+- Present sensitivity ranges (not just point estimates) as the primary output
+- Consider the score a "central estimate within a band," not a precise measurement
+
+**Phase mapping:** Model building and validation phases
 
 ---
+
+### P8: Ensemble Interpretation Failure (MODERATE)
+
+**What:** When three models are averaged, the composite score can mask important information. If Financial Stress says 80 and the other two say 20, the average of 40 obscures that financial markets are screaming. Model divergence is a signal, not noise to be averaged away.
+
+**Warning signs:**
+- Large spread between model scores (>20 points) without any alert
+- Users only see the composite, never individual model scores
+- A crisis in one domain (financial) gets diluted by stability in others
+
+**Prevention strategy:**
+- Always show per-model scores alongside the composite
+- Implement divergence alerting (already designed: alert when spread >20 points)
+- Consider reporting "highest model score" alongside average as a "worst-case" indicator
+- The factor breakdown must go model-by-model, not just top-level components
+
+**Phase mapping:** Ensemble/scoring phase and dashboard phase
+
+---
+
+### P9: Mixed-Frequency False Precision (MODERATE)
+
+**What:** When daily VIX data is combined with annual life expectancy data (carried forward 11 months via LOCF), the composite appears to have daily resolution but most of its inputs are stale. A score change driven entirely by VIX movement is presented alongside unchanged annual data as if both are "current."
+
+**Warning signs:**
+- Score changes daily but only 2-3 of 18 series actually updated
+- Users interpret weekly score changes as "new information" when it's just financial market noise
+- No indication of which components are based on fresh vs. stale data
+
+**Prevention strategy:**
+- Separate indicators into "fast" (daily/weekly financial) and "slow" (monthly/quarterly/annual structural)
+- Display freshness per-component in the dashboard
+- Consider weighting more recent data higher, or at least flagging when a score change is driven by a single fast-moving series
+- Weekly cadence already helps — don't go faster
+
+**Phase mapping:** Data pipeline phase (freshness tracking) and dashboard phase (display)
+
+---
+
+### P10: Irresponsible Score Communication (MODERATE)
+
+**What:** Even as a personal research tool, presenting a "revolution score" without context invites misinterpretation if anyone else ever sees it. Screenshots get shared. Dashboards get bookmarked.
+
+**Warning signs:**
+- Score displayed without methodology context
+- No disclaimers visible on the main page
+- Score presented as prediction rather than indicator
+
+**Prevention strategy:**
+- Include a persistent "What this is / What this isn't" section on every page
+- Frame as "Political Stress Index" not "Revolution Probability"
+- Include confidence intervals on every score display
+- v1 as personal research tool reduces this risk, but plan for responsible framing before going public
+
+**Phase mapping:** Dashboard phase and future public-facing phase
 
 ## Integration Gotchas
 
-| Integration | Common Mistake | Correct Approach |
-|-------------|----------------|------------------|
-| Cloudflare Pages + Astro | Installing `@astrojs/cloudflare` adapter for a static site | Do NOT install the adapter; it is SSR-only. Static Astro deploys with zero Cloudflare-specific packages. |
-| Cloudflare Pages + GitHub | Connecting repo but not setting build command and output dir explicitly | Always set: build command = `npm run build`, output dir = `dist` |
-| Chart.js + Astro | Importing Chart.js in component frontmatter | Import only inside `<script>` tags in the component body, never in frontmatter |
-| D3.js + Astro | Using `import * as d3 from 'd3'` in frontmatter | Same as Chart.js — D3 must execute client-side inside a `<script>` tag or `client:only` component |
-| JSON files + Astro static | Fetching data files with `fetch('/data/current.json')` in frontmatter | Correct pattern for static: import JSON directly at build time using `import data from '../data/current.json'`; use fetch only for client-side updates |
-| Cloudflare Pages + Auto Minify | Leaving Cloudflare's "Auto Minify" setting enabled | Disable Auto Minify in Cloudflare dashboard — it conflicts with Astro's hydration markers, causing "Hydration completed but contains mismatches" errors |
+| Gotcha | Context | Mitigation |
+|--------|---------|------------|
+| FRED rate limits | 120 requests/minute, but large batch fetches can hit limits | Already handled in existing fred_client.py with rate limiting. Verify rate limiter works for full 17-series historical backfill. |
+| FRED series redefinition | STLFSI → STLFSI4 already happened once | Maintain a series alias map in config. Test for empty/discontinued series in pipeline. |
+| WID.world API instability | No guaranteed uptime or API stability | Implement manual CSV fallback. Cache aggressively. Don't depend on WID for weekly pipeline health. |
+| pandas 3.0 breaking changes | If upgrading from 2.x, deprecation warnings become errors | Pin pandas version. Test before upgrading. The prior code targets 2.x. |
+| Plotly 6.x breaking changes | Major version bump from 5.x | Test gauge chart (go.Indicator) works with Plotly 6 + Streamlit before committing to stack. |
+| DuckDB concurrent access | DuckDB supports concurrent reads but only one writer | Pipeline must complete writes before dashboard reads. Not a real problem with weekly batch + on-demand dashboard reads. |
+| Bootstrap uncertainty performance | 500 samples × 3 models × full historical range = slow | Limit to latest-date-only for weekly runs. Full historical uncertainty only during backfill/validation. |
 
----
+## Technical Debt Patterns to Avoid
 
-## Performance Traps
-
-| Trap | Symptoms | Prevention | When It Breaks |
-|------|----------|------------|----------------|
-| Importing all of D3 (`import * as d3`) | Page weight increases by ~500KB for features never used | Import only needed D3 modules: `import { select, arc, pie } from 'd3'` | Any size — D3 is large, always tree-shake |
-| Chart.js without tree-shaking | Bundle includes all chart types and plugins | Use `import { Chart, LineController, ... } from 'chart.js'` with explicit registration | Any size — ~200KB saved vs `chart.js/auto` |
-| No loading state for client-side chart initialization | Charts render after visible DOM — users see blank space for 100-500ms | Add CSS skeleton/placeholder that hides before chart canvas is painted | Even on fast connections — noticeable flash |
-| Re-fetching JSON on every component mount | Multiple network requests for same data file | Fetch once at page level, pass as props; or use module-level cache | Not a problem with one component, breaks with multiple charts |
-| D3 needle animation on every page load | Expensive requestAnimationFrame on slow devices | Make animation optional; `prefers-reduced-motion` media query should skip animation | Low-end mobile devices |
-
----
-
-## Security Mistakes
-
-| Mistake | Risk | Prevention |
+| Pattern | Risk | Prevention |
 |---------|------|------------|
-| Storing API keys or pipeline tokens in committed JSON data files | Secret exposure in public repo | Keep all secrets in GitHub Actions secrets, never in committed files; JSON data files contain only scores and timestamps |
-| Setting Cloudflare Pages project to private repo access without verifying deploy key scope | Pipeline webhook may stop working | Use Cloudflare's GitHub App integration, not personal access tokens |
-| No `.gitignore` for generated `dist/` directory | Committed build artifacts conflict with Cloudflare Pages build | Add `dist/` to `.gitignore`; Cloudflare Pages runs its own build |
-| Trusting `data/current.json` format without validation | Frontend silently displays wrong/corrupted data if pipeline produces bad JSON | Add a JSON schema validation step in the GitHub Actions pipeline before commit |
-
----
-
-## UX Pitfalls
-
-| Pitfall | User Impact | Better Approach |
-|---------|-------------|-----------------|
-| Using only color to communicate gauge severity zones | Colorblind users (8% of males) cannot distinguish red/yellow/green zones | Add labels ("LOW", "ELEVATED", "CRITICAL") and pattern fills in addition to color |
-| Displaying raw probability score without confidence interval | Users treat point estimate as certainty, misread small changes as significant | Show score range or "±X" uncertainty marker when methodology supports it |
-| Gauge needle animates on every page visit including revisits | Repetitive animation feels gimmicky after first visit | Animate on first visit only (sessionStorage flag); on revisits jump to current position |
-| Contributing factors sorted alphabetically | Users cannot quickly identify what's most important | Sort by absolute weight/contribution magnitude, highest first |
-| No "last updated" timestamp visible | Users cannot tell if data is current or stale (especially if pipeline fails) | Always show `data.timestamp` formatted as "Updated: Feb 23, 2026" near the score |
-| Mobile gauge too small to read needle position | Core feature fails on mobile, which is likely 50%+ of traffic | Test gauge at 375px width; minimum needle endpoint visibility must be verified on real device |
-| Methodology page with all sections collapsed by default | Users who want depth don't realize content exists | Show section headings clearly visible; one section open by default with summary content |
-
----
-
-## "Looks Done But Isn't" Checklist
-
-- [ ] **Gauge:** Verify needle renders correctly at score=0, score=50, score=100 (boundary conditions) — the arc math often breaks at exact min/max
-- [ ] **Gauge:** Test on 375px mobile viewport — hardcoded SVG dimensions commonly clip the gauge at mobile sizes
-- [ ] **Charts:** Open browser DevTools Memory tab, navigate to page, check for growing heap on repeated gauge updates — Chart.js destroy() may be missing
-- [ ] **Data loading:** Open Network tab, verify only one fetch to `current.json` fires (not one per component)
-- [ ] **Cloudflare deployment:** Confirm deployment URL is `*.pages.dev` not `*.workers.dev` after first deploy
-- [ ] **Build output:** Run `npm run build` locally, verify `dist/index.html` exists before pushing
-- [ ] **Auto Minify:** Confirm Cloudflare Auto Minify is disabled in dashboard settings (Speed > Optimization > Auto Minify)
-- [ ] **Static output mode:** Confirm `astro.config.mjs` has `output: 'static'` explicitly declared
-- [ ] **JSON schema:** Document field names in a README or schema file alongside `data/` — future pipeline author must know exact contract
-- [ ] **Accessibility:** Run Lighthouse accessibility audit — gauge SVG elements need `aria-label` or `role="img"` with description
-
----
-
-## Recovery Strategies
-
-| Pitfall | Recovery Cost | Recovery Steps |
-|---------|---------------|----------------|
-| Chart.js window error in production | LOW | Move import to `<script>` tag; no rebuild of chart logic required |
-| Cloudflare deployed to Workers instead of Pages | LOW | Find "Shift to Pages" in project settings; redeploy |
-| Wrong build output directory | LOW | Update output directory setting in Cloudflare Pages dashboard; retrigger deploy |
-| D3 gauge not responsive (hardcoded dimensions) | MEDIUM | Refactor SVG to use viewBox + CSS width; all coordinate calculations must be re-verified relative to base dimensions |
-| JSON schema drift discovered at pipeline integration | HIGH | Audit all frontend field references, update mock data schema, rebuild charts if field structure changed — can take days if schema diverged significantly |
-| Chart.js memory leak discovered late | MEDIUM | Find every chart instantiation, add `.destroy()` before reinit; audit is straightforward but testing required |
-
----
-
-## Pitfall-to-Phase Mapping
-
-| Pitfall | Prevention Phase | Verification |
-|---------|------------------|--------------|
-| Chart.js window is not defined | Phase 1: Project scaffold | `npm run build` completes without error; charts visible in built site |
-| Cloudflare silently routes to Workers | Phase: First deployment | Deployment URL ends in `.pages.dev` |
-| Wrong build output directory | Phase: First deployment | `dist/` directory exists post-build; Cloudflare shows files in build log |
-| D3 gauge not responsive | Phase: Gauge component build | Manual test at 375px viewport; Lighthouse mobile score |
-| JSON schema contract drift | Phase 1: Data structure design | Schema document committed to repo before first chart component |
-| Chart.js memory leak | Phase: Chart component build | DevTools Memory tab shows stable heap after 10 page visits |
-| Cloudflare Auto Minify conflict | Phase: First deployment | Verify setting disabled; hydration mismatches absent in console |
-| Hardcoded gauge color zones | Phase: Gauge component build | Colors defined as named constants in a config object, not literals in D3 code |
-| No "last updated" visible | Phase: Dashboard layout | Visual design review confirms timestamp is visible without scrolling |
+| Hardcoded series IDs in model code | Breaks when adding/removing data sources | All series IDs in config.py, models read from config |
+| Model weights diverging from config | Already a documented bug (ETI weights in critical-review-implementation.md) | Single source of truth: weights ONLY in config, never in model code |
+| Raw data files in git | Repo bloat, merge conflicts on binary files | .gitignore all data/ directories. Document how to regenerate from APIs. |
+| Notebook-as-pipeline | Jupyter notebooks used for production data processing | Notebooks for exploration only. Pipeline is Python scripts/modules. |
+| Implicit column name dependencies | Model code assumes specific DataFrame column names without validation | Use an explicit data contract (Pydantic model or typed dict) between pipeline and models |
 
 ---
 
 ## Sources
 
-- [Astro Official Troubleshooting Docs](https://docs.astro.build/en/guides/troubleshooting/) — window/document SSR errors (HIGH confidence)
-- [Astro Deploy to Cloudflare Docs](https://docs.astro.build/en/guides/deploy/cloudflare/) — adapter requirements, static vs SSR config (HIGH confidence)
-- [Cloudflare Pages Astro Guide](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/) — build settings, output dir (HIGH confidence)
-- [Cloudflare Pages Limits](https://developers.cloudflare.com/pages/platform/limits/) — 500 builds/month, 20-min timeout, 1 concurrent build (HIGH confidence)
-- ["Deploy Astro to Cloudflare Pages Without Getting Screwed"](https://www.gmkennedy.com/blog/deploy-astro-cloudflare-pages/) — Workers silent redirect pitfall (MEDIUM confidence, single source)
-- [Cloudflare Static Pages Deploy Guide](https://eastondev.com/blog/en/posts/dev/20251201-cloudflare-static-pages-deploy-guide/) — wrong output directory = blank page (MEDIUM confidence)
-- [Chart.js Memory Leak GitHub Issue #462](https://github.com/chartjs/Chart.js/issues/462) — destroy() requirement (HIGH confidence, official repo)
-- [D3 Responsive SVG Guide](https://brendansudol.github.io/writing/responsive-d3) — viewBox pattern (MEDIUM confidence)
-- [D3 Graph Gallery - Responsive Charts](https://d3-graph-gallery.com/graph/custom_responsive.html) — viewBox + preserveAspectRatio (MEDIUM confidence)
-- [FusionCharts — Common Dashboard Mistakes](https://www.fusioncharts.com/blog/the-most-common-mistakes-people-make-with-charts/) — color-only encoding, overloading (MEDIUM confidence)
-- [Astro Islands Architecture Docs](https://docs.astro.build/en/concepts/islands/) — client:only behavior, props serialization (HIGH confidence)
+- **Project internal:** `critical-review-model-specs.md`, `critical-review-implementation.md`, `gap-analysis-literature-review.md` — these directly document known issues with the prior approach (HIGH confidence)
+- **Existing codebase:** `revolution-index/` — bugs and design decisions inspected directly (HIGH confidence)
+- **Academic literature:** Turchin SDT, Goldstone PITF, Kuran preference falsification, Davies J-curve — referenced in project's literature review (HIGH confidence for theoretical grounding)
+- **Data engineering patterns:** Training data knowledge of common pitfalls in ETL pipelines, composite index construction, and dashboard systems (MEDIUM confidence)
 
 ---
-*Pitfalls research for: Static data visualization dashboard — Revolution Index*
+*Pitfalls research for: Revolution Probability Tracker*
 *Researched: 2026-03-01*

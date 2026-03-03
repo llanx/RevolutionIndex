@@ -1,20 +1,16 @@
-# build output
+# Node / Astro
 dist/
 .output/
-
-# generated types
 .astro/
-
-# dependencies
 node_modules/
-
-# logs
 npm-debug.log*
 
-# environment
+# Python
+__pycache__/
+*.pyc
+
+# Shared
 .env
 .env.*
-
-# OS
 .DS_Store
 Thumbs.db

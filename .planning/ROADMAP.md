@@ -1,8 +1,8 @@
-# Roadmap: Revolution Index
+# Roadmap: Revolution Probability Tracker
 
 ## Overview
 
-Three phases from empty repo to publicly deployed dashboard. Phase 1 defines the data contract that everything else depends on. Phase 2 builds the full interactive dashboard — gauge, charts, layout, and responsive design — against that contract. Phase 3 adds supporting content and ships to Cloudflare Pages. Because v1 uses mock data, the critical risk is schema drift: the JSON shape defined in Phase 1 becomes a binding contract for Phase 2 and, eventually, the real data pipeline.
+This roadmap delivers a validated, data-backed political stress scoring system for the United States. The work flows through five phases that follow the natural dependency chain: first validate what prior research got right and wrong, then exhaustively mine academic literature for predictive variables, then source free data for those variables, then build models from what is actually available, and finally validate that those models produce meaningful signal. V1 delivers validated research and working models -- the dashboard is v2.
 
 ## Phases
 
@@ -12,59 +12,107 @@ Three phases from empty repo to publicly deployed dashboard. Phase 1 defines the
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Foundation and Data Contract** - Scaffold the Astro project and define the JSON schema that all visualizations depend on
-- [ ] **Phase 2: Dashboard** - Build the complete interactive dashboard with gauge, charts, layout, and responsive design
-- [ ] **Phase 3: Content and Launch** - Add methodology page and supporting content, then deploy publicly on Cloudflare Pages
+- [x] **Phase 1: Prior Work Validation** - Audit the existing 250 pages of theory and 18 data series to establish what holds up and what needs revision
+- [ ] **Phase 2: Literature Mining** - Exhaustive AI-assisted review across political science, economics, sociology, and conflict studies to discover predictive variables and candidate frameworks
+- [ ] **Phase 3: Data Sourcing** - Map every discovered variable to freely available data sources, classify availability, and identify proxies for gaps
+- [ ] **Phase 4: Model Building** - Select architecture(s) informed by literature findings and data availability, implement data pipeline and scoring models
+- [ ] **Phase 5: Validation** - Backtest against historical episodes, quantify uncertainty, test for overfitting and spurious trends, produce pass/fail assessment
 
 ## Phase Details
 
-### Phase 1: Foundation and Data Contract
-**Goal**: The JSON data schema is locked and the project can be built against it
+### Phase 1: Prior Work Validation
+**Goal**: Establish a rigorous baseline understanding of what prior research got right, what needs fixing, and what remains uncertain -- so literature mining starts from solid ground rather than unchecked assumptions
 **Depends on**: Nothing (first phase)
+**Requirements**: VAL-01, VAL-02, VAL-03, VAL-04, VAL-05, VAL-06
+**Success Criteria** (what must be TRUE):
+  1. Each of the 3 prior models (Turchin PSI, Prospect Theory PLI, Financial Stress Pathway) has a documented assessment stating what is confirmed, what is revised, and what is flagged as questionable
+  2. All mathematical fixes from the critical review are either applied with documented rationale or explicitly rejected with documented reasoning
+  3. Each of the 18 data series has a current availability status (active, discontinued, changed definition) verified against the actual source
+  4. A validation report exists that a new reader could use to understand the state of prior work without reading the original 250 pages
+**Plans**: 3 plans
+
+Plans:
+- [x] 01-01-PLAN.md — Model assessments for PSI, PLI, and FSP with mathematical fix checklist
+- [x] 01-02-PLAN.md — Data series audit for all 18 series (17 FRED + 1 WID)
+- [x] 01-03-PLAN.md — Consolidated validation report synthesizing all findings
+
+### Phase 2: Literature Mining
+**Goal**: Produce a comprehensive, evidence-ranked catalog of variables that predict revolution/instability, along with candidate theoretical frameworks -- so model selection is driven by the full weight of academic evidence rather than three pre-chosen models
+**Depends on**: Phase 1
+**Requirements**: LIT-01, LIT-02, LIT-03, LIT-04, LIT-05, LIT-06, LIT-07
+**Success Criteria** (what must be TRUE):
+  1. Literature review covers at minimum four domains: revolution prediction, democratic backsliding/state failure, historical case studies, and economic preconditions -- with source papers cited for each variable discovered
+  2. A ranked variable catalog exists where every variable has an evidence strength rating (strong/moderate/weak) and at least one source paper citation
+  3. Candidate models/frameworks beyond the original 3 are identified and assessed for applicability to US context
+  4. Candidate training/validation datasets (NAVCO, PITF, UCDP, etc.) are identified with documented coverage and access methods
+  5. A synthesis document maps variables to theoretical frameworks and explicitly identifies gaps where theory suggests a variable matters but no measurement approach is obvious
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: TBD
+- [ ] 02-02: TBD
+- [ ] 02-03: TBD
+- [ ] 02-04: TBD
+
+### Phase 3: Data Sourcing
+**Goal**: Determine exactly which predictive variables can actually be measured with free data, producing a concrete inventory that constrains model building to what is empirically feasible
+**Depends on**: Phase 2
 **Requirements**: DATA-01, DATA-02, DATA-03, DATA-04, DATA-05
 **Success Criteria** (what must be TRUE):
-  1. Three JSON files exist in `public/data/` (current.json, history.json, factors.json) with realistic mock data
-  2. TypeScript interfaces in `src/lib/data.ts` match every field in the JSON files — no `any` types
-  3. Mock history data contains at least 12 weekly entries so charts will render meaningfully
-  4. Schema is documented (inline or README) as the contract a future pipeline must produce
-  5. `npm run build` succeeds and outputs a valid `dist/` directory
-**Plans**: 1 (01-01-PLAN.md completed 2026-03-01)
+  1. Every variable in the ranked catalog from Phase 2 has a data availability classification: available (free API), available (manual download), partially available (proxy needed), or unavailable
+  2. For each "available" variable, the specific API endpoint or download URL, series ID, update frequency, and historical coverage are documented
+  3. For critical variables classified as "unavailable" or "partially available," at least one fallback/proxy variable is identified or the gap is explicitly documented as accepted
+  4. A final data source inventory exists that a developer could use to implement data fetching without any additional research
+**Plans**: TBD
 
-### Phase 2: Dashboard
-**Goal**: A visitor can land on the site and immediately understand the current score, what's driving it, and how it's been trending
-**Depends on**: Phase 1
-**Requirements**: DASH-01, DASH-02, DASH-03, DASH-04, DASH-05, DASH-06, DASH-07, SITE-01, SITE-02, SITE-05
-**Success Criteria** (what must be TRUE):
-  1. Visitor sees a needle gauge with color-coded severity zones and a plain-language zone label (e.g., "Elevated Tension") as the page centerpiece
-  2. Current score number and last-updated timestamp are visible without scrolling
-  3. Scrolling down reveals a historical trend line chart and a contributing factors breakdown showing 5-6 factors
-  4. Page is usable and visually coherent on a 375px mobile screen and a 1440px desktop screen
-  5. Page ships minimal JavaScript — charts hydrate client-side; static content requires no JS
-**Plans**: 2 plans
-- [x] 02-01-PLAN.md -- Layout, global CSS, static content (score, timestamp, zone, factors) -- completed 2026-03-01
-- [ ] 02-02-PLAN.md -- D3 needle gauge, Chart.js trend chart, visual verification
+Plans:
+- [ ] 03-01: TBD
+- [ ] 03-02: TBD
+- [ ] 03-03: TBD
 
-### Phase 3: Content and Launch
-**Goal**: The site is publicly accessible with supporting content that establishes credibility and enables social sharing
-**Depends on**: Phase 2
-**Requirements**: CONT-01, CONT-02, CONT-03, CONT-04, SITE-03, SITE-04
+### Phase 4: Model Building
+**Goal**: Produce working model(s) that compute a 0-100 political stress score from the sourced data, with interpretable factor breakdowns and an automated data pipeline
+**Depends on**: Phase 3
+**Requirements**: MOD-01, MOD-02, MOD-03, MOD-04, MOD-05
 **Success Criteria** (what must be TRUE):
-  1. A methodology page exists with expandable sections covering data sources, model approach, score calculation, and limitations — content marked "coming soon" where not yet defined
-  2. Dashboard includes visible disclaimer text explaining what the score is and is not
-  3. An About section explains the project's purpose and approach
-  4. Sharing the site URL on social platforms shows a populated Open Graph card (site name, description, preview image)
-  5. Site is live at a `*.pages.dev` URL and loads correctly in a fresh browser with no console errors
-**Plans**: 2 plans
-- [x] 03-01-PLAN.md -- Content pages (methodology, disclaimer, about), OG meta tags, site-wide nav -- completed 2026-03-02
-- [ ] 03-02-PLAN.md -- Build verification, GitHub push, Cloudflare Pages deployment
+  1. Final model architecture selection is documented with explicit rationale tying back to literature mining findings and data availability constraints
+  2. Running the data pipeline fetches current data from all sources, aligns frequencies via LOCF, and produces a unified dataset without manual intervention
+  3. Each model accepts the unified dataset and returns a structured output containing a 0-100 score, component scores, and factor contributions -- as a stateless pure function
+  4. If multiple models are used, an ensemble/composite score is computed with documented weighting rationale
+  5. Score interpretation labels map the 0-100 range to human-readable severity tiers (e.g., low/moderate/elevated/high/crisis)
+**Plans**: TBD
+
+Plans:
+- [ ] 04-01: TBD
+- [ ] 04-02: TBD
+- [ ] 04-03: TBD
+
+### Phase 5: Validation
+**Goal**: Determine whether the model(s) produce meaningful signal by testing against historical ground truth -- answering the question "should we trust this score?"
+**Depends on**: Phase 4
+**Requirements**: TEST-01, TEST-02, TEST-03, TEST-04, TEST-05, TEST-06, TEST-07
+**Success Criteria** (what must be TRUE):
+  1. Backtesting against historical crisis episodes (1968, 1970, 1992, 2001, 2008, 2020) shows the model detects at least 4 of 6 as elevated
+  2. Backtesting against quiet periods (1990s stability) shows scores remain below the "elevated" threshold
+  3. Bootstrap confidence intervals are computed for all scores, and the intervals are narrow enough to distinguish crisis from non-crisis periods
+  4. Sensitivity analysis across plausible parameter ranges shows the model is not brittle -- conclusions hold across reasonable parameter variation
+  5. A validation report exists with explicit pass/fail assessment, methodology documentation, and honest disclosure of limitations
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: TBD
+- [ ] 05-02: TBD
+- [ ] 05-03: TBD
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Data Contract | 1/1 | Complete | 2026-03-01 |
-| 2. Dashboard | 1/2 | In Progress | - |
-| 3. Content and Launch | 1/2 | In Progress | - |
+| 1. Prior Work Validation | 3/3 | Complete    | 2026-03-02 |
+| 2. Literature Mining | 0/4 | Not started | - |
+| 3. Data Sourcing | 0/3 | Not started | - |
+| 4. Model Building | 0/3 | Not started | - |
+| 5. Validation | 0/3 | Not started | - |
