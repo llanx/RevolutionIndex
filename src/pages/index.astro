@@ -28,11 +28,12 @@ const enrichedFactors = current.factors.map(f => ({
   description: descMap.get(f.id) ?? '',
 }));
 
-// Serialize data for client-side charts (Plan 02 will use these)
+// Serialize data for client-side charts
 const chartLabels = JSON.stringify(history.entries.map(e => e.date));
 const chartValues = JSON.stringify(history.entries.map(e => e.score));
 
 const zoneColor = ZONES.find(z => z.label === current.zone)?.cssVar ?? 'var(--text-primary)';
+const zoneHex = ZONES.find(z => z.label === current.zone)?.color ?? '#f4a261';
 
 // Prepare gauge benchmark markers (Tier 1 only — 5 max to avoid clutter)
 const tier1Ids = ['france-1789', 'russia-1917', 'iran-1979', 'arab-spring-2010', 'nepal-2025'];
@@ -47,7 +48,6 @@ const benchmarks = benchmarksRaw.benchmarks;
 const usInequality = current.factors.find(f => f.id === 'economic_inequality')?.value ?? 0;
 const usTrust = current.factors.find(f => f.id === 'institutional_trust')?.value ?? 0;
 
-// Find revolutions where US exceeds or approaches on key factors
 const insights: { text: string; severity: 'exceeds' | 'approaching' }[] = [];
 
 for (const rev of benchmarks) {
@@ -67,10 +67,9 @@ for (const rev of benchmarks) {
   }
 }
 
-// Take the 3 most striking insights
 const topInsights = insights.slice(0, 3);
 
-// Build benchmark markers for factor bars — most extreme historical case per factor
+// Build benchmark markers for factor bars
 type BenchmarkMarker = { label: string; value: number };
 const factorBenchmarks = new Map<string, BenchmarkMarker>();
 
@@ -80,12 +79,10 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
     const fData = rev.factors[factorId as keyof typeof rev.factors];
     if (!fData) continue;
     if (factorId === 'institutional_trust') {
-      // Lower trust = more extreme
       if (!extreme || fData.value < extreme.value) {
         extreme = { label: `${rev.country} ${rev.year}`, value: fData.value };
       }
     } else {
-      // Higher value = more extreme
       if (!extreme || fData.value > extreme.value) {
         extreme = { label: `${rev.country} ${rev.year}`, value: fData.value };
       }
@@ -101,7 +98,10 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
     <section class="dashboard-hero">
       <h1 class="sr-only">Revolution Index Dashboard</h1>
 
-      <!-- Gauge mount point (Plan 02 injects D3 SVG here) -->
+      <!-- Zone-colored ambient glow behind gauge -->
+      <div class="gauge-ambient-glow" style={`--zone-glow-color: ${zoneHex}`}></div>
+
+      <!-- Gauge mount point -->
       <div
         id="gauge-mount"
         class="gauge-container"
@@ -110,23 +110,26 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
         role="img"
         aria-label={`Revolution Index score: ${current.score} out of 100, ${current.zone}`}
       >
-        <!-- D3 gauge renders here (Gauge.astro replaces this content) -->
       </div>
 
       <!-- Score and metadata -->
-      <div class="score-display">{current.score}</div>
+      <div class="score-display" id="score-display" data-target={current.score}>{current.score}</div>
       <div class="zone-label" style={`color: ${zoneColor}`}>{current.zone}</div>
       <p class="timestamp">
+        <span class="live-dot"></span>
         Last updated: <time datetime={current.timestamp}>{dateDisplay}</time>
       </p>
     </section>
 
+    <!-- Particle canvas (behind content, above background) -->
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
     <!-- Below fold: trend chart + factors -->
     <div class="dashboard-lower">
       <!-- Trend chart section -->
-      <section class="dashboard-section">
+      <section class="dashboard-section scroll-reveal">
         <h2 class="section-title">Historical Trend</h2>
-        <div class="chart-container">
+        <div class="chart-container" id="trend-chart-container">
           <canvas
             id="trend-chart"
             data-labels={chartLabels}
@@ -136,7 +139,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
       </section>
 
       <!-- Factors section -->
-      <section class="dashboard-section">
+      <section class="dashboard-section scroll-reveal" style="--reveal-delay: 0.15s">
         <h2 class="section-title">Contributing Factors</h2>
         <FactorsBreakdown factors={enrichedFactors} benchmarks={Object.fromEntries(factorBenchmarks)} />
       </section>
@@ -144,7 +147,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
 
     <!-- Historical Context Teaser -->
     {topInsights.length > 0 && (
-      <section class="history-teaser" aria-label="Historical context">
+      <section class="history-teaser scroll-reveal" aria-label="Historical context" style="--reveal-delay: 0.1s">
         <h2 class="section-title">Historical Context</h2>
         <p class="teaser-intro">
           How do current US conditions compare to the preconditions of history's major revolutions?
@@ -161,8 +164,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
     )}
 
     <!-- Disclaimer -->
-    <!-- TODO: review disclaimer copy before launch -->
-    <section class="disclaimer" aria-label="Score disclaimer">
+    <section class="disclaimer scroll-reveal" aria-label="Score disclaimer" style="--reveal-delay: 0.15s">
       <p>
         <strong>Note:</strong> The Revolution Index is a data-driven indicator derived from
         publicly available social, economic, and political signals. It is <em>not</em> a prediction
@@ -174,7 +176,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
     </section>
 
     <!-- About -->
-    <section class="about" aria-label="About this project">
+    <section class="about scroll-reveal" aria-label="About this project" style="--reveal-delay: 0.2s">
       <h2 class="section-title">About</h2>
       <p>
         The Revolution Index is an analytical project that tracks structural indicators of political
@@ -205,3 +207,176 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
     border-width: 0;
   }
 </style>
+
+<script>
+  // ---------- Score counter animation ----------
+  const scoreEl = document.getElementById('score-display');
+  const target = Number(scoreEl?.dataset.target ?? 0);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (scoreEl && !prefersReducedMotion) {
+    scoreEl.textContent = '0';
+
+    window.addEventListener('gauge-animation-complete', () => {
+      const duration = 1000;
+      const start = performance.now();
+
+      function tick(now: number) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease-out quad
+        const eased = 1 - (1 - progress) * (1 - progress);
+        const current = Math.round(eased * target);
+        scoreEl!.textContent = String(current);
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        }
+      }
+
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // ---------- Intersection Observer for scroll reveals ----------
+  const revealEls = document.querySelectorAll('.scroll-reveal');
+
+  if (revealEls.length > 0 && !prefersReducedMotion) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  } else {
+    // If reduced motion, show everything immediately
+    revealEls.forEach((el) => (el as HTMLElement).classList.add('revealed'));
+  }
+
+  // ---------- Factor bar fill animation on scroll ----------
+  const factorBars = document.querySelectorAll('.factor-bar-fill[data-width]');
+  if (factorBars.length > 0 && !prefersReducedMotion) {
+    const barObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            el.style.width = el.dataset.width!;
+            barObserver.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    factorBars.forEach((bar, i) => {
+      const el = bar as HTMLElement;
+      el.style.transitionDelay = `${i * 100}ms`;
+      barObserver.observe(el);
+    });
+  }
+
+  // ---------- Particle / ember effect ----------
+  const particleCanvas = document.getElementById('particle-canvas') as HTMLCanvasElement | null;
+  if (particleCanvas && !prefersReducedMotion) {
+    const ctx = particleCanvas.getContext('2d');
+    if (ctx) {
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      particleCanvas.width = width;
+      particleCanvas.height = height;
+
+      // Zone-based particle config
+      const score = target;
+      const particleCount = Math.floor(12 + (score / 100) * 30);
+      const baseSpeed = 0.2 + (score / 100) * 0.5;
+
+      // Determine color based on score
+      let particleColor: string;
+      if (score <= 25) particleColor = 'rgba(64, 145, 108,';      // green
+      else if (score <= 50) particleColor = 'rgba(244, 162, 97,';  // orange
+      else if (score <= 75) particleColor = 'rgba(231, 111, 81,';  // red-orange
+      else particleColor = 'rgba(193, 18, 31,';                     // red
+
+      interface Particle {
+        x: number;
+        y: number;
+        vx: number;
+        vy: number;
+        size: number;
+        opacity: number;
+        life: number;
+        maxLife: number;
+      }
+
+      const particles: Particle[] = [];
+
+      function spawnParticle(): Particle {
+        return {
+          x: Math.random() * width,
+          y: height + 10,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: -(baseSpeed + Math.random() * baseSpeed),
+          size: 1 + Math.random() * 2,
+          opacity: 0.1 + Math.random() * 0.3,
+          life: 0,
+          maxLife: 200 + Math.random() * 300,
+        };
+      }
+
+      // Initialize particles
+      for (let i = 0; i < particleCount; i++) {
+        const p = spawnParticle();
+        p.y = Math.random() * height;
+        p.life = Math.random() * p.maxLife;
+        particles.push(p);
+      }
+
+      function animate() {
+        ctx!.clearRect(0, 0, width, height);
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life++;
+
+          // Fade in/out based on life
+          const lifeRatio = p.life / p.maxLife;
+          let alpha = p.opacity;
+          if (lifeRatio < 0.1) alpha *= lifeRatio / 0.1;
+          else if (lifeRatio > 0.8) alpha *= (1 - lifeRatio) / 0.2;
+
+          if (p.life >= p.maxLife || p.y < -10) {
+            particles[i] = spawnParticle();
+            continue;
+          }
+
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx!.fillStyle = `${particleColor} ${alpha})`;
+          ctx!.fill();
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+
+      // Handle resize
+      window.addEventListener('resize', () => {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        particleCanvas.width = width;
+        particleCanvas.height = height;
+      });
+    }
+  }
+</script>

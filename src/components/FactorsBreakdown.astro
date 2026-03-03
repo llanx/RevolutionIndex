@@ -27,6 +27,7 @@ function directionArrow(direction: string): string {
 <ul class="factors-list">
   {factors.map((f) => {
     const bm = benchmarks[f.id];
+    const widthPct = `${Math.round(f.value * 100)}%`;
     return (
       <li class="factor-item">
         <div class="factor-header">
@@ -45,7 +46,8 @@ function directionArrow(direction: string): string {
         >
           <div
             class="factor-bar-fill"
-            style={`width: ${Math.round(f.value * 100)}%`}
+            data-width={widthPct}
+            style={`width: 0%`}
           ></div>
           {bm && (
             <div
