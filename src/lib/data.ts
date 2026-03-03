@@ -222,6 +222,44 @@ export interface FactorDetail {
   historical: FactorHistoryEntry[];
 }
 
+// ---------------------------------------------------------------------------
+// benchmarks.json — BenchmarksData
+// ---------------------------------------------------------------------------
+
+/** A factor value with scholarly context note. */
+export interface BenchmarkFactorValue {
+  value: number;
+  note: string;
+}
+
+/** Known factor IDs used in benchmark comparisons. */
+export type BenchmarkFactorId =
+  | 'economic_inequality'
+  | 'political_polarization'
+  | 'protest_intensity'
+  | 'institutional_trust'
+  | 'unemployment_stress';
+
+/** A single historical revolution benchmark. */
+export interface Benchmark {
+  id: string;
+  name: string;
+  country: string;
+  year: number;
+  narrative: string;
+  factors: Record<BenchmarkFactorId, BenchmarkFactorValue>;
+  composite_estimate: number;
+  keystat: string;
+  sources: string[];
+}
+
+/** benchmarks.json — historical revolution benchmarks for comparison. */
+export interface BenchmarksData {
+  _schema: string;
+  _note: string;
+  benchmarks: Benchmark[];
+}
+
 /**
  * factors.json — detailed per-factor data for breakdown and drill-down views.
  * Contains the same factors as current.json but with descriptions and history.

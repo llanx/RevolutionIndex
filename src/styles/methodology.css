@@ -1,0 +1,76 @@
+/* ==========================================================================
+   Methodology Page Styles
+   ========================================================================== */
+
+.methodology-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.methodology-page h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.methodology-intro {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.accordion details {
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.accordion details:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.accordion summary {
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.accordion summary::after {
+  content: '+';
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s;
+}
+
+.accordion details[open] summary::after {
+  content: '\2212'; /* minus sign */
+}
+
+.accordion-body {
+  padding: 0 1.25rem 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.accordion-body em {
+  color: var(--accent);
+}

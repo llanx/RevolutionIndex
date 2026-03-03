@@ -17,8 +17,8 @@ const {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'http://localhost:4321');
 const ogImageURL = new URL(ogImage, Astro.site ?? 'http://localhost:4321');
 
-// Determine active nav path
-const currentPath = Astro.url.pathname;
+// Determine active nav path (strip trailing slash for consistent matching)
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 <!doctype html>
 <html lang="en">
@@ -57,8 +57,8 @@ const currentPath = Astro.url.pathname;
         <a href="/" class="nav-logo" transition:name="logo">Revolution Index</a>
         <div class="nav-links">
           <a href="/" class={currentPath === '/' ? 'active' : ''}>Dashboard</a>
-          <a href="/history" class={currentPath === '/history' || currentPath === '/history/' ? 'active' : ''}>History</a>
-          <a href="/methodology" class={currentPath === '/methodology' || currentPath === '/methodology/' ? 'active' : ''}>Methodology</a>
+          <a href="/history" class={currentPath === '/history' ? 'active' : ''}>History</a>
+          <a href="/methodology" class={currentPath === '/methodology' ? 'active' : ''}>Methodology</a>
         </div>
       </div>
     </nav>

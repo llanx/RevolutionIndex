@@ -2,39 +2,19 @@
 import * as d3 from 'd3';
 import { ZONES } from '../lib/data';
 
-function initGauge() {
-  const mount = document.getElementById('gauge-mount');
-  if (!mount) return;
+interface GaugeConfig {
+  width: number;
+  height: number;
+  outerR: number;
+  innerR: number;
+  bottomPad: number;
+}
 
-  const score = Number(mount.dataset.score);
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function valueToAngle(v: number): number {
+  return ((v / 100) - 0.5) * Math.PI;
+}
 
-  mount.innerHTML = '';
-
-  const gauge = { width: 400, height: 240, outerR: 160, innerR: 100, bottomPad: 30 };
-  const cx = gauge.width / 2;
-  const cy = gauge.height - gauge.bottomPad;
-
-  function valueToAngle(v: number): number {
-    return ((v / 100) - 0.5) * Math.PI;
-  }
-
-  // Find current zone
-  const currentZone = ZONES.find(z => score >= z.start && score < z.end) ?? ZONES[1];
-
-  const arcGen = d3.arc();
-
-  const svg = d3.select(mount)
-    .append('svg')
-    .attr('viewBox', `0 0 ${gauge.width} ${gauge.height}`)
-    .attr('aria-hidden', 'true')
-    .style('width', '100%')
-    .style('height', 'auto');
-
-  // ---------- SVG filters for glow effects ----------
-
-  const defs = svg.append('defs');
-
+function createSvgFilters(defs: d3.Selection<SVGDefsElement, unknown, null, undefined>) {
   // Zone glow filter
   const glowFilter = defs.append('filter')
     .attr('id', 'zone-glow')
@@ -62,23 +42,22 @@ function initGauge() {
     .attr('in', 'SourceGraphic')
     .attr('in2', 'blur')
     .attr('operator', 'over');
+}
 
-  const g = svg.append('g')
-    .attr('transform', `translate(${cx},${cy})`);
-
-  // ---------- Animation timing ----------
-
-  const arcDuration = prefersReducedMotion ? 0 : 600;
-  const arcStagger = prefersReducedMotion ? 0 : 120;
-  const needleDelay = prefersReducedMotion ? 0 : ZONES.length * arcStagger + arcDuration;
-  const needleDuration = prefersReducedMotion ? 0 : 1500;
-
-  // ---------- Draw zone arcs with sequential reveal ----------
+function drawZoneArcs(
+  g: d3.Selection<SVGGElement, unknown, null, undefined>,
+  gauge: GaugeConfig,
+  currentZoneLabel: string,
+  prefersReducedMotion: boolean,
+  arcStagger: number,
+  arcDuration: number,
+) {
+  const arcGen = d3.arc();
 
   ZONES.forEach((z, i) => {
     const startAngle = valueToAngle(z.start);
     const endAngle = valueToAngle(z.end);
-    const isActive = z.label === currentZone.label;
+    const isActive = z.label === currentZoneLabel;
 
     const arc = g.append('path')
       .attr('fill', z.color)
@@ -96,7 +75,6 @@ function initGauge() {
         endAngle,
       }));
     } else {
-      // Start collapsed, animate open
       arc.attr('d', arcGen({
         innerRadius: gauge.innerR,
         outerRadius: gauge.outerR,
@@ -119,9 +97,14 @@ function initGauge() {
         });
     }
   });
+}
 
-  // ---------- Tick marks (appear after arcs) ----------
-
+function drawTickMarks(
+  g: d3.Selection<SVGGElement, unknown, null, undefined>,
+  gauge: GaugeConfig,
+  prefersReducedMotion: boolean,
+  needleDelay: number,
+) {
   [25, 50, 75].forEach(tick => {
     const angle = valueToAngle(tick);
     const x1 = (gauge.outerR + 5) * Math.sin(angle);
@@ -143,9 +126,17 @@ function initGauge() {
         .attr('opacity', 1);
     }
   });
+}
 
-  // ---------- Needle with sweep + elastic settle ----------
-
+function drawNeedle(
+  g: d3.Selection<SVGGElement, unknown, null, undefined>,
+  gauge: GaugeConfig,
+  score: number,
+  zoneColor: string,
+  prefersReducedMotion: boolean,
+  needleDelay: number,
+  needleDuration: number,
+) {
   const targetAngle = valueToAngle(score);
   const originAngle = valueToAngle(0);
   const needleLength = gauge.outerR - 15;
@@ -178,7 +169,7 @@ function initGauge() {
   const tipPos = needleTipPos(prefersReducedMotion ? targetAngle : originAngle);
   const needleTip = g.append('circle')
     .attr('r', 5)
-    .attr('fill', currentZone.color)
+    .attr('fill', zoneColor)
     .attr('filter', 'url(#needle-glow)')
     .attr('cx', tipPos.x)
     .attr('cy', tipPos.y)
@@ -212,9 +203,12 @@ function initGauge() {
   g.append('circle')
     .attr('r', 8)
     .attr('fill', '#f5f5f5');
+}
 
-  // ---------- Min / Max labels ----------
-
+function drawLabels(
+  g: d3.Selection<SVGGElement, unknown, null, undefined>,
+  gauge: GaugeConfig,
+) {
   g.append('text')
     .attr('x', -(gauge.outerR + 15))
     .attr('y', 15)
@@ -230,70 +224,116 @@ function initGauge() {
     .attr('font-size', '12px')
     .attr('text-anchor', 'middle')
     .text('100');
+}
 
-  // ---------- Benchmark markers — staggered fade-in ----------
+function drawBenchmarkMarkers(
+  g: d3.Selection<SVGGElement, unknown, null, undefined>,
+  gauge: GaugeConfig,
+  benchmarksAttr: string | undefined,
+  prefersReducedMotion: boolean,
+  markerBaseDelay: number,
+) {
+  if (!benchmarksAttr) return;
 
-  const benchmarksAttr = mount.dataset.benchmarks;
-  if (benchmarksAttr) {
-    try {
-      const markers: { label: string; score: number }[] = JSON.parse(benchmarksAttr);
-      const markerBaseDelay = needleDelay + needleDuration + 400;
+  try {
+    const markers: { label: string; score: number }[] = JSON.parse(benchmarksAttr);
 
-      markers.forEach((m, i) => {
-        const mAngle = valueToAngle(m.score);
-        const innerTick = (gauge.outerR + 2) * Math.sin(mAngle);
-        const outerTick = (gauge.outerR + 14) * Math.sin(mAngle);
-        const innerTickY = -(gauge.outerR + 2) * Math.cos(mAngle);
-        const outerTickY = -(gauge.outerR + 14) * Math.cos(mAngle);
+    markers.forEach((m, i) => {
+      const mAngle = valueToAngle(m.score);
+      const innerTick = (gauge.outerR + 2) * Math.sin(mAngle);
+      const outerTick = (gauge.outerR + 14) * Math.sin(mAngle);
+      const innerTickY = -(gauge.outerR + 2) * Math.cos(mAngle);
+      const outerTickY = -(gauge.outerR + 14) * Math.cos(mAngle);
 
-        const markerG = g.append('g');
+      const markerG = g.append('g');
 
-        const line = markerG.append('line')
-          .attr('x1', innerTick).attr('y1', innerTickY)
-          .attr('x2', outerTick).attr('y2', outerTickY)
-          .attr('stroke', '#a0a0a0')
-          .attr('stroke-width', 1);
+      const line = markerG.append('line')
+        .attr('x1', innerTick).attr('y1', innerTickY)
+        .attr('x2', outerTick).attr('y2', outerTickY)
+        .attr('stroke', '#a0a0a0')
+        .attr('stroke-width', 1);
 
-        const labelR = gauge.outerR + 22;
-        const lx = labelR * Math.sin(mAngle);
-        const ly = -labelR * Math.cos(mAngle);
-        const angleDeg = (mAngle * 180) / Math.PI;
+      const labelR = gauge.outerR + 22;
+      const lx = labelR * Math.sin(mAngle);
+      const ly = -labelR * Math.cos(mAngle);
+      const angleDeg = (mAngle * 180) / Math.PI;
 
-        const text = markerG.append('text')
-          .attr('x', lx)
-          .attr('y', ly)
-          .attr('fill', '#a0a0a0')
-          .attr('font-size', '8px')
-          .attr('text-anchor', angleDeg < 0 ? 'end' : angleDeg > 0 ? 'start' : 'middle')
-          .attr('dominant-baseline', 'middle')
-          .text(m.label);
+      const text = markerG.append('text')
+        .attr('x', lx)
+        .attr('y', ly)
+        .attr('fill', '#a0a0a0')
+        .attr('font-size', '8px')
+        .attr('text-anchor', angleDeg < 0 ? 'end' : angleDeg > 0 ? 'start' : 'middle')
+        .attr('dominant-baseline', 'middle')
+        .text(m.label);
 
-        if (prefersReducedMotion) {
-          line.attr('opacity', 0.6);
-          text.attr('opacity', 0.7);
-        } else {
-          markerG.attr('opacity', 0)
-            .style('transform', 'scale(0.8)')
-            .style('transform-origin', `${lx}px ${ly}px`);
+      if (prefersReducedMotion) {
+        line.attr('opacity', 0.6);
+        text.attr('opacity', 0.7);
+      } else {
+        markerG.attr('opacity', 0)
+          .style('transform', 'scale(0.8)')
+          .style('transform-origin', `${lx}px ${ly}px`);
 
-          markerG.transition()
-            .delay(markerBaseDelay + i * 180)
-            .duration(400)
-            .ease(d3.easeBackOut.overshoot(1.5))
-            .attr('opacity', 1)
-            .style('transform', 'scale(1)');
+        markerG.transition()
+          .delay(markerBaseDelay + i * 180)
+          .duration(400)
+          .ease(d3.easeBackOut.overshoot(1.5))
+          .attr('opacity', 1)
+          .style('transform', 'scale(1)');
 
-          line.attr('opacity', 0.6);
-          text.attr('opacity', 0.7);
-        }
-      });
-    } catch (e) {
-      // Silently skip if benchmark data is malformed
-    }
+        line.attr('opacity', 0.6);
+        text.attr('opacity', 0.7);
+      }
+    });
+  } catch (e) {
+    // Silently skip if benchmark data is malformed
   }
+}
 
-  // ---------- Signal gauge animation complete ----------
+function initGauge() {
+  const mount = document.getElementById('gauge-mount');
+  if (!mount) return;
 
+  const score = Number(mount.dataset.score);
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  mount.innerHTML = '';
+
+  const gauge: GaugeConfig = { width: 400, height: 240, outerR: 160, innerR: 100, bottomPad: 30 };
+  const cx = gauge.width / 2;
+  const cy = gauge.height - gauge.bottomPad;
+
+  const currentZone = ZONES.find(z => score >= z.start && score < z.end) ?? ZONES[1];
+
+  const svg = d3.select(mount)
+    .append('svg')
+    .attr('viewBox', `0 0 ${gauge.width} ${gauge.height}`)
+    .attr('aria-hidden', 'true')
+    .style('width', '100%')
+    .style('height', 'auto');
+
+  const defs = svg.append('defs');
+  createSvgFilters(defs);
+
+  const g = svg.append('g')
+    .attr('transform', `translate(${cx},${cy})`);
+
+  // Animation timing
+  const arcDuration = prefersReducedMotion ? 0 : 600;
+  const arcStagger = prefersReducedMotion ? 0 : 120;
+  const needleDelay = prefersReducedMotion ? 0 : ZONES.length * arcStagger + arcDuration;
+  const needleDuration = prefersReducedMotion ? 0 : 1500;
+
+  drawZoneArcs(g, gauge, currentZone.label, prefersReducedMotion, arcStagger, arcDuration);
+  drawTickMarks(g, gauge, prefersReducedMotion, needleDelay);
+  drawNeedle(g, gauge, score, currentZone.color, prefersReducedMotion, needleDelay, needleDuration);
+  drawLabels(g, gauge);
+
+  const markerBaseDelay = needleDelay + needleDuration + 400;
+  drawBenchmarkMarkers(g, gauge, mount.dataset.benchmarks, prefersReducedMotion, markerBaseDelay);
+
+  // Signal gauge animation complete
   const totalAnimTime = prefersReducedMotion ? 0 : needleDelay + needleDuration + 600;
   setTimeout(() => {
     window.dispatchEvent(new CustomEvent('gauge-animation-complete'));
