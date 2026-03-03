@@ -211,7 +211,15 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
 </style>
 
 <script>
+  // AbortController for cleaning up listeners/animations between View Transitions
+  let cleanupController: AbortController | null = null;
+
   function initDashboardAnimations() {
+    // Abort previous listeners and animation frames
+    cleanupController?.abort();
+    cleanupController = new AbortController();
+    const { signal } = cleanupController;
+
     const scoreEl = document.getElementById('score-display');
     if (!scoreEl) return;
 
@@ -227,6 +235,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
         const start = performance.now();
 
         function tick(now: number) {
+          if (signal.aborted) return;
           const elapsed = now - start;
           const progress = Math.min(elapsed / duration, 1);
           // Ease-out quad
@@ -240,7 +249,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
         }
 
         requestAnimationFrame(tick);
-      });
+      }, { signal });
     }
 
     // ---------- Intersection Observer for scroll reveals ----------
@@ -260,6 +269,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
       );
 
       revealEls.forEach((el) => observer.observe(el));
+      signal.addEventListener('abort', () => observer.disconnect());
     } else {
       // If reduced motion, show everything immediately
       revealEls.forEach((el) => (el as HTMLElement).classList.add('revealed'));
@@ -291,6 +301,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
         el.style.transitionDelay = `${i * 100}ms`;
         barObserver.observe(el);
       });
+      signal.addEventListener('abort', () => barObserver.disconnect());
     }
     // When reduced motion is preferred, bars keep their HTML default width (already correct)
 
@@ -351,6 +362,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
         }
 
         function animate() {
+          if (signal.aborted) return;
           ctx!.clearRect(0, 0, width, height);
 
           for (let i = 0; i < particles.length; i++) {
@@ -381,13 +393,13 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
 
         animate();
 
-        // Handle resize
+        // Handle resize (auto-removed when signal aborts)
         window.addEventListener('resize', () => {
           width = window.innerWidth;
           height = window.innerHeight;
           particleCanvas.width = width;
           particleCanvas.height = height;
-        });
+        }, { signal });
       }
     }
   }
