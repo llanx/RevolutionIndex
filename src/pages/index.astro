@@ -268,6 +268,11 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
     // ---------- Factor bar fill animation on scroll ----------
     const factorBars = document.querySelectorAll('.factor-bar-fill[data-width]');
     if (factorBars.length > 0 && !prefersReducedMotion) {
+      // Reset to 0% for animation start state (HTML default is the correct width)
+      factorBars.forEach((bar) => {
+        (bar as HTMLElement).style.width = '0%';
+      });
+
       const barObserver = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -287,6 +292,7 @@ for (const factorId of ['economic_inequality', 'political_polarization', 'protes
         barObserver.observe(el);
       });
     }
+    // When reduced motion is preferred, bars keep their HTML default width (already correct)
 
     // ---------- Particle / ember effect ----------
     const particleCanvas = document.getElementById('particle-canvas') as HTMLCanvasElement | null;
