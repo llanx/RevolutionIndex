@@ -1,0 +1,144 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { CurrentData } from '../lib/data';
+
+import currentRaw from '../../public/data/current.json';
+import benchmarksRaw from '../../public/data/benchmarks.json';
+
+const current = currentRaw as unknown as CurrentData;
+const benchmarks = benchmarksRaw.benchmarks;
+
+// Build a map of current US factor values by ID
+const currentFactorMap = new Map(current.factors.map(f => [f.id, f]));
+
+// Factor display names and IDs in display order
+const factorMeta = [
+  { id: 'economic_inequality', name: 'Economic Inequality' },
+  { id: 'political_polarization', name: 'Political Polarization' },
+  { id: 'protest_intensity', name: 'Protest Activity' },
+  { id: 'institutional_trust', name: 'Institutional Trust' },
+  { id: 'unemployment_stress', name: 'Unemployment & Economic Stress' },
+];
+
+// Helper: determine comparison color
+// For most factors: higher historical = more severe. US exceeding = red.
+// For institutional_trust: lower value = less trust = worse. US lower than historical = red.
+function getComparisonClass(factorId: string, usValue: number, histValue: number): string {
+  if (factorId === 'institutional_trust') {
+    // Lower trust is worse. If US trust is lower than historical, that's alarming.
+    if (usValue < histValue - 0.05) return 'comparison-exceeds';
+    if (usValue < histValue + 0.05) return 'comparison-approaching';
+    return 'comparison-below';
+  }
+  // For all other factors, higher value = worse
+  if (usValue > histValue + 0.05) return 'comparison-exceeds';
+  if (usValue > histValue - 0.10) return 'comparison-approaching';
+  return 'comparison-below';
+}
+---
+
+<BaseLayout
+  title="Historical Context — Revolution Index"
+  description="How current US conditions compare to the preconditions of history's most significant revolutions, from France 1789 to Nepal 2025."
+>
+  <main class="history-page">
+    <section class="history-hero">
+      <h1>Historical Context</h1>
+      <p class="history-intro">
+        Revolutions don't emerge from nowhere. They follow measurable preconditions — rising inequality,
+        collapsing institutional trust, economic stress, and mass mobilization. This page compares current
+        US indicator levels against the conditions that preceded eight major revolutions spanning 1789 to 2025.
+      </p>
+      <p class="history-caveat">
+        All historical values are scholarly estimates based on academic research, not precise measurements.
+        They are mapped to the same 0.0-1.0 scale used by the Revolution Index to enable direct comparison.
+      </p>
+    </section>
+
+    <section class="benchmarks-grid">
+      {benchmarks.map((rev) => (
+        <article class="revolution-card" id={rev.id}>
+          <div class="rev-header">
+            <h2 class="rev-title">{rev.name}</h2>
+            <span class="rev-meta">{rev.country} &middot; {rev.year}</span>
+          </div>
+
+          <p class="rev-narrative">{rev.narrative}</p>
+
+          <div class="rev-keystat">
+            <span class="keystat-label">Key figure:</span> {rev.keystat}
+          </div>
+
+          <div class="rev-composite">
+            <span class="composite-label">Estimated severity</span>
+            <div class="composite-bar-track">
+              <div class="composite-bar-fill" style={`width: ${rev.composite_estimate}%`}></div>
+              <div class="composite-us-marker" style={`left: ${current.score}%`} title={`Current US: ${current.score}`}></div>
+            </div>
+            <div class="composite-legend">
+              <span class="legend-hist">{rev.composite_estimate}/100</span>
+              <span class="legend-us">US today: {current.score}/100</span>
+            </div>
+          </div>
+
+          <div class="rev-factors">
+            <h3 class="factors-heading">Factor Comparison</h3>
+            {factorMeta.map((fm) => {
+              const histFactor = rev.factors[fm.id as keyof typeof rev.factors];
+              const usFactor = currentFactorMap.get(fm.id);
+              if (!histFactor || !usFactor) return null;
+              const compClass = getComparisonClass(fm.id, usFactor.value, histFactor.value);
+              return (
+                <div class={`factor-comparison ${compClass}`}>
+                  <div class="fc-label">{fm.name}</div>
+                  <div class="fc-bars">
+                    <div class="fc-bar-row">
+                      <span class="fc-bar-label">Historical</span>
+                      <div class="fc-bar-track">
+                        <div class="fc-bar-fill fc-bar-hist" style={`width: ${Math.round(histFactor.value * 100)}%`}></div>
+                      </div>
+                      <span class="fc-value">{histFactor.value.toFixed(2)}</span>
+                    </div>
+                    <div class="fc-bar-row">
+                      <span class="fc-bar-label">US Today</span>
+                      <div class="fc-bar-track">
+                        <div class="fc-bar-fill fc-bar-us" style={`width: ${Math.round(usFactor.value * 100)}%`}></div>
+                      </div>
+                      <span class="fc-value">{usFactor.value.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  <div class="fc-note">{histFactor.note}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          <details class="rev-sources">
+            <summary>Sources</summary>
+            <ul>
+              {rev.sources.map((s: string) => (
+                <li>{s}</li>
+              ))}
+            </ul>
+          </details>
+        </article>
+      ))}
+    </section>
+
+    <section class="history-methodology-note">
+      <h2>A Note on Methodology</h2>
+      <p>
+        Historical factor values are approximate estimates derived from academic research, economic history
+        papers, and scholarly analyses. They are not precise measurements — pre-modern economies lacked the
+        statistical infrastructure for exact Gini coefficients or unemployment rates. Where multiple scholarly
+        estimates exist, we use the midpoint of the range. These comparisons are intended to provide context
+        and perspective, not definitive equivalences.
+      </p>
+      <p>
+        For details on how the Revolution Index score is calculated, see the
+        <a href="/methodology">Methodology</a> page. For the current US dashboard, return to the
+        <a href="/">Dashboard</a>.
+      </p>
+    </section>
+  </main>
+</BaseLayout>

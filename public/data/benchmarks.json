@@ -1,0 +1,174 @@
+{
+  "_schema": "Historical revolution benchmarks mapped to Revolution Index factors",
+  "_note": "Factor values are scholarly estimates on the same 0.0-1.0 scale as current.json factors. For institutional_trust, lower values = less trust = worse for stability. Composite estimates are approximate overall severity scores (0-100).",
+  "benchmarks": [
+    {
+      "id": "france-1789",
+      "name": "French Revolution",
+      "country": "France",
+      "year": 1789,
+      "narrative": "The French monarchy collapsed under extreme wealth concentration, crushing tax burdens on commoners, and a bankrupt state unable to feed its people. The top 10% held 90% of national wealth while bread consumed 50-80% of a laborer's wages. The storming of the Bastille became the defining symbol of popular revolt against institutional failure.",
+      "factors": {
+        "economic_inequality": { "value": 0.85, "note": "Top 10% held 90% of wealth; income Gini ~0.59; wealth Gini ~0.80-0.85" },
+        "political_polarization": { "value": 0.75, "note": "Three Estates system; aristocracy, clergy, and commoners in open class conflict" },
+        "protest_intensity": { "value": 0.80, "note": "Bread riots across France; storming of the Bastille; mass mobilization of sans-culottes" },
+        "institutional_trust": { "value": 0.05, "note": "Monarchy, Catholic Church, and tax system all despised; state functionally bankrupt" },
+        "unemployment_stress": { "value": 0.88, "note": "State bankrupt; bread consumed 50-80% of wages; widespread food insecurity" }
+      },
+      "composite_estimate": 82,
+      "keystat": "Top 10% held 90% of national wealth",
+      "sources": [
+        "Morrisson & Snyder, 'The Income Inequality of France in Historical Perspective' (2000)",
+        "Thomas Piketty, 'Capital in the Twenty-First Century' (2014)",
+        "CEPR: Economic Consequences of the French Revolution"
+      ]
+    },
+    {
+      "id": "europe-1848",
+      "name": "Revolutions of 1848",
+      "country": "Europe (50+ nations)",
+      "year": 1848,
+      "narrative": "The most widespread revolutionary wave in European history swept across 50+ countries in a single year, triggered by catastrophic crop failures and financial crisis. Potato blight devastated Northern Europe, German rye harvests fell to 20% of normal, and wheat prices doubled across France and Italy. In Vienna alone, 10,000 factory workers lost their jobs.",
+      "factors": {
+        "economic_inequality": { "value": 0.62, "note": "Moderate but growing; aristocratic land ownership vs urban working class" },
+        "political_polarization": { "value": 0.70, "note": "Autocratic monarchies vs liberal/nationalist reform movements across continent" },
+        "protest_intensity": { "value": 0.92, "note": "50+ countries simultaneously; the most contagious revolutionary wave in history" },
+        "institutional_trust": { "value": 0.15, "note": "Widespread distrust of autocratic governments; demands for constitutional reform" },
+        "unemployment_stress": { "value": 0.85, "note": "Crop failures 1845-47; food prices doubled; mass factory layoffs; workers spent 50%+ on food" }
+      },
+      "composite_estimate": 70,
+      "keystat": "50+ countries experienced revolution simultaneously",
+      "sources": [
+        "Berger & Spoerer, 'Economic Crises and the European Revolutions of 1848'",
+        "Khan Academy, 'Revolutions 1750-1900'",
+        "Encyclopedia.com, 'Revolutions of 1848'"
+      ]
+    },
+    {
+      "id": "mexico-1910",
+      "name": "Mexican Revolution",
+      "country": "Mexico",
+      "year": 1910,
+      "narrative": "After 35 years of authoritarian rule under Porfirio Diaz, Mexico erupted in revolution. A tiny elite owned vast estates while peasants were dispossessed of communal lands. Sugar workers were employed only 4 months per year, living in perpetual debt. Widespread malnutrition and illiteracy plagued rural areas that lacked any healthcare or education.",
+      "factors": {
+        "economic_inequality": { "value": 0.88, "note": "Vast estates owned by tiny elite; communal ejido lands privatized; extreme land concentration" },
+        "political_polarization": { "value": 0.70, "note": "Diaz dictatorship vs peasants, workers, intellectuals, and competing revolutionary factions" },
+        "protest_intensity": { "value": 0.68, "note": "Student riots and demonstrations growing before armed revolt; rural uprisings" },
+        "institutional_trust": { "value": 0.10, "note": "Porfirian dictatorship seen as corrupt and serving only the elite" },
+        "unemployment_stress": { "value": 0.78, "note": "Seasonal employment (4 months/year); perpetual debt; malnutrition; rural destitution" }
+      },
+      "composite_estimate": 74,
+      "keystat": "Sugar workers employed only 4 months per year",
+      "sources": [
+        "Cambridge Core, 'Income Inequality in Mexico 1895-1940'",
+        "Britannica, 'Mexican Revolution'",
+        "Cal State Journals, 'The Mexican Revolution: An Economic and Social Revival'"
+      ]
+    },
+    {
+      "id": "russia-1917",
+      "name": "Russian Revolution",
+      "country": "Russia",
+      "year": 1917,
+      "narrative": "World War I devastated an already fragile Russian economy. Prices quadrupled between 1914-1917 while bread shortages triggered mass protests in Petrograd. A tiny nobility and urban elite controlled virtually all wealth while millions of peasants endured periodic famines with insecure land tenure. Tsar Nicholas II was seen as catastrophically incompetent.",
+      "factors": {
+        "economic_inequality": { "value": 0.90, "note": "Tiny nobility/elite vs millions of impoverished peasants and workers; extreme wealth gap" },
+        "political_polarization": { "value": 0.85, "note": "Bolsheviks, Mensheviks, Social Revolutionaries, monarchists — multiple armed factions" },
+        "protest_intensity": { "value": 0.92, "note": "Petrograd bread riots; general strikes; soldiers refusing orders; armed insurrection" },
+        "institutional_trust": { "value": 0.05, "note": "Tsar seen as incompetent; military failures; government unable to provide basic food" },
+        "unemployment_stress": { "value": 0.92, "note": "Wartime inflation (prices 4x in 3 years); bread shortages; mass poverty; WWI devastation" }
+      },
+      "composite_estimate": 90,
+      "keystat": "Prices quadrupled in just 3 years (1914-1917)",
+      "sources": [
+        "NBER, 'Russian Inequality on the Eve of Revolution' (Nafziger & Lindert, 2013)",
+        "CEPR, 'Russia's National Income in War and Revolution 1913-1928'",
+        "History.com, 'Russian Revolution'"
+      ]
+    },
+    {
+      "id": "iran-1979",
+      "name": "Iranian Revolution",
+      "country": "Iran",
+      "year": 1979,
+      "narrative": "Iran's economy was growing on paper, but oil boom profits flowed to a small elite connected to the Shah while rapid urbanization created a massive disenfranchised underclass. Two-thirds of the population was under 30, and young people faced unemployment despite modernization. The Shah was seen as a Western puppet enforced by the feared SAVAK secret police.",
+      "factors": {
+        "economic_inequality": { "value": 0.72, "note": "Oil wealth concentrated in elite; urban underclass created by rapid modernization" },
+        "political_polarization": { "value": 0.78, "note": "Secular modernizers vs religious conservatives vs leftists; all united against Shah" },
+        "protest_intensity": { "value": 0.88, "note": "Millions marched; strikes paralyzed the economy; sustained mass mobilization" },
+        "institutional_trust": { "value": 0.08, "note": "Shah seen as Western puppet; SAVAK secret police; autocracy despite modernization" },
+        "unemployment_stress": { "value": 0.68, "note": "High inflation despite GDP growth; youth unemployment from modernization disruption" }
+      },
+      "composite_estimate": 76,
+      "keystat": "Two-thirds of the population was under age 30",
+      "sources": [
+        "Britannica, 'Iranian Revolution'",
+        "Stanford, 'Iranian Revolution of 1979'",
+        "History.com, 'What Led to the 1979 Iranian Revolution'"
+      ]
+    },
+    {
+      "id": "arab-spring-2010",
+      "name": "Arab Spring",
+      "country": "Tunisia / Egypt",
+      "year": 2010,
+      "narrative": "Beginning with a fruit vendor's self-immolation in Tunisia, uprisings swept across the Arab world fueled by extreme youth unemployment (30% in Tunisia, 25% in Egypt), decades of corrupt autocracy, and global food price spikes. Social media amplified grievances and enabled rapid mobilization. Youth unemployment across the region was the highest in the world.",
+      "factors": {
+        "economic_inequality": { "value": 0.70, "note": "Official Gini 30-40% but scholars say surveys dramatically undercount elite wealth" },
+        "political_polarization": { "value": 0.65, "note": "Autocratic regimes vs popular movements; less factional than other revolutions" },
+        "protest_intensity": { "value": 0.92, "note": "Millions across multiple countries; social media amplification; regimes toppled" },
+        "institutional_trust": { "value": 0.08, "note": "Decades of corrupt autocracy; rigged elections; suppressed civil society" },
+        "unemployment_stress": { "value": 0.82, "note": "Tunisia 30% youth unemployment; Egypt 25%; global food price spike 2010-2011" }
+      },
+      "composite_estimate": 73,
+      "keystat": "Youth unemployment reached 30% in Tunisia and 25% in Egypt",
+      "sources": [
+        "Al Jazeera, 'How Economic Hardship Fuelled the Arab Spring' (2020)",
+        "Wilson Center, 'Forecasting Instability: The Case of the Arab Spring'",
+        "Brookings, 'Youth Employment in Egypt and Tunisia'"
+      ]
+    },
+    {
+      "id": "sri-lanka-2022",
+      "name": "Sri Lanka Crisis",
+      "country": "Sri Lanka",
+      "year": 2022,
+      "narrative": "Sri Lanka's government defaulted on its debt after years of fiscal mismanagement, populist tax cuts, and the COVID-19 tourism collapse. Inflation hit 54.6% overall and 81% for food. Citizens stormed the presidential palace, and the president fled the country. It demonstrated how pure economic collapse — without pre-existing ideological movements — can topple a government.",
+      "factors": {
+        "economic_inequality": { "value": 0.55, "note": "Present but not the primary driver; crisis was about total economic collapse" },
+        "political_polarization": { "value": 0.50, "note": "Population was relatively united against the government rather than factionally divided" },
+        "protest_intensity": { "value": 0.78, "note": "Protesters stormed and occupied the presidential palace; president fled country" },
+        "institutional_trust": { "value": 0.12, "note": "Government seen as fiscally irresponsible; ruling family dynasty despised" },
+        "unemployment_stress": { "value": 0.95, "note": "54.6% inflation; 81% food inflation; sovereign debt default; foreign reserves depleted" }
+      },
+      "composite_estimate": 66,
+      "keystat": "Food inflation reached 81% — the highest in South Asian history",
+      "sources": [
+        "Wikipedia, 'Sri Lankan Economic Crisis (2019-2024)'",
+        "World Economic Forum, 'Visual Breakdown of Sri Lanka Crisis'",
+        "IMF, 'Sri Lanka Economic Reform Program'"
+      ]
+    },
+    {
+      "id": "nepal-2025",
+      "name": "Nepal Gen Z Protests",
+      "country": "Nepal",
+      "year": 2025,
+      "narrative": "Nepal's Gen Z organized through Discord to topple a government seen as corrupt and out of touch. With 20.8% youth unemployment, an average income of just $1,400/year, and 33% of GDP dependent on remittances, frustration boiled over when ruling elites displayed lavish wealth on social media. The movement chose its interim leader through online polling — a first in history.",
+      "factors": {
+        "economic_inequality": { "value": 0.72, "note": "Elite wealth visible on social media vs $1,400/year average income; 33% GDP from remittances" },
+        "political_polarization": { "value": 0.55, "note": "Primarily generational divide (Gen Z vs establishment) rather than ideological factions" },
+        "protest_intensity": { "value": 0.82, "note": "Nationwide Discord-organized protests; government toppled; digital-first mobilization" },
+        "institutional_trust": { "value": 0.10, "note": "Government seen as corrupt; social media exposed elite wealth vs mass poverty" },
+        "unemployment_stress": { "value": 0.72, "note": "20.8% youth unemployment; $1,400/yr average income; remittance-dependent economy" }
+      },
+      "composite_estimate": 68,
+      "keystat": "20.8% youth unemployment; interim leader chosen via online poll",
+      "sources": [
+        "Wikipedia, '2025 Nepalese Gen Z Protests'",
+        "Columbia Journalism Review, 'Nepal's Revolution Was on Discord'",
+        "The Nation, 'Nepal's Revolution Wasn't Televised'"
+      ]
+    }
+  ]
+}

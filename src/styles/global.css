@@ -213,7 +213,8 @@ body {
   height: 8px;
   background: #2a2a2a;
   border-radius: 4px;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
 }
 
 .factor-bar-fill {
@@ -223,10 +224,38 @@ body {
   transition: width 0.3s;
 }
 
+.factor-benchmark-marker {
+  position: absolute;
+  top: -3px;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.factor-benchmark-marker::before {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 14px;
+  background: #a0a0a0;
+  margin: 0 auto;
+  border-radius: 1px;
+  opacity: 0.8;
+}
+
+.benchmark-marker-label {
+  display: block;
+  font-size: 0.6rem;
+  color: #a0a0a0;
+  white-space: nowrap;
+  text-align: center;
+  margin-top: 1px;
+  opacity: 0.8;
+}
+
 .factor-description {
   font-size: 0.85rem;
   color: var(--text-secondary);
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
   margin-bottom: 0;
 }
 
@@ -300,6 +329,73 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   Historical Context Teaser (Dashboard)
+   -------------------------------------------------------------------------- */
+
+.history-teaser {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+
+.teaser-intro {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0 0 0.75rem;
+}
+
+.teaser-insights {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+}
+
+.teaser-insight {
+  font-size: 0.875rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.teaser-insight::before {
+  margin-right: 0.4rem;
+}
+
+.teaser-exceeds {
+  color: #ef4444;
+}
+
+.teaser-exceeds::before {
+  content: '\25B2'; /* triangle up */
+}
+
+.teaser-approaching {
+  color: var(--zone-elevated);
+}
+
+.teaser-approaching::before {
+  content: '\25C6'; /* diamond */
+}
+
+.teaser-link {
+  display: inline-block;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.teaser-link:hover {
+  opacity: 0.8;
+}
+
+/* --------------------------------------------------------------------------
    Disclaimer
    -------------------------------------------------------------------------- */
 
@@ -343,5 +439,291 @@ body {
 }
 
 .about a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   History Page — Historical Revolutions Comparison
+   -------------------------------------------------------------------------- */
+
+.history-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.history-hero {
+  margin-bottom: 2.5rem;
+}
+
+.history-page h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.history-intro {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+}
+
+.history-caveat {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* Revolution Cards */
+
+.benchmarks-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.revolution-card {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 1.5rem;
+  border-left: 3px solid var(--accent);
+}
+
+.rev-header {
+  margin-bottom: 0.75rem;
+}
+
+.rev-title {
+  font-size: 1.35rem;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+}
+
+.rev-meta {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.rev-narrative {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0 0 1rem;
+}
+
+.rev-keystat {
+  background: rgba(232, 93, 4, 0.1);
+  border-radius: 6px;
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.keystat-label {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Composite severity bar */
+
+.rev-composite {
+  margin-bottom: 1.25rem;
+}
+
+.composite-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.composite-bar-track {
+  height: 10px;
+  background: #2a2a2a;
+  border-radius: 5px;
+  margin: 0.4rem 0;
+  position: relative;
+  overflow: visible;
+}
+
+.composite-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--zone-stable), var(--zone-elevated), var(--zone-crisis), var(--zone-revolution));
+}
+
+.composite-us-marker {
+  position: absolute;
+  top: -4px;
+  width: 3px;
+  height: 18px;
+  background: var(--text-primary);
+  border-radius: 1px;
+  transform: translateX(-50%);
+}
+
+.composite-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.legend-hist {
+  color: var(--accent);
+}
+
+.legend-us {
+  color: var(--text-secondary);
+}
+
+/* Factor Comparison Bars */
+
+.rev-factors {
+  margin-bottom: 1rem;
+}
+
+.factors-heading {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem;
+}
+
+.factor-comparison {
+  margin-bottom: 0.85rem;
+  padding-left: 0.5rem;
+  border-left: 2px solid #333;
+}
+
+.factor-comparison.comparison-exceeds {
+  border-left-color: #ef4444;
+}
+
+.factor-comparison.comparison-approaching {
+  border-left-color: #f4a261;
+}
+
+.factor-comparison.comparison-below {
+  border-left-color: var(--zone-stable);
+}
+
+.fc-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.fc-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.fc-bar-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 40px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fc-bar-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.fc-bar-track {
+  height: 6px;
+  background: #2a2a2a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.fc-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.fc-bar-hist {
+  background: var(--accent);
+}
+
+.fc-bar-us {
+  background: var(--text-primary);
+  opacity: 0.7;
+}
+
+.fc-value {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+.fc-note {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+  font-style: italic;
+}
+
+/* Sources toggle */
+
+.rev-sources {
+  margin-top: 0.5rem;
+}
+
+.rev-sources summary {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.rev-sources ul {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0 0;
+}
+
+.rev-sources li {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Methodology note */
+
+.history-methodology-note {
+  margin-top: 2.5rem;
+  padding: 1.25rem;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border-left: 3px solid var(--text-secondary);
+}
+
+.history-methodology-note h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.history-methodology-note p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0 0 0.75rem;
+}
+
+.history-methodology-note p:last-child {
+  margin-bottom: 0;
+}
+
+.history-methodology-note a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.history-methodology-note a:hover {
   border-bottom-color: var(--accent);
 }

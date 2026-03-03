@@ -99,4 +99,49 @@ g.append('text')
   .attr('font-size', '12px')
   .attr('text-anchor', 'middle')
   .text('100');
+
+// Draw historical revolution benchmark markers on the outer arc
+const benchmarksAttr = mount.dataset.benchmarks;
+if (benchmarksAttr) {
+  try {
+    const markers: { label: string; score: number }[] = JSON.parse(benchmarksAttr);
+    markers.forEach(m => {
+      const mAngle = valueToAngle(m.score);
+      const markerR = gauge.outerR + 8;
+      const mx = markerR * Math.sin(mAngle);
+      const my = -markerR * Math.cos(mAngle);
+
+      // Tick line
+      const innerTick = (gauge.outerR + 2) * Math.sin(mAngle);
+      const outerTick = (gauge.outerR + 14) * Math.sin(mAngle);
+      const innerTickY = -(gauge.outerR + 2) * Math.cos(mAngle);
+      const outerTickY = -(gauge.outerR + 14) * Math.cos(mAngle);
+
+      g.append('line')
+        .attr('x1', innerTick).attr('y1', innerTickY)
+        .attr('x2', outerTick).attr('y2', outerTickY)
+        .attr('stroke', '#a0a0a0')
+        .attr('stroke-width', 1)
+        .attr('opacity', 0.6);
+
+      // Label
+      const labelR = gauge.outerR + 22;
+      const lx = labelR * Math.sin(mAngle);
+      const ly = -labelR * Math.cos(mAngle);
+      const angleDeg = (mAngle * 180) / Math.PI;
+
+      g.append('text')
+        .attr('x', lx)
+        .attr('y', ly)
+        .attr('fill', '#a0a0a0')
+        .attr('font-size', '8px')
+        .attr('text-anchor', angleDeg < 0 ? 'end' : angleDeg > 0 ? 'start' : 'middle')
+        .attr('dominant-baseline', 'middle')
+        .attr('opacity', 0.7)
+        .text(m.label);
+    });
+  } catch (e) {
+    // Silently skip if benchmark data is malformed
+  }
+}
 </script>

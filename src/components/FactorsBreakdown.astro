@@ -5,11 +5,17 @@ interface FactorWithDescription extends Factor {
   description: string;
 }
 
-export interface Props {
-  factors: FactorWithDescription[];
+interface BenchmarkMarker {
+  label: string;
+  value: number;
 }
 
-const { factors } = Astro.props;
+export interface Props {
+  factors: FactorWithDescription[];
+  benchmarks?: Record<string, BenchmarkMarker>;
+}
+
+const { factors, benchmarks = {} } = Astro.props;
 
 function directionArrow(direction: string): string {
   if (direction === 'up') return '\u2191';
@@ -19,28 +25,40 @@ function directionArrow(direction: string): string {
 ---
 
 <ul class="factors-list">
-  {factors.map((f) => (
-    <li class="factor-item">
-      <div class="factor-header">
-        <span class="factor-name">{f.name}</span>
-        <span class={`factor-direction direction-${f.direction}`}>
-          {directionArrow(f.direction)}
-        </span>
-      </div>
-      <div
-        class="factor-bar-track"
-        role="meter"
-        aria-valuenow={Math.round(f.value * 100)}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label={f.name}
-      >
+  {factors.map((f) => {
+    const bm = benchmarks[f.id];
+    return (
+      <li class="factor-item">
+        <div class="factor-header">
+          <span class="factor-name">{f.name}</span>
+          <span class={`factor-direction direction-${f.direction}`}>
+            {directionArrow(f.direction)}
+          </span>
+        </div>
         <div
-          class="factor-bar-fill"
-          style={`width: ${Math.round(f.value * 100)}%`}
-        ></div>
-      </div>
-      <p class="factor-description">{f.description}</p>
-    </li>
-  ))}
+          class="factor-bar-track"
+          role="meter"
+          aria-valuenow={Math.round(f.value * 100)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={f.name}
+        >
+          <div
+            class="factor-bar-fill"
+            style={`width: ${Math.round(f.value * 100)}%`}
+          ></div>
+          {bm && (
+            <div
+              class="factor-benchmark-marker"
+              style={`left: ${Math.round(bm.value * 100)}%`}
+              title={`${bm.label}: ${bm.value.toFixed(2)}`}
+            >
+              <span class="benchmark-marker-label">{bm.label}</span>
+            </div>
+          )}
+        </div>
+        <p class="factor-description">{f.description}</p>
+      </li>
+    );
+  })}
 </ul>

@@ -8,6 +8,7 @@ import { ZONES, type CurrentData, type HistoryData, type FactorsData } from '../
 import currentRaw from '../../public/data/current.json';
 import historyRaw from '../../public/data/history.json';
 import factorsRaw from '../../public/data/factors.json';
+import benchmarksRaw from '../../public/data/benchmarks.json';
 
 const current = currentRaw as unknown as CurrentData;
 const history = historyRaw as unknown as HistoryData;
@@ -32,6 +33,66 @@ const chartLabels = JSON.stringify(history.entries.map(e => e.date));
 const chartValues = JSON.stringify(history.entries.map(e => e.score));
 
 const zoneColor = ZONES.find(z => z.label === current.zone)?.cssVar ?? 'var(--text-primary)';
+
+// Prepare gauge benchmark markers (Tier 1 only — 5 max to avoid clutter)
+const tier1Ids = ['france-1789', 'russia-1917', 'iran-1979', 'arab-spring-2010', 'nepal-2025'];
+const gaugeMarkers = JSON.stringify(
+  benchmarksRaw.benchmarks
+    .filter((b: any) => tier1Ids.includes(b.id))
+    .map((b: any) => ({ label: `${b.country} ${b.year}`, score: b.composite_estimate }))
+);
+
+// Build historical comparison insights for teaser
+const benchmarks = benchmarksRaw.benchmarks;
+const usInequality = current.factors.find(f => f.id === 'economic_inequality')?.value ?? 0;
+const usTrust = current.factors.find(f => f.id === 'institutional_trust')?.value ?? 0;
+
+// Find revolutions where US exceeds or approaches on key factors
+const insights: { text: string; severity: 'exceeds' | 'approaching' }[] = [];
+
+for (const rev of benchmarks) {
+  const histTrust = rev.factors.institutional_trust.value;
+  if (usTrust < histTrust) {
+    insights.push({
+      text: `US institutional trust is lower than pre-revolution ${rev.country} (${rev.year})`,
+      severity: 'exceeds',
+    });
+  }
+  const histIneq = rev.factors.economic_inequality.value;
+  if (usInequality > histIneq - 0.10 && usInequality <= histIneq) {
+    insights.push({
+      text: `US inequality is approaching ${rev.country} (${rev.year}) levels`,
+      severity: 'approaching',
+    });
+  }
+}
+
+// Take the 3 most striking insights
+const topInsights = insights.slice(0, 3);
+
+// Build benchmark markers for factor bars — most extreme historical case per factor
+type BenchmarkMarker = { label: string; value: number };
+const factorBenchmarks = new Map<string, BenchmarkMarker>();
+
+for (const factorId of ['economic_inequality', 'political_polarization', 'protest_intensity', 'institutional_trust', 'unemployment_stress']) {
+  let extreme: BenchmarkMarker | null = null;
+  for (const rev of benchmarks) {
+    const fData = rev.factors[factorId as keyof typeof rev.factors];
+    if (!fData) continue;
+    if (factorId === 'institutional_trust') {
+      // Lower trust = more extreme
+      if (!extreme || fData.value < extreme.value) {
+        extreme = { label: `${rev.country} ${rev.year}`, value: fData.value };
+      }
+    } else {
+      // Higher value = more extreme
+      if (!extreme || fData.value > extreme.value) {
+        extreme = { label: `${rev.country} ${rev.year}`, value: fData.value };
+      }
+    }
+  }
+  if (extreme) factorBenchmarks.set(factorId, extreme);
+}
 ---
 
 <BaseLayout title="Revolution Index">
@@ -45,6 +106,7 @@ const zoneColor = ZONES.find(z => z.label === current.zone)?.cssVar ?? 'var(--te
         id="gauge-mount"
         class="gauge-container"
         data-score={current.score}
+        data-benchmarks={gaugeMarkers}
         role="img"
         aria-label={`Revolution Index score: ${current.score} out of 100, ${current.zone}`}
       >
@@ -76,9 +138,27 @@ const zoneColor = ZONES.find(z => z.label === current.zone)?.cssVar ?? 'var(--te
       <!-- Factors section -->
       <section class="dashboard-section">
         <h2 class="section-title">Contributing Factors</h2>
-        <FactorsBreakdown factors={enrichedFactors} />
+        <FactorsBreakdown factors={enrichedFactors} benchmarks={Object.fromEntries(factorBenchmarks)} />
       </section>
     </div>
+
+    <!-- Historical Context Teaser -->
+    {topInsights.length > 0 && (
+      <section class="history-teaser" aria-label="Historical context">
+        <h2 class="section-title">Historical Context</h2>
+        <p class="teaser-intro">
+          How do current US conditions compare to the preconditions of history's major revolutions?
+        </p>
+        <ul class="teaser-insights">
+          {topInsights.map((insight) => (
+            <li class={`teaser-insight teaser-${insight.severity}`}>
+              {insight.text}
+            </li>
+          ))}
+        </ul>
+        <a href="/history" class="teaser-link">Explore all historical comparisons &rarr;</a>
+      </section>
+    )}
 
     <!-- Disclaimer -->
     <!-- TODO: review disclaimer copy before launch -->
