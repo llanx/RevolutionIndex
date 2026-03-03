@@ -23,12 +23,16 @@ const dateDisplay = new Date(current.timestamp).toLocaleDateString('en-US', {
   day: 'numeric',
 });
 
-// Enrich current factors with descriptions from factors.json
-const descMap = new Map(factors.factors.map(d => [d.id, d.description]));
-const enrichedFactors = current.factors.map(f => ({
-  ...f,
-  description: descMap.get(f.id) ?? '',
-}));
+// Enrich current factors with descriptions + historical sparkline data from factors.json
+const detailMap = new Map(factors.factors.map(d => [d.id, d]));
+const enrichedFactors = current.factors.map(f => {
+  const detail = detailMap.get(f.id);
+  return {
+    ...f,
+    description: detail?.description ?? '',
+    historical: detail?.historical ?? [],
+  };
+});
 
 // Serialize data for client-side charts
 const chartLabels = JSON.stringify(history.entries.map(e => e.date));
@@ -72,6 +76,14 @@ for (const rev of benchmarks) {
 
 const topInsights = insights.slice(0, 3);
 
+// Zone-specific editorial deck text
+const zoneDeck: Record<string, string> = {
+  'Stable': 'within historical norms\u2009\u2014\u2009no significant structural pressures detected.',
+  'Elevated Tension': 'where structural pressures are building but haven\u2019t reached critical mass.',
+  'Crisis Territory': 'a range historically associated with severe political instability.',
+  'Revolution Territory': 'a level that has preceded revolutionary upheaval in comparable nations.',
+};
+
 // Build benchmark markers for factor bars
 type BarBenchmarkMarker = { label: string; value: number };
 const factorBenchmarks = new Map<string, BarBenchmarkMarker>();
@@ -98,33 +110,51 @@ for (const factorId of comparedFactorIds) {
 
 <BaseLayout title="Revolution Index">
   <main class="dashboard">
-    <!-- Hero section: gauge + score (above fold) -->
+    <!-- Hero section: editorial headline + gauge illustration (above fold) -->
     <section class="dashboard-hero">
       <h1 class="sr-only">Revolution Index Dashboard</h1>
 
-      <h2 class="gauge-title">Instability Gauge</h2>
-
-      <!-- Zone-colored ambient glow behind gauge -->
-      <div class="gauge-ambient-glow" style={`--zone-glow-color: ${zoneHex}`}></div>
-
-      <!-- Gauge mount point -->
-      <div
-        id="gauge-mount"
-        class="gauge-container"
-        data-score={current.score}
-        data-benchmarks={gaugeMarkers}
-        role="img"
-        aria-label={`Revolution Index score: ${current.score} out of 100, ${current.zone}`}
-      >
+      <!-- Editorial headline block -->
+      <div class="hero-editorial">
+        <p class="hero-kicker">The Revolution Index</p>
+        <h2 class="hero-headline">
+          America Sits at <span class="hero-score-inline" id="score-display" data-target={current.score}>{current.score}</span>
+        </h2>
+        <p class="hero-deck">
+          The composite instability score places the United States in
+          <span class="hero-zone-inline" style={`color: ${zoneColor}`}>{current.zone}</span>
+          &mdash; {zoneDeck[current.zone] ?? 'a level reflecting current structural conditions.'}
+        </p>
+        <p class="hero-timestamp">
+          <span class="live-dot"></span>
+          Last updated: <time datetime={current.timestamp}>{dateDisplay}</time>
+        </p>
       </div>
 
-      <!-- Score and metadata -->
-      <div class="score-display" id="score-display" data-target={current.score}>{current.score}</div>
-      <div class="zone-label" style={`color: ${zoneColor}`}>{current.zone}</div>
-      <p class="timestamp">
-        <span class="live-dot"></span>
-        Last updated: <time datetime={current.timestamp}>{dateDisplay}</time>
-      </p>
+      <!-- Gauge as editorial illustration -->
+      <div class="hero-gauge-frame">
+        <!-- Zone-colored ambient glow behind gauge -->
+        <div class="gauge-ambient-glow" style={`--zone-glow-color: ${zoneHex}`}></div>
+
+        <!-- Gauge mount point -->
+        <div
+          id="gauge-mount"
+          class="gauge-container"
+          data-score={current.score}
+          data-benchmarks={gaugeMarkers}
+          role="img"
+          aria-label={`Revolution Index score: ${current.score} out of 100, ${current.zone}`}
+        >
+        </div>
+        <p class="gauge-caption">
+          Composite score across five structural indicators, benchmarked against historical revolutions.
+        </p>
+      </div>
+
+      <!-- Subtle scroll cue -->
+      <div class="hero-scroll-cue" aria-hidden="true">
+        <span class="scroll-cue-line"></span>
+      </div>
     </section>
 
     <!-- Particle canvas (behind content, above background) -->
@@ -221,24 +251,29 @@ for (const factorId of comparedFactorIds) {
   function animateScoreCounter(scoreEl: HTMLElement, target: number, signal: AbortSignal) {
     scoreEl.textContent = '0';
 
-    window.addEventListener('gauge-animation-complete', () => {
-      const duration = 1000;
-      const start = performance.now();
+    window.addEventListener('gauge-needle-start', ((e: CustomEvent) => {
+      const counterDelay = 200;  // Needle leads by 200ms
+      const duration = e.detail.sweepDuration - counterDelay;  // 700ms to land with needle
 
-      function tick(now: number) {
+      setTimeout(() => {
         if (signal.aborted) return;
-        const elapsed = now - start;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - (1 - progress) * (1 - progress);
-        scoreEl.textContent = String(Math.round(eased * target));
+        const start = performance.now();
 
-        if (progress < 1) {
-          requestAnimationFrame(tick);
+        function tick(now: number) {
+          if (signal.aborted) return;
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - (1 - progress) * (1 - progress);
+          scoreEl.textContent = String(Math.round(eased * target));
+
+          if (progress < 1) {
+            requestAnimationFrame(tick);
+          }
         }
-      }
 
-      requestAnimationFrame(tick);
-    }, { signal });
+        requestAnimationFrame(tick);
+      }, counterDelay);
+    }) as EventListener, { signal });
   }
 
   function initScrollReveals(signal: AbortSignal, prefersReducedMotion: boolean) {

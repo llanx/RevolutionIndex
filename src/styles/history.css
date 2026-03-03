@@ -289,10 +289,20 @@
 .history-methodology-note a {
   color: var(--accent);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+  position: relative;
 }
 
-.history-methodology-note a:hover {
-  border-bottom-color: var(--accent);
+.history-methodology-note a::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.history-methodology-note a:hover::after {
+  width: 100%;
 }

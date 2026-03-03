@@ -18,6 +18,30 @@ function initTrendChart() {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   });
 
+  // Custom plugin: draw colored zone bands behind the chart data
+  const zoneBandsPlugin = {
+    id: 'zoneBands',
+    beforeDraw(chart: Chart) {
+      const { ctx, chartArea, scales: { y } } = chart;
+      if (!chartArea) return;
+      const { left, right } = chartArea;
+
+      const zones = [
+        { min: 0, max: 25, color: 'rgba(64, 145, 108, 0.07)' },   // Stable
+        { min: 25, max: 50, color: 'rgba(244, 162, 97, 0.07)' },   // Elevated
+        { min: 50, max: 75, color: 'rgba(231, 111, 81, 0.07)' },   // Crisis
+        { min: 75, max: 100, color: 'rgba(193, 18, 31, 0.07)' },   // Revolution
+      ];
+
+      zones.forEach(zone => {
+        const yTop = y.getPixelForValue(zone.max);
+        const yBottom = y.getPixelForValue(zone.min);
+        ctx.fillStyle = zone.color;
+        ctx.fillRect(left, yTop, right - left, yBottom - yTop);
+      });
+    }
+  };
+
   function createChart() {
     // Guard against double-creation if observer fires after a swap
     if (Chart.getChart(canvas)) return;
@@ -37,6 +61,7 @@ function initTrendChart() {
           pointBackgroundColor: '#e85d04',
         }]
       },
+      plugins: [zoneBandsPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: true,

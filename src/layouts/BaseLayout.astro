@@ -30,7 +30,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     <!-- Google Fonts: Space Grotesk for display headings -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -63,6 +63,23 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
       </div>
     </nav>
     <slot />
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">Revolution Index</span>
+          <p class="footer-tagline">Tracking structural instability through data.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <a href="/">Dashboard</a>
+          <a href="/history">History</a>
+          <a href="/methodology">Methodology</a>
+        </nav>
+        <p class="footer-legal">
+          &copy; 2026 Revolution Index. An analytical research project &mdash; not a political statement.
+        </p>
+      </div>
+    </footer>
 
     <!-- Nav scroll effect -->
     <script>

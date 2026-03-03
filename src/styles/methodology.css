@@ -48,6 +48,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: color 0.2s, background 0.2s;
+}
+
+.accordion summary:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .accordion summary::-webkit-details-marker {

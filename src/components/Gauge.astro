@@ -53,10 +53,13 @@ function drawZoneArcs(
   arcDuration: number,
 ) {
   const arcGen = d3.arc();
+  const GAP = 0.012; // ~0.7 degrees in radians
 
   ZONES.forEach((z, i) => {
-    const startAngle = valueToAngle(z.start);
-    const endAngle = valueToAngle(z.end);
+    const rawStart = valueToAngle(z.start);
+    const rawEnd = valueToAngle(z.end);
+    const startAngle = rawStart + (i === 0 ? 0 : GAP);
+    const endAngle = rawEnd - (i === ZONES.length - 1 ? 0 : GAP);
     const isActive = z.label === currentZoneLabel;
 
     const arc = g.append('path')
@@ -176,21 +179,45 @@ function drawNeedle(
     .attr('opacity', prefersReducedMotion ? 0.7 : 0);
 
   if (!prefersReducedMotion) {
-    const angleInterp = d3.interpolate(originAngle, targetAngle);
+    // Two-phase animation: fast sweep with slight overshoot, then gentle settle
+    const overshootAngle = originAngle + (targetAngle - originAngle) * 1.04;
+    const sweepInterp = d3.interpolate(originAngle, overshootAngle);
+    const settleInterp = d3.interpolate(overshootAngle, targetAngle);
 
+    const sweepDuration = 900;
+    const settleDuration = 300;
+
+    // Signal counter to start synced animation
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('gauge-needle-start', {
+        detail: { sweepDuration }
+      }));
+    }, needleDelay);
+
+    // Phase 1: Sweep to overshoot
     needle.transition()
       .delay(needleDelay)
-      .duration(needleDuration)
-      .ease(d3.easeElasticOut.amplitude(1.1).period(0.35))
-      .attrTween('d', () => (t: number) => needlePath(angleInterp(t)));
+      .duration(sweepDuration)
+      .ease(d3.easeQuadOut)
+      .attrTween('d', () => (t: number) => needlePath(sweepInterp(t)))
+      .transition()  // Phase 2: Settle back
+      .duration(settleDuration)
+      .ease(d3.easeCubicInOut)
+      .attrTween('d', () => (t: number) => needlePath(settleInterp(t)));
 
+    // Tip glow follows same two-phase motion
     needleTip.transition()
       .delay(needleDelay)
-      .duration(needleDuration)
-      .ease(d3.easeElasticOut.amplitude(1.1).period(0.35))
-      .attrTween('cx', () => (t: number) => String(needleTipPos(angleInterp(t)).x))
-      .attrTween('cy', () => (t: number) => String(needleTipPos(angleInterp(t)).y))
-      .attr('opacity', 0.7);
+      .duration(sweepDuration)
+      .ease(d3.easeQuadOut)
+      .attrTween('cx', () => (t: number) => String(needleTipPos(sweepInterp(t)).x))
+      .attrTween('cy', () => (t: number) => String(needleTipPos(sweepInterp(t)).y))
+      .attr('opacity', 0.7)
+      .transition()  // Phase 2: Settle back
+      .duration(settleDuration)
+      .ease(d3.easeCubicInOut)
+      .attrTween('cx', () => (t: number) => String(needleTipPos(settleInterp(t)).x))
+      .attrTween('cy', () => (t: number) => String(needleTipPos(settleInterp(t)).y));
 
     // Add pulse class after animation settles
     setTimeout(() => {
@@ -291,6 +318,46 @@ function drawBenchmarkMarkers(
   }
 }
 
+function drawTrack(
+  g: d3.Selection<SVGGElement, unknown, null, undefined>,
+  gauge: GaugeConfig,
+) {
+  const trackArc = d3.arc()({
+    innerRadius: gauge.innerR,
+    outerRadius: gauge.outerR,
+    startAngle: valueToAngle(0),
+    endAngle: valueToAngle(100),
+  });
+  g.append('path')
+    .attr('d', trackArc)
+    .attr('fill', '#1a1a1a');
+}
+
+function drawBezelRings(
+  g: d3.Selection<SVGGElement, unknown, null, undefined>,
+  gauge: GaugeConfig,
+) {
+  const outerBezel = d3.arc()({
+    innerRadius: gauge.outerR + 1,
+    outerRadius: gauge.outerR + 2,
+    startAngle: valueToAngle(0),
+    endAngle: valueToAngle(100),
+  });
+  g.append('path')
+    .attr('d', outerBezel)
+    .attr('fill', 'rgba(255, 255, 255, 0.08)');
+
+  const innerBezel = d3.arc()({
+    innerRadius: gauge.innerR - 2,
+    outerRadius: gauge.innerR - 1,
+    startAngle: valueToAngle(0),
+    endAngle: valueToAngle(100),
+  });
+  g.append('path')
+    .attr('d', innerBezel)
+    .attr('fill', 'rgba(255, 255, 255, 0.06)');
+}
+
 function initGauge() {
   const mount = document.getElementById('gauge-mount');
   if (!mount) return;
@@ -323,9 +390,11 @@ function initGauge() {
   const arcDuration = prefersReducedMotion ? 0 : 600;
   const arcStagger = prefersReducedMotion ? 0 : 120;
   const needleDelay = prefersReducedMotion ? 0 : ZONES.length * arcStagger + arcDuration;
-  const needleDuration = prefersReducedMotion ? 0 : 1500;
+  const needleDuration = prefersReducedMotion ? 0 : 1200;
 
+  drawTrack(g, gauge);
   drawZoneArcs(g, gauge, currentZone.label, prefersReducedMotion, arcStagger, arcDuration);
+  drawBezelRings(g, gauge);
   drawTickMarks(g, gauge, prefersReducedMotion, needleDelay);
   drawNeedle(g, gauge, score, currentZone.color, prefersReducedMotion, needleDelay, needleDuration);
   drawLabels(g, gauge);

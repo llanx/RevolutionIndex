@@ -1,8 +1,9 @@
 ---
-import type { Factor } from '../lib/data';
+import type { Factor, FactorHistoryEntry } from '../lib/data';
 
-interface FactorWithDescription extends Factor {
+interface FactorWithSparkline extends Factor {
   description: string;
+  historical: FactorHistoryEntry[];
 }
 
 interface BenchmarkMarker {
@@ -11,7 +12,7 @@ interface BenchmarkMarker {
 }
 
 export interface Props {
-  factors: FactorWithDescription[];
+  factors: FactorWithSparkline[];
   benchmarks?: Record<string, BenchmarkMarker>;
 }
 
@@ -22,24 +23,96 @@ function directionArrow(direction: string): string {
   if (direction === 'down') return '\u2193';
   return '\u2192';
 }
+
+function directionColor(direction: string): string {
+  if (direction === 'up') return '#ef4444';
+  if (direction === 'down') return '#22c55e';
+  return '#a0a0a0';
+}
+
+function sparklineData(historical: FactorHistoryEntry[]): { points: string; endX: string; endY: string } | null {
+  if (historical.length < 2) return null;
+
+  const viewWidth = 60;
+  const viewHeight = 24;
+  const paddingY = 3;
+
+  const values = historical.map(h => h.value);
+  const minVal = Math.min(...values);
+  const maxVal = Math.max(...values);
+  const range = maxVal - minVal || 0.01;
+
+  const coords = historical.map((point, i) => ({
+    x: (i / (historical.length - 1)) * viewWidth,
+    y: paddingY + (1 - (point.value - minVal) / range) * (viewHeight - paddingY * 2),
+  }));
+
+  const points = coords.map(c => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(' ');
+  const last = coords[coords.length - 1];
+
+  return { points, endX: last.x.toFixed(1), endY: last.y.toFixed(1) };
+}
 ---
 
-<ul class="factors-list">
+<div class="factors-grid">
   {factors.map((f) => {
     const bm = benchmarks[f.id];
     const widthPct = `${Math.round(f.value * 100)}%`;
+    const valuePct = Math.round(f.value * 100);
+    const weightPct = Math.round(f.weight * 100);
+    const sparkline = sparklineData(f.historical);
+    const lineColor = directionColor(f.direction);
+
     return (
-      <li class="factor-item">
-        <div class="factor-header">
-          <span class="factor-name">{f.name}</span>
-          <span class={`factor-direction direction-${f.direction}`}>
+      <article class="factor-card">
+        <div class="factor-card-header">
+          <h3 class="factor-card-name">{f.name}</h3>
+          <span class={`factor-card-direction direction-${f.direction}`}>
             {directionArrow(f.direction)}
           </span>
         </div>
+
+        <div class="factor-card-metrics">
+          <div class="factor-card-value-group">
+            <span class="factor-card-value">{valuePct}</span>
+            <span class="factor-card-unit">/100</span>
+          </div>
+          <span class="factor-card-weight" title={`Weight: ${weightPct}%`}>
+            {weightPct}% wt
+          </span>
+        </div>
+
+        {sparkline && (
+          <div class="factor-card-sparkline">
+            <svg
+              viewBox="0 0 60 24"
+              preserveAspectRatio="none"
+              class="sparkline-svg"
+              aria-hidden="true"
+            >
+              <polyline
+                points={sparkline.points}
+                fill="none"
+                stroke={lineColor}
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <circle
+                cx={sparkline.endX}
+                cy={sparkline.endY}
+                r="2"
+                fill={lineColor}
+              />
+            </svg>
+            <span class="sparkline-label">30-day trend</span>
+          </div>
+        )}
+
         <div
           class="factor-bar-track"
           role="meter"
-          aria-valuenow={Math.round(f.value * 100)}
+          aria-valuenow={valuePct}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label={f.name}
@@ -59,8 +132,9 @@ function directionArrow(direction: string): string {
             </div>
           )}
         </div>
-        <p class="factor-description">{f.description}</p>
-      </li>
+
+        <p class="factor-card-description">{f.description}</p>
+      </article>
     );
   })}
-</ul>
+</div>
