@@ -558,3 +558,357 @@ This loses the consumer confidence signal in the FSP model, but UMCSENT already 
 | Census Bureau API | ACS education variables | No (but limited without key) |
 | WID.world | 1 series (sptinc992j) | No |
 | HUD | Fair Market Rents | No |
+
+---
+
+## Domain 2: Political Polarization & Elite Dynamics
+
+This domain covers 8 variables from the Phase 2 catalog that measure political division, elite competition, and distributional conflict between groups. The domain relies heavily on non-MCP academic sources (VoteView, WID, ANES, FEC) rather than federal APIs, making verification more web-research dependent. Political polarization -- both ideological and affective -- is among the most consistently cited predictors of democratic backsliding across 16 comparative cases (Haggard & Kaufman 2021).
+
+**Variables in this domain:** #3, #4, #11, #15, #19, #20, #31, #45
+
+---
+
+### Political Polarization - Congressional (#3)
+
+**Catalog Rating:** Strong
+**Theoretical Concept:** The degree of ideological separation between political parties as measured by legislative voting behavior. Core elite-level political division indicator. DW-NOMINATE scores are the gold standard for US congressional polarization measurement (McCarty, Poole & Rosenthal 2006). Turchin (2023) includes political polarization as a key structural-demographic stress indicator.
+**Availability Classification:** Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| DW-NOMINATE party mean distance (House + Senate) | VoteView (UCLA) | `HSall_members.csv` from voteview.com/data | Per Congress (~biennial), weekly DB dumps | 1st-119th Congress (1789-2027) | Direct | No |
+| DW-NOMINATE scores (House only) | VoteView (UCLA) | `Hall_members.csv` from voteview.com/data | Per Congress, weekly DB dumps | 1st-119th Congress (1789-2027) | Direct | No |
+| DW-NOMINATE scores (Senate only) | VoteView (UCLA) | `Sall_members.csv` from voteview.com/data | Per Congress, weekly DB dumps | 1st-119th Congress (1789-2027) | Direct | No |
+| Bipartisan voting frequency | Congress.gov (via MCP) | `congress_house_votes`, `congress_senate_votes` | Per vote | Recent Congresses | Strong proxy (behavioral complement to ideological distance) | No |
+
+**Recommended:** VoteView DW-NOMINATE party mean distance as the primary measure. Compute as: |mean(Republican 1st dimension scores) - mean(Democrat 1st dimension scores)| per Congress. This is the standard operationalization in the political science literature (McCarty et al. 2006, 2016). The 1st dimension captures the liberal-conservative axis; the 2nd dimension (historically race/civil rights) is less relevant for the modern era. Use both House and Senate separately or combined (`HSall_members.csv`).
+
+**Construction Recipe (Party Polarization from DW-NOMINATE):**
+1. Download `HSall_members.csv` from https://voteview.com/data
+2. Filter to a specific Congress number (e.g., congress = 118)
+3. Separate by party_code (100 = Democrat, 200 = Republican)
+4. Compute mean of `nominate_dim1` for each party
+5. Polarization = |mean_R - mean_D|
+6. Repeat for each Congress to build time series (1789-present)
+
+**Rate Limits:** No API -- CSV download from voteview.com. Files are static downloads updated weekly.
+**License:** VoteView data is freely available for academic and non-commercial use. Data produced by Keith Poole, Howard Rosenthal, and collaborators.
+**Known Gaps:**
+- VoteView is NOT an API -- it provides CSV file downloads only. Do not attempt REST API calls to voteview.com.
+- DW-NOMINATE scores are estimated jointly across all Congresses using a bridge scaling methodology, so adding new Congresses can slightly revise historical scores
+- The 2nd dimension has diminished explanatory power since the civil rights realignment (post-1970s)
+- Congressional polarization measures elite behavior, not mass public polarization -- supplement with #4 (Affective Polarization) for the public dimension
+- Mann & Ornstein (2012) document that polarization is asymmetric: Republican rightward shift has been larger than Democratic leftward shift
+
+**Last Verified:** 2026-03-03 (VoteView website confirmed active, CSV files available at voteview.com/data; Congressional MCP tools confirmed available)
+
+---
+
+### Affective Polarization (#4)
+
+**Catalog Rating:** Strong
+**Theoretical Concept:** Growing mutual dislike and distrust between partisan groups that extends beyond policy disagreements into personal hostility. Distinct from ideological polarization (#3) -- measures how much partisans dislike each other, not how much they disagree on policy. McCoy & Somer (2019) identify pernicious polarization as the strongest predictor of democratic backsliding across 16 comparative cases.
+**Availability Classification:** Available (manual download) -- periodic survey data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Partisan feeling thermometer difference (in-party minus out-party) | ANES Cumulative Data File | Variables VCF0218 (in-party), VCF0224 (out-party) from electionstudies.org | Biennial/quadrennial (election years) | 1948-2020 (Cumulative File) | Direct | No |
+| ANES Time Series individual studies | ANES | Individual study files from electionstudies.org | Per study | 2020, 2024 (standalone studies) | Direct | No |
+| Partisan antipathy surveys | Pew Research Center | Published reports with data tables | Irregular (~annual since 2014) | 2014-present (systematic tracking) | Strong proxy | No |
+
+**Recommended:** ANES partisan feeling thermometer difference as the primary measure. Compute as: mean(in-party thermometer rating) - mean(out-party thermometer rating). The cumulative data file provides the standardized variables VCF0218 and VCF0224 across all election studies from 1948 to 2020. For post-2020 data, use individual ANES Time Series studies (2020, 2024).
+
+**Construction Recipe (Affective Polarization from ANES):**
+1. Download ANES Cumulative Data File from https://electionstudies.org/data-center/anes-time-series-cumulative-data-file/
+2. Extract VCF0218 (feeling thermometer: own party) and VCF0224 (feeling thermometer: other party)
+3. Compute difference: affective_polarization = mean(VCF0218) - mean(VCF0224)
+4. Higher difference = greater affective polarization
+5. Note: thermometers run 0-100; typical gap has grown from ~25 points (1980) to ~45+ points (2020)
+
+**Rate Limits:** No API -- CSV download from electionstudies.org after free registration.
+**License:** ANES data is freely available for research purposes. Requires citation of ANES and acknowledgment of NSF funding.
+**Known Gaps:**
+- Biennial/quadrennial frequency severely limits time series density -- use LOCF (Last Observation Carried Forward) for alignment with higher-frequency series per project decision
+- Tag as "short series" for the systematic measurement component -- the concept has been measured since 1948 (feeling thermometers exist that far back) but the "affective polarization" interpretation is modern (Iyengar et al. 2012)
+- ANES question wording and methodology have evolved across waves -- the cumulative file harmonizes variables but some waves may have different response scales or sampling frames
+- ANES does not include all feeling thermometer questions in all waves -- verify VCF0218 and VCF0224 availability per wave before computing time series
+- Pew partisan antipathy data provides higher frequency since 2014 but uses different methodology (not directly comparable to ANES thermometers)
+- Post-2020 ANES data may require downloading individual Time Series studies separately from the cumulative file
+
+**Last Verified:** 2026-03-03 (ANES website confirmed active, cumulative data file available; Pew trust/antipathy reports confirmed published through 2025)
+
+---
+
+### Elite Factionalism / Fragmentation (#11)
+
+**Catalog Rating:** Strong
+**Theoretical Concept:** The degree to which political elites are divided into competing factions unable to cooperate on governance. Central to Goldstone (1991, 2010) and the PITF model -- factionalism is a key component of the highest-risk regime category. Distinct from polarization (#3): measures division within the ruling class specifically, not just between parties.
+**Availability Classification:** Partially available (proxy needed) -- constructible from VoteView data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Intra-party DW-NOMINATE spread (SD within each party) | VoteView (UCLA) | Derived from `HSall_members.csv` | Per Congress (~biennial) | 1st-119th Congress (1789-2027) | Strong proxy (intra-party ideological dispersion as factionalism proxy) | No |
+| Primary challenge rates | FEC | `fec_search_candidates` MCP tool | Per election cycle | 1980-present (electronic filings) | Strong proxy (contested primaries signal elite competition) | No |
+| House Freedom Caucus / Progressive Caucus membership and defection votes | Congress.gov (via MCP) | `congress_house_votes` | Per vote | 2015-present (Freedom Caucus founded 2015) | Strong proxy (formalized intra-party factions) | No |
+
+**Recommended:** Construct intra-party DW-NOMINATE spread as the primary measure. This captures how ideologically dispersed each party's members are -- higher spread = more internal factions. The construction recipe uses the same VoteView data as #3 (Political Polarization) but measures within-party rather than between-party variation.
+
+**Construction Recipe (Elite Factionalism from VoteView):**
+1. Download `HSall_members.csv` from https://voteview.com/data
+2. Filter to a specific Congress number
+3. Separate by party_code (100 = Democrat, 200 = Republican)
+4. Compute standard deviation of `nominate_dim1` within each party
+5. Factionalism index = max(SD_R, SD_D) or average(SD_R, SD_D) -- Phase 4 decision
+6. Higher SD = more internal fragmentation
+7. Repeat for each Congress to build time series
+
+**Rate Limits:** VoteView: no API, CSV download. FEC MCP tool: standard MCP rate limits.
+**License:** VoteView: freely available for academic use. FEC: public domain (US government).
+**Known Gaps:**
+- This is a constructed variable -- intra-party DW-NOMINATE SD is not a pre-computed series
+- DW-NOMINATE captures ideological spread but not all forms of factionalism (e.g., personal/patronage factions, generational divides)
+- The PITF model uses a categorical factionalism coding (0-3 scale) based on expert judgment, not a continuous measure -- our proxy is continuous but captures a narrower concept
+- FEC primary challenge data requires defining what constitutes a "primary challenge" (at least 2 candidates filing?) and is available only for federal races
+- Formalized caucus data (Freedom Caucus, Progressive Caucus) provides a direct factionalism measure but only from 2015 -- tag as "short series" if used
+
+**Last Verified:** 2026-03-03 (VoteView CSV files confirmed available; FEC MCP tool confirmed operational)
+
+---
+
+### Horizontal Inequality - Between-Group (#15)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** Inequality between politically relevant identity groups (racial, ethnic, regional) rather than between individuals. Stewart (2008) and Cederman et al. (2013) show that between-group inequality is more predictive of political conflict than aggregate inequality measures like Gini.
+**Availability Classification:** Available (free API)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Median household income by race/ethnicity | Census Bureau ACS | Tables B19013A-I (by race), via `census_search_variables` MCP | Annual | 2005-present (1-year ACS estimates) | Direct | No (Census API, limited without key) |
+| Black-White median household income ratio | Census Bureau (via FRED) | Derived from race-specific income series | Annual | 1967-present (from Census historical tables) | Direct | Yes (FRED) |
+| Earnings by race/ethnicity (weekly) | BLS Current Population Survey (via FRED) | LEU0252881600A (Black), LEU0252883600A (White), LEU0252885600A (Hispanic) | Quarterly | 1979-present | Direct | Yes (FRED) |
+| Racial income mobility gaps | Opportunity Insights (Chetty et al.) | CSV download from opportunityinsights.org | One-time cohort data | Birth cohorts 1978-1992 | Strong proxy (intergenerational mobility dimension) | No |
+
+**Recommended:** Census Bureau racial/ethnic median household income ratios as the primary measure. Compute Black/White and Hispanic/White income ratios from Census historical tables (available 1967-present for Black/White, 1972-present for Hispanic/White). For higher granularity post-2005, use ACS tables B19013A-I. Supplement with BLS weekly earnings by race for quarterly frequency.
+
+**Construction Recipe (Racial Income Ratio):**
+1. Obtain median household income by race: Census historical tables H-5 and H-9 from census.gov/data/tables/time-series/demo/income-poverty/historical-income-households.html
+2. Compute ratio: (Black median HH income) / (White median HH income)
+3. Similarly for Hispanic/White ratio
+4. Track ratio over time -- declining ratio = increasing horizontal inequality
+5. For post-2005 annual detail: use ACS B19013B (Black), B19013A (White non-Hispanic), B19013I (Hispanic)
+
+**Rate Limits:** FRED API: 120 requests/minute. Census API: 500 requests/day without key, higher with key.
+**License:** Public domain (US government work). Opportunity Insights data is freely available for research.
+**Known Gaps:**
+- Census racial categories have changed over time (multiracial category added in 2000 Census, ACS categories differ from decennial Census)
+- ACS 1-year estimates available only for geographies with 65,000+ population -- limits state/local granularity
+- Opportunity Insights data is cohort-based (birth year), not calendar-year time series -- useful for level assessment but not for time series modeling
+- Regional inequality (e.g., Rust Belt vs. Sun Belt) is a separate dimension not captured by racial income ratios -- would require constructing from ACS geographic data
+
+**Last Verified:** 2026-03-03 (FRED earnings series confirmed via MCP; Census ACS variable structure confirmed via web research; Census MCP tool returned JSON parse error during research phase -- fallback to direct Census API or web download)
+
+---
+
+### Intra-Elite Wealth Gap (#19)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The gap between the very top of the wealth distribution (top 0.1%) and the merely affluent (top 1-10%). Captures the frustrated aspirant dynamic central to Turchin's counter-elite formation theory. When the top 0.1% pull away from the top 1-10%, the "merely rich" become frustrated aspirants who fund counter-elite movements.
+**Availability Classification:** Available (free API) + Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Top 1% net worth share | Federal Reserve DFA (via FRED) | WFRBST01134 | Quarterly | 1989-present | Direct (component) | Yes (FRED) |
+| Top 0.1% net worth share | Federal Reserve DFA (via FRED) | WFRBSTP1300 | Quarterly | 1989-present | Direct (component) | Yes (FRED) |
+| Bottom 50% net worth share | Federal Reserve DFA (via FRED) | WFRBSB50107 | Quarterly | 1989-present | Direct (component for reference) | Yes (FRED) |
+| Top 1% pre-tax income share | WID.world | sptinc992j (US) | Annual | 1913-present | Direct (income dimension) | No |
+| Top 0.1% pre-tax income share | WID.world | sptinc p99.9p100 (US) | Annual | 1913-present | Direct (income dimension) | No |
+| Top 10% pre-tax income share | WID.world | sptinc p90p100 (US) | Annual | 1913-present | Direct (income dimension) | No |
+
+**Recommended:** Construct the intra-elite concentration ratio from Fed DFA data as the primary measure: WFRBSTP1300 / (WFRBST01134 - WFRBSTP1300). This captures how much of the top 1%'s wealth is concentrated in the top 0.1% -- higher ratio = more extreme concentration at the very top. The Fed DFA data has quarterly frequency (1989-present) which is better for model building than WID annual data. For longer historical coverage, use WID income shares to construct the analogous ratio back to 1913.
+
+**Construction Recipe (Intra-Elite Concentration Ratio):**
+1. From FRED: obtain WFRBSTP1300 (top 0.1% net worth share) and WFRBST01134 (top 1% net worth share)
+2. Compute "merely affluent" share: merely_affluent = WFRBST01134 - WFRBSTP1300 (this is the 99.0-99.9th percentile)
+3. Intra-elite ratio = WFRBSTP1300 / merely_affluent
+4. Higher ratio = more concentration within the elite (top 0.1% pulling away from top 1-10%)
+5. For WID income analog: ratio = sptinc_p99.9p100 / (sptinc_p99p100 - sptinc_p99.9p100)
+
+**Rate Limits:** FRED API: 120 requests/minute. WID.world: no documented rate limits for bulk CSV download.
+**License:** FRED/DFA data: public domain (Federal Reserve). WID: CC BY 4.0.
+**Known Gaps:**
+- Fed DFA starts only in 1989 -- limits backtesting to ~35 years. WID income shares extend to 1913 but measure income, not wealth.
+- Fed DFA and WID use different methodologies: DFA is based on the Financial Accounts + Survey of Consumer Finances; WID uses tax data + national accounts. Levels are not directly comparable.
+- The "top 0.1%" threshold is arbitrary -- the theory suggests a continuous gradient of elite frustration, not a discrete cutoff
+- WID API endpoint stability is uncertain -- bulk CSV download or R package (`wid-r-tool`) recommended as fallback
+
+**Last Verified:** 2026-03-03 (WFRBST01134 and WFRBSTP1300 confirmed active via MCP `fred_series_info`; WID via web research)
+
+---
+
+### Middle-Class Income Share (#20)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The share of national income accruing to the middle three income quintiles (20th-80th percentile). A direct measure of middle-class economic health. Alesina & Perotti (1996) find middle-class income share is a stronger predictor of instability than the Gini coefficient.
+**Availability Classification:** Available (free API) + Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Income shares by quintile (2nd + 3rd + 4th quintile) | Census Bureau | Table B19082 (ACS) or historical Table H-2 | Annual | 1967-present (historical tables), 2005-present (ACS) | Direct | No (Census API) |
+| Median household income relative to mean | Census Bureau (via FRED) | Derived: MEHOINUSA672N / MAFAINUSA646N | Annual | 1984-present | Strong proxy (median-to-mean ratio proxies middle-class share) | Yes (FRED) |
+| Pre-tax income share P50-P90 group | WID.world | sptinc p50p90 (US) | Annual | 1913-present | Direct (income share of upper-middle class) | No |
+| Share of aggregate income by quintile | Census Bureau | Historical Table H-2 from census.gov | Annual | 1967-present | Direct | No |
+
+**Recommended:** Census Bureau income shares by quintile as the primary measure. Sum the 2nd, 3rd, and 4th quintile shares from Census historical Table H-2 (available 1967-present) to compute the middle 60% income share. Supplement with WID P50-P90 income share for longer history (1913-present) and the income concentration perspective. The median-to-mean ratio from FRED provides a monthly-frequency proxy.
+
+**Construction Recipe (Middle-Class Income Share from Census):**
+1. Download Census historical Table H-2 from census.gov/data/tables/time-series/demo/income-poverty/historical-income-households.html
+2. Extract shares for 2nd quintile, 3rd quintile, and 4th quintile
+3. Middle-class share = sum of 2nd + 3rd + 4th quintile shares
+4. Track over time -- declining share = middle-class squeeze
+5. For WID alternative: download P50-P90 pre-tax income share from wid.world/data (series sptinc p50p90 for US)
+
+**Rate Limits:** Census API: 500 requests/day without key. FRED API: 120 requests/minute. WID: no documented limits.
+**License:** Public domain (Census, FRED). WID: CC BY 4.0.
+**Known Gaps:**
+- Census quintile shares are based on money income before taxes -- does not capture the effect of taxes and transfers, which significantly affect the middle-class income picture
+- Census income definition changed in 2013 (redesigned income questions) creating a comparability break -- Census provides bridge tables
+- WID uses "pre-tax national income" which includes non-cash income and employer contributions -- different concept from Census money income
+- The "middle 60%" definition is one of several possible operationalizations; Alesina & Perotti (1996) use the "middle class" as the 3rd and 4th quintile only (middle 40%)
+
+**Last Verified:** 2026-03-03 (FRED series for median/mean income confirmed active; Census historical tables confirmed available via web; WID P50-P90 series confirmed via WID data documentation)
+
+---
+
+### Anti-System Party Vote Share (#31)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The electoral support for parties or candidates that reject core democratic norms or challenge the legitimacy of the political system. Funke et al. (2016) find that financial crises produce a ~30% increase in far-right vote share with a 5-10 year lag -- the single strongest documented economic-to-political transmission mechanism.
+**Availability Classification:** Available (manual download) -- with coding decision deferred
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Third-party presidential vote share | Dave Leip's Atlas / Wikipedia / MIT Election Lab | CSV download from MIT Election Data + Science Lab (electionlab.mit.edu) | Per presidential election (quadrennial) | 1789-present | Strong proxy (third-party voting as system rejection) | No |
+| FEC candidate financial data | FEC | `fec_search_candidates` MCP tool | Per election cycle | 1980-present (electronic filings) | Strong proxy (financial viability of anti-system candidates) | No |
+| State-level election returns | MIT Election Data + Science Lab | CSV download from dataverse.harvard.edu | Per election | 2000-present (standardized) | Direct (when combined with coding) | No |
+| Populist vote share composite | Academic coding required | Constructed from election returns + candidate classification | Per election | Requires manual coding | Direct (but requires Phase 4 coding decisions) | N/A |
+
+**Recommended:** MIT Election Data + Science Lab election returns as the primary data source. This provides standardized US election returns at the candidate level for presidential, Senate, and House races. However, the data provides vote totals, NOT anti-system classification -- determining which candidates/parties qualify as "anti-system" requires a coding decision deferred to Phase 4.
+
+**IMPORTANT -- Coding Decision Required (Phase 4):**
+Defining "anti-system" for the US context requires explicit criteria. Options include:
+- **Third-party only:** All non-D/non-R candidates (simple but misses anti-system major-party candidates)
+- **Expert coding:** Classify candidates based on platform analysis (rigorous but subjective and labor-intensive)
+- **Behavioral markers:** Candidates who contested election results, called for institutional change, or rejected democratic norms
+- The Funke et al. (2016) operationalization uses "far-right" party family classification, which does not map cleanly onto the US two-party system
+
+**Rate Limits:** MIT Election Lab: no API, CSV download. FEC MCP tool: standard MCP limits.
+**License:** MIT Election Lab data: CC BY 4.0. FEC data: public domain (US government).
+**Known Gaps:**
+- FEC provides financial data (contributions, spending), NOT vote totals -- must use MIT Election Lab or state Secretary of State data for actual vote shares
+- US two-party system makes "anti-system" classification fundamentally different from European multi-party systems where Funke et al. (2016) is calibrated
+- Third-party vote share is a noisy proxy -- some third-party votes are protest votes, not anti-system sentiment
+- No standardized dataset of US election returns with anti-system coding exists; this must be constructed
+- Quadrennial frequency for presidential elections severely limits time series density; midterm House races provide biennial data but with more complex aggregation
+
+**Last Verified:** 2026-03-03 (MIT Election Lab confirmed active; FEC MCP tool confirmed operational)
+
+---
+
+### Wealth Concentration - Top 0.1% (#45)
+
+**Catalog Rating:** Strong
+**Theoretical Concept:** The share of national wealth held by the top 0.1% of the distribution. Captures the emergence of an economic oligarchy distinct from general inequality. Saez & Zucman (2016) document that US top 0.1% wealth share tripled from ~7% to ~20% since 1978. Treated as separate from general inequality (#1) because extreme concentration captures qualitatively different elite capture dynamics.
+**Availability Classification:** Available (free API) + Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Share of Net Worth Held by Top 0.1% | Federal Reserve DFA (via FRED) | WFRBSTP1300 | Quarterly | 1989-present | Direct | Yes (FRED) |
+| Top 0.1% pre-tax income share | WID.world | sptinc p99.9p100 (US) | Annual | 1913-present | Direct (income dimension) | No |
+| Top 0.1% wealth share | WID.world | shweal p99.9p100 (US) | Annual | 1913-present | Direct (wealth dimension) | No |
+| Share of Net Worth Held by Top 1% | Federal Reserve DFA (via FRED) | WFRBST01134 | Quarterly | 1989-present | Strong proxy (broader top-end concentration) | Yes (FRED) |
+
+**Recommended:** WFRBSTP1300 (Fed DFA top 0.1% net worth share) as the primary measure. It is quarterly (vs. WID annual), freely available on FRED, and directly measures wealth concentration at the 0.1% threshold. Supplement with WID shweal p99.9p100 for the longer historical perspective (1913-present) that captures the full U-shaped trajectory of US wealth concentration documented by Piketty and Saez.
+
+**Tradeoff: Fed DFA vs. WID:**
+- **Fed DFA (WFRBSTP1300):** Quarterly, 1989-present, based on Financial Accounts + Survey of Consumer Finances, FRED-accessible
+- **WID (shweal p99.9p100):** Annual, 1913-present, based on tax data + national accounts capitalization, CSV/R download
+- For model building, Fed DFA's quarterly frequency is preferred. For backtesting against historical episodes (Great Depression, Gilded Age), WID's century-long coverage is essential.
+
+**Rate Limits:** FRED API: 120 requests/minute. WID: no documented rate limits for bulk download.
+**License:** FRED/DFA: public domain (Federal Reserve). WID: CC BY 4.0.
+**Known Gaps:**
+- Fed DFA starts only in 1989 -- cannot backtest against pre-1989 wealth concentration episodes
+- WID wealth estimates for the US are methodologically contested: Saez & Zucman (2016) vs. Smith, Zidar & Zwick (2023) produce meaningfully different top wealth shares depending on capitalization assumptions
+- Top 0.1% is approximately 130,000 households in the US -- the threshold is stable in population terms but the composition changes
+- Wealth concentration is measured at household level in DFA but at individual/tax-unit level in WID -- not directly comparable at the level
+
+**Last Verified:** 2026-03-03 (WFRBSTP1300 confirmed active through Jul 2025 via MCP `fred_series_info`; WID wealth shares confirmed via web research)
+
+---
+
+## Domain Summary: Political Polarization & Elite Dynamics
+
+### Coverage Assessment
+
+| Variable | # | Rating | Availability | Primary Source | Coverage Start |
+|----------|---|--------|-------------|----------------|----------------|
+| Political Polarization (Congressional) | 3 | Strong | Available (manual download) | VoteView DW-NOMINATE | 1789 |
+| Affective Polarization | 4 | Strong | Available (manual download) | ANES feeling thermometers | 1948 |
+| Elite Factionalism / Fragmentation | 11 | Strong | Partially available | Constructed (VoteView intra-party SD) | 1789 |
+| Horizontal Inequality (Between-Group) | 15 | Moderate | Available (free API) | Census racial income ratios | 1967 |
+| Intra-Elite Wealth Gap | 19 | Moderate | Available (free API) | Fed DFA (WFRBSTP1300/WFRBST01134) | 1989 |
+| Middle-Class Income Share | 20 | Moderate | Available (free API) | Census quintile shares | 1967 |
+| Anti-System Party Vote Share | 31 | Moderate | Available (manual download) | MIT Election Lab + coding | 1789 |
+| Wealth Concentration (Top 0.1%) | 45 | Strong | Available (free API) | WFRBSTP1300 | 1989 |
+
+### Key Statistics
+
+- **Total variables:** 8
+- **Available (free API):** 3 (38%) -- #15, #19, #45 (with FRED DFA series)
+- **Available (manual download):** 4 (50%) -- #3, #4, #20, #31 (VoteView, ANES, Census tables, MIT Election Lab)
+- **Partially available (proxy needed):** 1 (13%) -- #11 Elite Factionalism (constructible from VoteView)
+- **Unavailable:** 0
+- **Strong-rated:** 4 (50%) -- #3, #4, #11, #45
+- **Moderate-rated:** 4 (50%) -- #15, #19, #20, #31
+- **Contested:** 0
+- **Short series (post-2000 start):** 0 (all primary measures start before 2000; some alternatives are short)
+- **Frequency mix:** Quarterly (2 via FRED), Biennial/per-Congress (3), Annual (2), Quadrennial (1)
+- **MCP-verified components:** 4 -- WFRBSTP1300, WFRBST01134, WFRBSB50107 (FRED); FEC candidate search; Congressional vote tools
+
+### Critical Gaps
+
+1. **Anti-system party coding (#31):** Data sources provide raw election returns, but classifying candidates as "anti-system" requires an explicit coding scheme. This is a Phase 4 methodology decision -- no pre-built dataset exists.
+
+2. **Affective polarization frequency (#4):** ANES data is biennial/quadrennial, creating sparse time series. LOCF alignment is the project standard, but this means affective polarization values are held constant for 2-4 years between measurements. Pew data supplements frequency since 2014 but uses different methodology.
+
+3. **Elite factionalism construction (#11):** The PITF model uses a categorical 0-3 expert coding for factionalism. Our continuous DW-NOMINATE SD proxy captures a narrower concept (ideological dispersion, not all forms of factionalism). The mapping from continuous SD to the PITF categorical framework is not validated.
+
+### Data Sources Used
+
+| Source | Variables Served | API Key Required |
+|--------|-----------------|-----------------|
+| VoteView (voteview.com/data) | #3, #11 (CSV download) | No |
+| ANES (electionstudies.org) | #4 (CSV download, free registration) | No |
+| Federal Reserve DFA (via FRED) | #19, #45 (3 series: WFRBSTP1300, WFRBST01134, WFRBSB50107) | Yes (FRED key) |
+| WID.world | #19, #45 (income/wealth shares, CSV download) | No |
+| Census Bureau | #15, #20 (ACS tables, historical tables) | No (API limited without key) |
+| MIT Election Data + Science Lab | #31 (CSV download) | No |
+| FEC (via MCP) | #11, #31 (candidate search) | No |
+| BLS / FRED | #15 (earnings by race series) | Yes (FRED key) |
