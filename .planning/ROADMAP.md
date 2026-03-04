@@ -66,12 +66,12 @@ Plans:
   2. For each "available" variable, the specific API endpoint or download URL, series ID, update frequency, and historical coverage are documented
   3. For critical variables classified as "unavailable" or "partially available," at least one fallback/proxy variable is identified or the gap is explicitly documented as accepted
   4. A final data source inventory exists that a developer could use to implement data fetching without any additional research
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
-- [ ] 03-03: TBD
+- [ ] 03-01-PLAN.md — Methodology + Economic Stress domain sourcing (13 variables, MCP-verified)
+- [ ] 03-02-PLAN.md — Political Polarization & Elite Dynamics + Institutional/Democratic Quality domains (16 variables)
+- [ ] 03-03-PLAN.md — Social Mobilization & Trust + Information/Media domains + Availability Summary Matrix + Gap Analysis + Source Registry
 
 ### Phase 4: Model Building
 **Goal**: Produce working model(s) that compute a 0-100 political stress score from the sourced data, with interpretable factor breakdowns and an automated data pipeline
