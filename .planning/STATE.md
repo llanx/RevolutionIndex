@@ -1,33 +1,31 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
+milestone: v1.1
+milestone_name: Build & Validate
 status: in-progress
-last_updated: "2026-03-04T05:05:29Z"
+last_updated: "2026-03-03T00:00:00Z"
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 12
-  completed_plans: 12
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-01)
+See: .planning/PROJECT.md (updated 2026-03-03)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 3 COMPLETE. All 45 variables mapped to data sources (41 measurable, 4 unavailable). Data source inventory ready for Phase 4 Model Building. Next step: plan Phase 4.
+**Current focus:** Milestone v1.1 started -- defining requirements for model building and validation.
 
 ## Current Position
 
-Phase: 3 of 5 (Data Sourcing) -- COMPLETE
-Plan: 3 of 3 in current phase (All domains complete, inventory finalized)
-Status: Phase 3 COMPLETE -- all 3 plans executed. Ready for Phase 4 planning.
-Last activity: 2026-03-04 -- Social/Information domains sourced, Availability Matrix + Gap Analysis + Source Registry added. All 45 variables mapped.
-
-Progress: [██████████] 100%
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-03 — Milestone v1.1 started
 
 ## Performance Metrics
 
