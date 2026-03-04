@@ -5,32 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 1 complete. Ready for Phase 2: Literature Mining.
+**Current focus:** Phase 2 in progress: Literature Mining (adjacent domain reviews complete).
 
 ## Current Position
 
-Phase: 1 of 5 (Prior Work Validation) -- COMPLETE
-Plan: 3 of 3 in current phase (all plans complete)
-Status: Phase 1 Complete
-Last activity: 2026-03-02 -- Completed 01-03-PLAN.md (Consolidated Validation Report)
+Phase: 2 of 5 (Literature Mining) -- IN PROGRESS
+Plan: 3 of 6 in current phase (3 complete)
+Status: Phase 2 In Progress
+Last activity: 2026-03-04 -- Completed 02-03-PLAN.md (Adjacent Domain Literature Reviews)
 
-Progress: [███░░░░░░░] 20%
+Progress: [████░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 14min
-- Total execution time: 0.72 hours
+- Total plans completed: 4
+- Average duration: 13min
+- Total execution time: 0.85 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 - Prior Work Validation | 3 | 43min | 14min |
+| 2 - Literature Mining | 1 | 8min | 8min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (14min), 01-02 (4min), 01-01 (25min)
+- Last 5 plans: 02-03 (8min), 01-03 (14min), 01-02 (4min), 01-01 (25min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -56,6 +57,10 @@ Recent decisions affecting current work:
 - [01-01]: PLI has undocumented sqrt+*10 transformation beyond critical review scope -- needs empirical backtesting
 - [01-01]: FSP config/code ETI weight divergence (6 config vs. 4 code series) is a maintenance hazard
 - [01-01]: Of 27 total critical review issues: 4 resolved, 18 open (Phase 4), 5 deferred (non-selected models)
+- [02-03]: Protest frequency and union density identified as most directly measurable US mobilization variables (ACLED, BLS)
+- [02-03]: DW-NOMINATE congressional polarization identified as strongest media/info domain variable -- exceptional data quality (1789-present)
+- [02-03]: Survey problem flagged -- most media/information variables are periodic surveys, not continuous time-series, limiting backtesting utility
+- [02-03]: 22 adjacent-domain variables discovered (12 social movement + 10 media/info) for variable catalog
 
 ### Pending Todos
 
@@ -68,6 +73,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-02
-Stopped at: Completed 01-03-PLAN.md (Consolidated Validation Report). Phase 1 complete.
+Last session: 2026-03-04
+Stopped at: Completed 02-03-PLAN.md (Adjacent Domain Literature Reviews). Phase 2 plans 01-03 in parallel Wave 1.
 Resume file: None
