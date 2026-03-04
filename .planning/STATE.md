@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-last_updated: "2026-03-04T10:15:00Z"
+last_updated: "2026-03-04T10:43:00Z"
 progress:
   total_phases: 4
   completed_phases: 4
-  total_plans: 15
-  completed_plans: 15
+  total_plans: 16
+  completed_plans: 16
 ---
 
 # Project State
@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 4 COMPLETE. All 3 plans executed: pipeline infrastructure, 5 model implementations, ensemble scoring + JSON output. Full pipeline from raw data to dashboard JSON is automated. Next: Phase 5 (Model Validation).
+**Current focus:** Phase 4 COMPLETE (all 4 plans including gap closure). Pipeline infrastructure, 5 model implementations, ensemble scoring + JSON output, and gap closure (bootstrap n=1000, history zero-score fix) all done. Next: Phase 5 (Model Validation).
 
 ## Current Position
 
 Phase: 4 of 5 (Model Building) -- COMPLETE
-Plan: 3 of 3 in current phase (Pipeline Integration + Ensemble Scoring complete)
-Status: Phase 04 COMPLETE -- ensemble scoring, calibration, bootstrap CIs, and JSON output all implemented. Pipeline executable via `python models/run.py`.
-Last activity: 2026-03-04 -- Evidence-weighted ensemble, anchor-point calibration, bootstrap CIs, JSON output matching data.ts schema.
+Plan: 4 of 4 in current phase (Gap Closure complete)
+Status: Phase 04 COMPLETE -- all models, ensemble, calibration, bootstrap CIs, JSON output, and gap closure all done. Pipeline executable via `python models/run.py`.
+Last activity: 2026-03-04 -- Gap closure: MIN_DOMAINS_REQUIRED=2 in _build_raw_history(), bootstrap CI n=1000, history leading zeros removed.
 
 Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 16
 - Average duration: 12min
-- Total execution time: 2.91 hours
+- Total execution time: 2.94 hours
 
 **By Phase:**
 
@@ -43,11 +43,11 @@ Progress: [██████████] 100%
 | 1 - Prior Work Validation | 3 | 43min | 14min |
 | 2 - Literature Mining | 6 | 51min | 9min |
 | 3 - Data Sourcing | 3 | 24min | 8min |
-| 4 - Model Building | 3/3 | 62min | 21min |
+| 4 - Model Building | 4/4 | 64min | 16min |
 
 **Recent Trend:**
-- Last 5 plans: 04-03 (9min), 04-02 (8min), 04-01 (45min), 03-03 (11min), 03-02 (8min)
-- Trend: Phase 4 Plans 02 and 03 fast (clear specs from prior plans); Plan 01 was larger (infrastructure + migration)
+- Last 5 plans: 04-04 (2min), 04-03 (9min), 04-02 (8min), 04-01 (45min), 03-03 (11min)
+- Trend: Phase 4 Plan 04 (gap closure) very fast -- targeted fixes to 3 files, no new infrastructure
 
 *Updated after each plan completion*
 | Phase 03 P01 | 1 | 1 tasks | 1 files |
@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 04 P01 | 1 | 2 tasks | 13 files |
 | Phase 04 P02 | 1 | 2 tasks | 6 files |
 | Phase 04 P03 | 1 | 2 tasks | 8 files |
+| Phase 04 P04 | 1 | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -152,7 +153,10 @@ Recent decisions affecting current work:
 - [04-03]: Bootstrap CIs resample variables within each domain (not composite perturbation) for correct uncertainty propagation
 - [04-03]: History sampling: annual pre-2000, quarterly post-2000 for manageable file size covering all 6 Phase 5 validation episodes
 - [04-03]: Column naming bridge in ensemble.py handles pipeline-to-model column format difference
-- [Phase 04]: Model building complete -- 5 models, ensemble scoring, calibration, bootstrap CIs, JSON output all automated via `python models/run.py`
+- [04-04]: MIN_DOMAINS_REQUIRED=2 chosen as threshold for _build_raw_history() -- at least 2 of 5 domains must have valid data
+- [04-04]: Leading zeros (1960-1978) removed from history.json; interior zeros left as-is for next real pipeline run
+- [04-04]: Bootstrap CI n updated from 100 to 1000 in committed JSON -- data artifact from test run, not code bug
+- [Phase 04]: Model building complete -- 5 models, ensemble scoring, calibration, bootstrap CIs, JSON output all automated via `python models/run.py`. Gap closure (04-04) fixed bootstrap n and history zeros.
 
 ### Pending Todos
 
@@ -166,5 +170,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 04-03-PLAN.md (Pipeline Integration + Ensemble Scoring). Phase 4 COMPLETE. Next: Phase 5 (Model Validation).
+Stopped at: Completed 04-04-PLAN.md (Gap Closure). Phase 4 fully COMPLETE (4/4 plans). Next: Phase 5 (Model Validation).
 Resume file: None
