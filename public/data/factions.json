@@ -1,0 +1,174 @@
+{
+  "_schema": "src/lib/data.ts#FactionsData",
+  "_note": "Projected faction archetypes in a US instability scenario. Editorial scenario analysis, not prediction.",
+  "factions": [
+    {
+      "id": "right_populists",
+      "name": "Right Populists",
+      "tagline": "Anti-establishment nationalism rooted in cultural and economic grievance",
+      "color": "#d45d5d",
+      "stance": "pro-revolution",
+      "stanceLabel": "System Replacement",
+      "base": {
+        "demographics": "Rural and exurban working/middle class, non-college white voters, veterans",
+        "geography": "Heartland, Sun Belt, Appalachia, rural South and Midwest",
+        "institutions": "Militia networks, evangelical churches, conservative media ecosystem, state legislatures"
+      },
+      "factorAlignment": {
+        "primary": "political_polarization",
+        "secondary": "institutional_trust",
+        "description": "Activated by deepening cultural polarization and eroding trust in federal institutions. Views institutional decay as evidence the system is beyond reform."
+      },
+      "alliances": ["religious_traditionalists", "libertarian_decentralists"],
+      "conflicts": ["establishment_center", "progressive_left"],
+      "wildcard": "A charismatic leader who bridges the militia-mainstream gap could rapidly expand this faction's mobilization capacity beyond its current base."
+    },
+    {
+      "id": "progressive_left",
+      "name": "Progressive Left",
+      "tagline": "Anti-corporate movement demanding systemic economic restructuring",
+      "color": "#5d8fd4",
+      "stance": "pro-revolution",
+      "stanceLabel": "Systemic Reform",
+      "base": {
+        "demographics": "Urban younger voters, college-educated professionals, service workers, racial minorities",
+        "geography": "Major metros, university towns, Pacific coast, Northeast corridor",
+        "institutions": "Labor unions, activist networks, progressive media, university campuses, nonprofit organizations"
+      },
+      "factorAlignment": {
+        "primary": "economic_inequality",
+        "secondary": "unemployment_stress",
+        "description": "Driven by wealth concentration and economic precarity. Frames instability as a symptom of capitalism's structural failures and sees revolution as corrective, not destructive."
+      },
+      "alliances": ["labor_movement"],
+      "conflicts": ["corporate_oligarchy", "right_populists"],
+      "wildcard": "If a severe financial crisis hits, progressive demands for nationalization and wealth redistribution could move from fringe to mainstream overnight."
+    },
+    {
+      "id": "establishment_center",
+      "name": "Establishment Center",
+      "tagline": "Institutional loyalists from both parties defending the status quo",
+      "color": "#8b8b8b",
+      "stance": "anti-revolution",
+      "stanceLabel": "Status Quo Preservation",
+      "base": {
+        "demographics": "Professional-managerial class, suburban moderates, older voters, government employees",
+        "geography": "Suburban rings, state capitals, Washington DC corridor, established metro areas",
+        "institutions": "Federal bureaucracy, mainstream media, think tanks, corporate boards, both party establishments"
+      },
+      "factorAlignment": {
+        "primary": "institutional_trust",
+        "secondary": "political_polarization",
+        "description": "Stake in institutional continuity makes them the natural anti-revolution force. But declining trust in the very institutions they defend erodes their legitimacy and recruitment base."
+      },
+      "alliances": ["corporate_oligarchy"],
+      "conflicts": ["right_populists", "progressive_left"],
+      "wildcard": "A major institutional success (corruption prosecution, crisis competently managed) could restore enough trust to pull moderates back from the populist fringes."
+    },
+    {
+      "id": "libertarian_decentralists",
+      "name": "Libertarian Decentralists",
+      "tagline": "Tech-aligned anti-federalists seeking radical restructuring of governance",
+      "color": "#d4a85d",
+      "stance": "opportunistic",
+      "stanceLabel": "Exploit Chaos for Restructuring",
+      "base": {
+        "demographics": "Tech workers, entrepreneurs, crypto community, younger libertarians, digital nomads",
+        "geography": "Silicon Valley, Austin, Miami, remote/distributed networks, crypto hubs",
+        "institutions": "Tech companies, DAOs, crypto exchanges, libertarian think tanks, seasteading movements"
+      },
+      "factorAlignment": {
+        "primary": "unemployment_stress",
+        "secondary": "institutional_trust",
+        "description": "Views economic disruption as proof that centralized systems fail. Doesn't want revolution per se, but rather wants the old system to collapse so decentralized alternatives can fill the vacuum."
+      },
+      "alliances": ["right_populists"],
+      "conflicts": ["establishment_center", "progressive_left"],
+      "wildcard": "If a major bank failure or currency crisis hits, crypto-native parallel financial systems could gain mass adoption, giving this faction disproportionate influence over economic infrastructure."
+    },
+    {
+      "id": "security_apparatus",
+      "name": "Security Apparatus",
+      "tagline": "Military, law enforcement, and intelligence community: the kingmaker faction",
+      "color": "#5d7a5d",
+      "stance": "kingmaker",
+      "stanceLabel": "Could Fracture or Unify",
+      "base": {
+        "demographics": "Active military, veterans, law enforcement officers, intelligence community, National Guard",
+        "geography": "Military bases nationwide, Pentagon corridor, Fort Liberty, Fort Hood, border regions",
+        "institutions": "Department of Defense, FBI, DHS, state National Guard units, police unions, veteran organizations"
+      },
+      "factorAlignment": {
+        "primary": "protest_intensity",
+        "secondary": "institutional_trust",
+        "description": "Directly confronts the consequences of rising protest intensity. Their response (suppress, stand down, or split) historically determines whether instability resolves or escalates into revolution."
+      },
+      "alliances": [],
+      "conflicts": [],
+      "wildcard": "A contested election or unconstitutional executive order that forces military leadership to choose sides could fracture this faction along officer/enlisted and federal/state lines, making it the single most destabilizing scenario."
+    },
+    {
+      "id": "corporate_oligarchy",
+      "name": "Corporate Oligarchy",
+      "tagline": "Billionaire class leveraging instability for consolidation",
+      "color": "#9b5dd4",
+      "stance": "opportunistic",
+      "stanceLabel": "Consolidate During Instability",
+      "base": {
+        "demographics": "Ultra-wealthy individuals, corporate executives, hedge fund managers, media owners",
+        "geography": "New York, San Francisco, and globally distributed, not bound by geography",
+        "institutions": "Fortune 500, Wall Street, major media conglomerates, lobbying firms, private equity"
+      },
+      "factorAlignment": {
+        "primary": "economic_inequality",
+        "secondary": "political_polarization",
+        "description": "Both driver and beneficiary of inequality. Funds both sides of polarization through media ownership and campaign finance. Historically, oligarchic factions survive revolutions by switching allegiance to whichever side wins."
+      },
+      "alliances": ["establishment_center"],
+      "conflicts": ["progressive_left", "labor_movement"],
+      "wildcard": "If key oligarchs publicly break with the establishment and fund populist movements, as some tech billionaires have already begun doing, it could accelerate instability dramatically."
+    },
+    {
+      "id": "labor_movement",
+      "name": "Labor Movement",
+      "tagline": "Working-class economic populism driven by union resurgence",
+      "color": "#d4875d",
+      "stance": "pro-revolution",
+      "stanceLabel": "Economic Revolution, Not Political",
+      "base": {
+        "demographics": "Union workers, gig economy workers, service sector, nurses, teachers, warehouse workers",
+        "geography": "Rust Belt, port cities, major distribution hubs, hospital-dense metros",
+        "institutions": "AFL-CIO, SEIU, Teamsters, Amazon Labor Union, new-wave independent unions"
+      },
+      "factorAlignment": {
+        "primary": "unemployment_stress",
+        "secondary": "economic_inequality",
+        "description": "Activated by wage stagnation, job insecurity, and the widening gap between productivity and compensation. Historically, labor movements provide the mass mobilization base that other factions cannot generate alone."
+      },
+      "alliances": ["progressive_left"],
+      "conflicts": ["corporate_oligarchy", "libertarian_decentralists"],
+      "wildcard": "A general strike, even a partial one affecting logistics, healthcare, or transportation, could shift the entire power dynamic. The Teamsters alone control 30% of US freight."
+    },
+    {
+      "id": "religious_traditionalists",
+      "name": "Religious Traditionalists",
+      "tagline": "Christian nationalist movement anchored in cultural conservatism",
+      "color": "#7a5d8b",
+      "stance": "conditional",
+      "stanceLabel": "Revolution If Culture War Demands It",
+      "base": {
+        "demographics": "Evangelical Christians, conservative Catholics, homeschool networks, rural religious communities",
+        "geography": "Bible Belt, rural Midwest, exurban megachurch corridors",
+        "institutions": "Megachurches, Christian media networks, faith-based schools, judicial advocacy groups (ADF, FRC)"
+      },
+      "factorAlignment": {
+        "primary": "political_polarization",
+        "secondary": "institutional_trust",
+        "description": "Perceives cultural changes as existential threat. Revolutionary impulse is conditional, activated when secular institutions are seen as hostile to religious values. Provides moral justification framework for other right-aligned factions."
+      },
+      "alliances": ["right_populists"],
+      "conflicts": ["progressive_left"],
+      "wildcard": "A Supreme Court reversal on religious liberty issues, or perceived government persecution of churches, could transform this faction from passive cultural warriors into active revolutionary participants."
+    }
+  ]
+}

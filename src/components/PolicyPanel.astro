@@ -1,0 +1,67 @@
+---
+import type { FactorPolicies } from '../lib/data';
+
+export interface Props {
+  factor: FactorPolicies;
+}
+
+const { factor } = Astro.props;
+---
+
+<section class="policy-factor-section" id={`policy-${factor.id}`}>
+  <div class="policy-factor-header">
+    <h2 class="policy-factor-name">{factor.name}</h2>
+    <div class="policy-factor-meta">
+      <span class="factor-current">Current: <strong>{factor.currentValue.toFixed(2)}</strong></span>
+      <span class="factor-weight">Weight: <strong>{Math.round(factor.weight * 100)}%</strong></span>
+    </div>
+  </div>
+
+  <div class="policy-dual-panels">
+    <!-- Stability Panel -->
+    <div class="policy-panel panel-stability">
+      <div class="panel-header">
+        <span class="panel-icon">&#9681;</span>
+        <h3 class="panel-title">{factor.stability.header}</h3>
+      </div>
+      <p class="panel-framing">{factor.stability.framing}</p>
+      <div class="panel-policies">
+        {factor.stability.policies.map((policy) => (
+          <div class="policy-item">
+            <div class="policy-title-row">
+              <h4 class="policy-title">{policy.title}</h4>
+              <span class="policy-effect effect-stability">{policy.projectedEffect}</span>
+            </div>
+            <p class="policy-description">{policy.description}</p>
+            <div class="policy-precedent">
+              <span class="precedent-label">Historical precedent:</span> {policy.precedent}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Acceleration Panel -->
+    <div class="policy-panel panel-acceleration">
+      <div class="panel-header">
+        <span class="panel-icon">&#9650;</span>
+        <h3 class="panel-title">{factor.acceleration.header}</h3>
+      </div>
+      <p class="panel-framing">{factor.acceleration.framing}</p>
+      <div class="panel-policies">
+        {factor.acceleration.policies.map((policy) => (
+          <div class="policy-item">
+            <div class="policy-title-row">
+              <h4 class="policy-title">{policy.title}</h4>
+              <span class="policy-effect effect-acceleration">{policy.projectedEffect}</span>
+            </div>
+            <p class="policy-description">{policy.description}</p>
+            <div class="policy-precedent">
+              <span class="precedent-label">Historical precedent:</span> {policy.precedent}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

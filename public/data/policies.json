@@ -1,0 +1,276 @@
+{
+  "_schema": "src/lib/data.ts#PoliciesData",
+  "_note": "Policy analysis through dual lenses: stabilization and acceleration. Each factor has policies that could reduce or increase its contribution to the Revolution Index.",
+  "factors": [
+    {
+      "id": "economic_inequality",
+      "name": "Economic Inequality",
+      "currentValue": 0.72,
+      "weight": 0.22,
+      "stability": {
+        "header": "The Stabilizer's View",
+        "framing": "Concentrated wealth is the single most persistent precondition across all eight historical benchmarks. Reducing it doesn't require revolution. It requires political will.",
+        "policies": [
+          {
+            "title": "Progressive Taxation & Wealth Caps",
+            "description": "Restore top marginal rates to pre-1980 levels (70%+), implement annual wealth tax on holdings above $50M, close carried interest and dynasty trust loopholes. Historical precedent: the post-WWII compression (1945-1975) coincided with the most stable period in modern US history.",
+            "projectedEffect": "-3 to -5 points",
+            "precedent": "New Deal / Post-WWII Great Compression: Top 1% share fell from 24% to 10%, coinciding with 30 years of broadly shared growth and political stability."
+          },
+          {
+            "title": "Wage Floor Indexing",
+            "description": "Index minimum wage to median productivity growth with automatic annual adjustments. Eliminate the legislative bottleneck that allows real wages to stagnate for decades between political fights.",
+            "projectedEffect": "-2 to -3 points",
+            "precedent": "1960s minimum wage peaks: When minimum wage tracked productivity, labor share of GDP remained above 60% and strike activity was at manageable levels."
+          },
+          {
+            "title": "Antitrust Enforcement Revival",
+            "description": "Break up concentrated market power in tech, finance, healthcare, and agriculture. Reduce the political influence that accompanies economic concentration. Restore competition as a check on oligarchic accumulation.",
+            "projectedEffect": "-1 to -3 points",
+            "precedent": "Trust-busting era (1901-1914): Standard Oil breakup and Progressive Era reforms defused revolutionary labor movements by demonstrating the system could self-correct."
+          }
+        ]
+      },
+      "acceleration": {
+        "header": "The Accelerationist's View",
+        "framing": "Inequality is the structural foundation that makes all other instability factors worse. It's also the hardest factor for the establishment to address because the beneficiaries of inequality control the policy levers.",
+        "policies": [
+          {
+            "title": "Regressive Tax Cuts During Expansion",
+            "description": "Tax cuts concentrated at the top during economic growth periods accelerate wealth divergence without the political cover of crisis. The top 0.1% captures disproportionate gains while public services erode, creating visible two-tier society.",
+            "projectedEffect": "+2 to +4 points",
+            "precedent": "France pre-1789: Aristocratic tax exemptions funded by commoner taxation created the legitimacy crisis that made revolution inevitable."
+          },
+          {
+            "title": "Financial Deregulation",
+            "description": "Deregulating financial markets enables leveraged speculation that amplifies wealth concentration during booms and socializes losses during busts. Each cycle ratchets inequality higher while eroding trust in economic fairness.",
+            "projectedEffect": "+3 to +5 points",
+            "precedent": "2008 Financial Crisis: Deregulation-enabled speculation destroyed $11T in household wealth while bailed-out banks returned to profitability within 2 years."
+          },
+          {
+            "title": "Weakening Labor Protections",
+            "description": "Right-to-work laws, contractor misclassification, and anti-union legal frameworks suppress the one institutional check on wage stagnation. As collective bargaining collapses, the gap between productivity and compensation widens.",
+            "projectedEffect": "+2 to +3 points",
+            "precedent": "Gilded Age (1870-1900): Labor suppression created the conditions for violent strikes (Haymarket, Pullman, Homestead) that brought the US closer to revolution than at any point since 1776."
+          }
+        ]
+      }
+    },
+    {
+      "id": "political_polarization",
+      "name": "Political Polarization",
+      "currentValue": 0.78,
+      "weight": 0.20,
+      "stability": {
+        "header": "The Stabilizer's View",
+        "framing": "Polarization isn't just a cultural mood. It's a structural failure of representative systems. When the political system can't process disagreement, every dispute becomes existential.",
+        "policies": [
+          {
+            "title": "Ranked Choice Voting & Open Primaries",
+            "description": "Eliminate winner-take-all primaries that reward extremism. RCV incentivizes coalition-building and penalizes candidates who demonize opponents. Alaska's 2022 implementation already showed moderating effects.",
+            "projectedEffect": "-3 to -5 points",
+            "precedent": "Australia (1918-present): Preferential voting has maintained a functional multi-party democracy with lower polarization than comparable Westminster systems for over a century."
+          },
+          {
+            "title": "Independent Redistricting Commissions",
+            "description": "Remove partisan gerrymandering by mandating independent redistricting in all states. Competitive districts produce moderate representatives. Currently, only 10% of House seats are truly competitive.",
+            "projectedEffect": "-2 to -3 points",
+            "precedent": "California Citizens Redistricting Commission (2010): Produced more competitive districts and measurably reduced the state legislature's partisan extremity scores."
+          },
+          {
+            "title": "Cross-Partisan Institutional Investment",
+            "description": "Fund local civic infrastructure (community centers, libraries, shared public spaces) that creates the incidental contact proven to reduce partisan animosity. National service programs that mix demographics across partisan lines.",
+            "projectedEffect": "-1 to -2 points",
+            "precedent": "Post-WWII GI Bill era: Shared military service and shared educational institutions created cross-class, cross-regional bonds that anchored bipartisan cooperation for a generation."
+          }
+        ]
+      },
+      "acceleration": {
+        "header": "The Accelerationist's View",
+        "framing": "Polarization is the multiplier that turns every other grievance into a tribal identity. Once political identity becomes existential, compromise becomes betrayal and negotiation becomes surrender.",
+        "policies": [
+          {
+            "title": "Gerrymandering Intensification",
+            "description": "Safe districts produce extreme representatives who face no electoral incentive to compromise. Each redistricting cycle ratchets polarization higher as moderates are purged in primaries.",
+            "projectedEffect": "+2 to +3 points",
+            "precedent": "Pre-Civil War sectionalism: Geographic political sorting (free states vs slave states) made compromise increasingly impossible, culminating in secession."
+          },
+          {
+            "title": "Media Ecosystem Fragmentation",
+            "description": "Algorithmic amplification of outrage content, combined with the collapse of local journalism, creates hermetically sealed information environments where each side views the other as not just wrong but evil.",
+            "projectedEffect": "+2 to +4 points",
+            "precedent": "Rwanda 1994: Radio Mille Collines demonstrated how targeted media can transform political disagreement into dehumanization. The US version operates through slower, algorithmic mechanisms."
+          },
+          {
+            "title": "Delegitimization of Elections",
+            "description": "When significant portions of the population believe elections are fraudulent, the peaceful transfer of power (the core mechanism preventing revolution) breaks down. Each contested election further erodes the norm.",
+            "projectedEffect": "+3 to +5 points",
+            "precedent": "Weimar Germany (1930-33): Systematic delegitimization of democratic institutions by both far-left and far-right created the vacuum that enabled authoritarian consolidation."
+          }
+        ]
+      }
+    },
+    {
+      "id": "protest_intensity",
+      "name": "Protest Activity",
+      "currentValue": 0.58,
+      "weight": 0.25,
+      "stability": {
+        "header": "The Stabilizer's View",
+        "framing": "Protest is a pressure valve. The goal isn't to eliminate it (that's impossible and counterproductive) but to ensure the system can absorb grievances before they escalate to unmanageable levels.",
+        "policies": [
+          {
+            "title": "Responsive Governance Mechanisms",
+            "description": "Create rapid-response channels between protest movements and policy action. When people see protests producing results, even partial ones, mobilization stays within institutional channels. Participatory budgeting, citizen assemblies, and town halls with binding authority.",
+            "projectedEffect": "-3 to -5 points",
+            "precedent": "1960s Civil Rights legislation: Federal legislative response to civil rights protests (1964, 1965 Acts) channeled mass mobilization into institutional change, averting the revolutionary trajectory that 1968 briefly threatened."
+          },
+          {
+            "title": "De-Escalation Policing Standards",
+            "description": "Mandate de-escalation training and community policing models. Militarized police responses to peaceful protest consistently escalate rather than resolve tensions, and every study confirms this.",
+            "projectedEffect": "-2 to -3 points",
+            "precedent": "Camden, NJ (2013): Disbanded and rebuilt police force with community policing model, reducing both crime and protest-police confrontation simultaneously."
+          },
+          {
+            "title": "Legitimate Grievance Processing",
+            "description": "Acknowledge protest grievances publicly even when policy response is slow. The perception that the system is listening, even imperfectly, reduces the radicalization pipeline from protester to revolutionary.",
+            "projectedEffect": "-1 to -2 points",
+            "precedent": "UK Chartist Movement (1830s-50s): Gradual adoption of Chartist demands (expanded suffrage, secret ballot) over two decades defused Britain's most serious revolutionary threat."
+          }
+        ]
+      },
+      "acceleration": {
+        "header": "The Accelerationist's View",
+        "framing": "Protest is the leading indicator. It's where structural grievances become visible and organized. The transition from protest to revolution requires a critical mass that Chenoweth estimates at 3.5% sustained active participation.",
+        "policies": [
+          {
+            "title": "Suppress Peaceful Protest",
+            "description": "Militarized crackdowns on peaceful protesters radicalize moderates and generate sympathy for the cause. Every historical revolution was accelerated, not prevented, by state violence against non-violent demonstrators.",
+            "projectedEffect": "+3 to +5 points",
+            "precedent": "Iran 1978: The Shah's crackdown on peaceful mourners created cycles of mourning-protest-crackdown that spiraled into revolution within 12 months."
+          },
+          {
+            "title": "Ignore Grievances Systematically",
+            "description": "When institutional channels produce no results, movements conclude the system cannot be reformed from within. Each ignored grievance recruits moderates into radical flanks.",
+            "projectedEffect": "+2 to +4 points",
+            "precedent": "Arab Spring 2010-11: Decades of ignored economic grievances across North Africa meant a single catalytic event (Bouazizi's self-immolation) triggered cascading revolution across multiple countries."
+          },
+          {
+            "title": "Criminalize Organizing",
+            "description": "Anti-protest legislation, surveillance of activist networks, and prosecution of organizers forces movements underground, where they radicalize faster and become harder to de-escalate through institutional channels.",
+            "projectedEffect": "+2 to +3 points",
+            "precedent": "Russia 1905-17: Tsarist suppression of legal political activity pushed reformists into alliance with revolutionaries, creating the unified front that eventually toppled the regime."
+          }
+        ]
+      }
+    },
+    {
+      "id": "institutional_trust",
+      "name": "Institutional Trust",
+      "currentValue": 0.31,
+      "weight": 0.18,
+      "stability": {
+        "header": "The Stabilizer's View",
+        "framing": "Trust is the invisible infrastructure of democratic governance. When it collapses, every institution must justify its existence through coercion rather than consent, an unsustainable position.",
+        "policies": [
+          {
+            "title": "Radical Transparency Reforms",
+            "description": "Mandatory real-time disclosure of lobbying contacts, campaign spending, and policy influence. When citizens can see exactly who influences what, institutional legitimacy becomes verifiable rather than assumed.",
+            "projectedEffect": "-2 to -4 points",
+            "precedent": "Nordic transparency model: Countries with the strongest transparency laws (Sweden's principle of public access dates to 1766) consistently rank highest in institutional trust globally."
+          },
+          {
+            "title": "Anti-Corruption Enforcement",
+            "description": "Visible prosecution of institutional corruption, regardless of party, demonstrates that the system can police itself. The perception of impunity is more corrosive to trust than the corruption itself.",
+            "projectedEffect": "-2 to -3 points",
+            "precedent": "Italy's Mani Pulite (1992): Anti-corruption investigations, while destabilizing in the short term, ultimately strengthened Italian institutional legitimacy by demonstrating accountability."
+          },
+          {
+            "title": "Judicial Independence Guarantees",
+            "description": "Structural reforms to insulate courts from political pressure: term limits for Supreme Court, merit selection for federal judges, recusal enforcement. Courts are the last institution standing when political trust collapses.",
+            "projectedEffect": "-1 to -2 points",
+            "precedent": "Post-Watergate reforms (1974-78): Ethics in Government Act, FISA court, Inspector General Act restored enough institutional credibility to prevent the trust crisis from deepening."
+          }
+        ]
+      },
+      "acceleration": {
+        "header": "The Accelerationist's View",
+        "framing": "Institutional trust at 31% means the legitimacy crisis is already advanced. Every institution now operates on borrowed time, one major failure away from irreversible collapse.",
+        "policies": [
+          {
+            "title": "Institutional Capture",
+            "description": "Staffing regulatory agencies with industry loyalists, politicizing the DOJ, and weaponizing the IRS destroys the perception that institutions serve the public. Each captured institution recruits more citizens into the 'the system is rigged' camp.",
+            "projectedEffect": "+3 to +5 points",
+            "precedent": "Late Roman Republic (133-27 BC): Systematic institutional capture by competing oligarchic factions made the Republic's democratic processes meaningless, leading directly to civil war and autocracy."
+          },
+          {
+            "title": "Norm Erosion Without Consequence",
+            "description": "When officials violate norms, defy subpoenas, ignore court orders, or break laws without consequence, it proves to the public that institutional rules apply selectively. Impunity is the fastest trust-destroyer.",
+            "projectedEffect": "+2 to +4 points",
+            "precedent": "Weimar Republic: Judges who refused to punish right-wing political violence (Beer Hall Putsch received minimal sentences) signaled that the legal system would not defend democratic norms."
+          },
+          {
+            "title": "Weaponization of Government Agencies",
+            "description": "Using the IRS, FBI, or DOJ against political opponents transforms neutral institutions into partisan weapons. Once citizens believe government agencies target based on ideology, institutional legitimacy is functionally dead.",
+            "projectedEffect": "+2 to +3 points",
+            "precedent": "Nixon's enemies list / Watergate: The revelation that government agencies were used as political weapons triggered the deepest trust crisis in modern US history, and trust never fully recovered."
+          }
+        ]
+      }
+    },
+    {
+      "id": "unemployment_stress",
+      "name": "Unemployment & Economic Stress",
+      "currentValue": 0.44,
+      "weight": 0.15,
+      "stability": {
+        "header": "The Stabilizer's View",
+        "framing": "Economic stress is the most visceral instability factor because it hits people in their daily lives. It's also the most responsive to policy intervention, making it the easiest factor to address with political will.",
+        "policies": [
+          {
+            "title": "Counter-Cyclical Fiscal Policy",
+            "description": "Automatic stabilizers that increase spending during downturns and reduce it during expansions. Unemployment benefits, infrastructure investment, and direct payments that activate without legislative delay.",
+            "projectedEffect": "-2 to -4 points",
+            "precedent": "2009 ARRA / 2020 CARES Act: Both prevented economic downturns from cascading into social crises, though the 2020 response was faster and more effective at preventing household collapse."
+          },
+          {
+            "title": "Job Retraining & Transition Support",
+            "description": "Comprehensive retraining programs with income replacement for displaced workers. Trade Adjustment Assistance on steroids, covering not just trade displacement but automation, AI, and industry shifts.",
+            "projectedEffect": "-1 to -2 points",
+            "precedent": "Denmark's flexicurity model: Combines flexible labor markets with generous unemployment benefits and active retraining, maintaining low unemployment stress despite high economic dynamism."
+          },
+          {
+            "title": "Safety Net Expansion",
+            "description": "Universal healthcare, childcare subsidies, and housing assistance decouple basic security from employment status. When losing a job doesn't mean losing healthcare and housing, economic stress is dramatically reduced.",
+            "projectedEffect": "-2 to -3 points",
+            "precedent": "Post-WWII welfare state expansion (1945-1975): Universal programs in healthcare, education, and housing across Western democracies coincided with the most politically stable period in modern history."
+          }
+        ]
+      },
+      "acceleration": {
+        "header": "The Accelerationist's View",
+        "framing": "Economic stress is the trigger. It's what converts abstract political grievances into personal desperation. People don't revolt because they disagree with policy. They revolt because they can't feed their families.",
+        "policies": [
+          {
+            "title": "Austerity During Downturns",
+            "description": "Cutting government spending during recessions, the exact moment when people need support most, creates the maximum perception of government indifference. It's the policy equivalent of telling drowning people to swim harder.",
+            "projectedEffect": "+3 to +5 points",
+            "precedent": "Sri Lanka 2022: Austerity measures during an economic crisis (54.6% inflation, fuel shortages) triggered the Aragalaya movement that stormed the presidential palace within months."
+          },
+          {
+            "title": "Offshoring Without Transition",
+            "description": "Moving manufacturing overseas while providing no retraining or transition support creates permanent economic casualties in specific regions. These 'left behind' communities become recruiting grounds for revolutionary movements.",
+            "projectedEffect": "+2 to +3 points",
+            "precedent": "Rust Belt collapse (1980s-2000s): Deindustrialization without transition created 'deaths of despair' regions that became the political base for anti-establishment populism."
+          },
+          {
+            "title": "Benefit Cuts During Stagnation",
+            "description": "Reducing unemployment benefits, food assistance, or healthcare access during periods of wage stagnation creates a squeeze from both sides. When both income and safety nets shrink simultaneously, economic stress escalates rapidly.",
+            "projectedEffect": "+2 to +4 points",
+            "precedent": "Russia 1917: The combination of wartime inflation, food shortages, and government indifference to civilian suffering created the bread riots that triggered the February Revolution."
+          }
+        ]
+      }
+    }
+  ]
+}

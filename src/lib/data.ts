@@ -277,3 +277,87 @@ export interface FactorsData {
    */
   factors: FactorDetail[];
 }
+
+// ---------------------------------------------------------------------------
+// factions.json — FactionsData
+// ---------------------------------------------------------------------------
+
+/** Demographics, geography, and institutional anchors for a faction. */
+export interface FactionBase {
+  demographics: string;
+  geography: string;
+  institutions: string;
+}
+
+/** Which Revolution Index factor a faction responds to. */
+export interface FactionFactorAlignment {
+  primary: BenchmarkFactorId;
+  secondary: BenchmarkFactorId;
+  description: string;
+}
+
+/** Faction stance toward revolution. */
+export type FactionStance =
+  | 'pro-revolution'
+  | 'anti-revolution'
+  | 'opportunistic'
+  | 'conditional'
+  | 'kingmaker';
+
+/** A projected faction in a US instability scenario. */
+export interface Faction {
+  id: string;
+  name: string;
+  tagline: string;
+  color: string;
+  stance: FactionStance;
+  stanceLabel: string;
+  base: FactionBase;
+  factorAlignment: FactionFactorAlignment;
+  alliances: string[];
+  conflicts: string[];
+  wildcard: string;
+}
+
+/** factions.json — projected faction archetypes. */
+export interface FactionsData {
+  _schema: string;
+  _note: string;
+  factions: Faction[];
+}
+
+// ---------------------------------------------------------------------------
+// policies.json — PoliciesData
+// ---------------------------------------------------------------------------
+
+/** A single policy recommendation with projected effect. */
+export interface PolicyRecommendation {
+  title: string;
+  description: string;
+  projectedEffect: string;
+  precedent: string;
+}
+
+/** One side of the dual-perspective panel (stability or acceleration). */
+export interface PolicyPanel {
+  header: string;
+  framing: string;
+  policies: PolicyRecommendation[];
+}
+
+/** Policy analysis for a single Revolution Index factor. */
+export interface FactorPolicies {
+  id: BenchmarkFactorId;
+  name: string;
+  currentValue: number;
+  weight: number;
+  stability: PolicyPanel;
+  acceleration: PolicyPanel;
+}
+
+/** policies.json — dual-perspective policy analysis by factor. */
+export interface PoliciesData {
+  _schema: string;
+  _note: string;
+  factors: FactorPolicies[];
+}

@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PolicyPanel from '../components/PolicyPanel.astro';
+import '../styles/think-tank.css';
+import type { PoliciesData, CurrentData } from '../lib/data';
+
+import policiesRaw from '../../public/data/policies.json';
+import currentRaw from '../../public/data/current.json';
+
+const policies = (policiesRaw as unknown as PoliciesData).factors;
+const current = currentRaw as unknown as CurrentData;
+---
+
+<BaseLayout
+  title="The Think Tank | Revolution Index"
+  description="Every policy decision either stabilizes or destabilizes. Dual-perspective analysis of policy levers mapped to Revolution Index factors."
+>
+  <main class="think-tank-page">
+    <section class="think-tank-hero">
+      <div class="hero-split">
+        <div class="hero-side hero-stability">
+          <span class="hero-icon">&#9681;</span>
+          <span class="hero-side-label">Stabilize</span>
+        </div>
+        <div class="hero-center">
+          <h1>The Think Tank</h1>
+          <p class="hero-subtitle">Policy Through Two Lenses</p>
+          <p class="hero-description">
+            Every policy decision either stabilizes or destabilizes. This page analyzes key policy
+            levers through two opposing perspectives: one seeking stability, one examining the
+            pressure points. The current Revolution Index score is
+            <strong>{current.score}/100</strong> ({current.zone}).
+          </p>
+        </div>
+        <div class="hero-side hero-acceleration">
+          <span class="hero-icon">&#9650;</span>
+          <span class="hero-side-label">Accelerate</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="think-tank-guide">
+      <div class="guide-content">
+        <div class="guide-panel guide-stability">
+          <h3>The Stabilizer's View</h3>
+          <p>
+            Risk warnings grounded in historical precedent. These policies have demonstrably reduced
+            instability indicators in comparable situations. The framing: <em>"Here's what has worked
+            before, and what we risk if we don't act."</em>
+          </p>
+        </div>
+        <div class="guide-divider">
+          <span class="guide-vs">vs</span>
+        </div>
+        <div class="guide-panel guide-acceleration">
+          <h3>The Accelerationist's View</h3>
+          <p>
+            Strategic analysis of pressure points and structural vulnerabilities. Not advocacy, but
+            an honest examination of the mechanisms that increase instability. The framing:
+            <em>"These are the levers and this is how they work."</em>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="think-tank-nav">
+      <h2 class="section-heading">Jump to Factor</h2>
+      <div class="factor-nav-links">
+        {policies.map((factor) => (
+          <a href={`#policy-${factor.id}`} class="factor-nav-link">
+            <span class="factor-nav-name">{factor.name}</span>
+            <span class="factor-nav-value">{factor.currentValue.toFixed(2)}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <div class="policy-sections">
+      {policies.map((factor) => (
+        <PolicyPanel factor={factor} />
+      ))}
+    </div>
+
+    <section class="think-tank-synthesis">
+      <h2>The Big Picture</h2>
+      <div class="synthesis-content">
+        <div class="synthesis-block">
+          <h3>Compound Effects</h3>
+          <p>
+            These factors don't operate in isolation. Economic inequality fuels political polarization,
+            which erodes institutional trust, which increases protest intensity, which compounds
+            economic stress. A single destabilizing policy can cascade across multiple factors,
+            and a single stabilizing intervention can create virtuous cycles in the opposite direction.
+          </p>
+        </div>
+        <div class="synthesis-block">
+          <h3>The Asymmetry of Stability</h3>
+          <p>
+            Destabilization is easier than stabilization. Breaking trust is fast; rebuilding it is slow.
+            A single financial crisis can undo a decade of economic stability. A single institutional
+            betrayal can collapse trust that took generations to build. This asymmetry means that
+            pro-stability policies must be sustained and systemic, while destabilization can occur through
+            a few well-placed shocks, or simple neglect.
+          </p>
+        </div>
+        <div class="synthesis-block">
+          <h3>The Choice Is Always Available</h3>
+          <p>
+            Nothing presented here is inevitable. Every historical revolution could have been prevented
+            by different policy choices made at the right time. The preconditions tracked by the
+            <a href="/">Revolution Index</a> are structural pressures, not deterministic forces. They
+            tell us where the system is stressed, but the response to that stress is always a choice.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="think-tank-disclaimer">
+      <h2>About This Analysis</h2>
+      <p>
+        This page presents policy analysis through two deliberately opposed framings. Neither perspective
+        represents the editorial position of the Revolution Index. The "Stabilizer's View" and
+        "Accelerationist's View" are analytical lenses, tools for understanding how different policy
+        choices affect the structural indicators tracked by the index.
+      </p>
+      <p>
+        Projected effects are estimates based on historical patterns and the factor weight model used by
+        the Revolution Index. They are not precise predictions. Real-world policy impacts depend on
+        implementation quality, timing, political context, and interaction effects between factors.
+      </p>
+      <p>
+        For the current state of these factors, see the <a href="/">Dashboard</a>.
+        For the historical cases informing these precedents, see <a href="/history">Historical Context</a>.
+        For the faction dynamics these policies would affect, see <a href="/factions">Projected Factions</a>.
+      </p>
+    </section>
+  </main>
+</BaseLayout>

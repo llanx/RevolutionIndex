@@ -58,6 +58,8 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
         <div class="nav-links">
           <a href="/" class={currentPath === '/' ? 'active' : ''}>Dashboard</a>
           <a href="/history" class={currentPath === '/history' ? 'active' : ''}>History</a>
+          <a href="/factions" class={currentPath === '/factions' ? 'active' : ''}>Factions</a>
+          <a href="/think-tank" class={currentPath === '/think-tank' ? 'active' : ''}>Think Tank</a>
           <a href="/methodology" class={currentPath === '/methodology' ? 'active' : ''}>Methodology</a>
         </div>
       </div>
@@ -73,6 +75,8 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
         <nav class="footer-nav" aria-label="Footer navigation">
           <a href="/">Dashboard</a>
           <a href="/history">History</a>
+          <a href="/factions">Factions</a>
+          <a href="/think-tank">Think Tank</a>
           <a href="/methodology">Methodology</a>
         </nav>
         <p class="footer-legal">

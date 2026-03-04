@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FactionCard from '../components/FactionCard.astro';
+import '../styles/factions.css';
+import type { FactionsData } from '../lib/data';
+
+import factionsRaw from '../../public/data/factions.json';
+
+const factions = (factionsRaw as unknown as FactionsData).factions;
+
+// Build a name lookup for alliance/conflict labels
+const factionNames: Record<string, string> = {};
+for (const f of factions) {
+  factionNames[f.id] = f.name;
+}
+
+// Group factions by stance for the dynamics section
+const proRev = factions.filter(f => f.stance === 'pro-revolution');
+const antiRev = factions.filter(f => f.stance === 'anti-revolution');
+const wildcards = factions.filter(f => ['opportunistic', 'conditional', 'kingmaker'].includes(f.stance));
+---
+
+<BaseLayout
+  title="Projected Factions | Revolution Index"
+  description="Scenario analysis of the faction archetypes that would emerge during a US instability event, based on historical revolutionary patterns."
+>
+  <main class="factions-page">
+    <section class="factions-hero">
+      <h1>Projected Factions in a US Instability Scenario</h1>
+      <p class="factions-subtitle">Analytical scenario planning, not prediction</p>
+      <div class="factions-intro">
+        <p>
+          Revolutions produce predictable faction archetypes. Across every historical case in our
+          <a href="/history">benchmarks</a>, from France 1789 to Sri Lanka 2022, instability
+          fractured society along similar structural lines: economic class, institutional loyalty,
+          ideological commitment, and proximity to coercive power.
+        </p>
+        <p>
+          The United States already has proto-factions forming along these familiar lines. This page
+          maps eight projected faction archetypes based on current political dynamics, each connected
+          to the structural factors tracked by the <a href="/">Revolution Index</a>. These aren't
+          political parties. They're the deeper alignments that would crystallize if institutional
+          stability continues to erode.
+        </p>
+      </div>
+    </section>
+
+    <section class="factions-legend">
+      <h2 class="section-heading">Faction Stances</h2>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="legend-dot stance-pro"></span>
+          <span class="legend-label">Pro-Revolution</span>
+          <span class="legend-desc">Seeks fundamental system change</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot stance-anti"></span>
+          <span class="legend-label">Anti-Revolution</span>
+          <span class="legend-desc">Defends institutional status quo</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot stance-opportunistic"></span>
+          <span class="legend-label">Opportunistic</span>
+          <span class="legend-desc">Exploits instability for restructuring</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot stance-conditional"></span>
+          <span class="legend-label">Conditional</span>
+          <span class="legend-desc">Activated by specific trigger conditions</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot stance-kingmaker"></span>
+          <span class="legend-label">Kingmaker</span>
+          <span class="legend-desc">Determines which side prevails</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="factions-grid">
+      {factions.map((faction) => (
+        <FactionCard faction={faction} factionNames={factionNames} />
+      ))}
+    </section>
+
+    <section class="factions-dynamics">
+      <h2 class="section-heading">Faction Dynamics</h2>
+
+      <div class="dynamics-content">
+        <div class="dynamics-block">
+          <h3>The Revolutionary Coalition</h3>
+          <p>
+            Historical pattern: revolutions succeed when <em>disparate factions</em> temporarily
+            unite against a common enemy. In the US scenario, the
+            {proRev.map((f, i) => (
+              <>{i > 0 && (i === proRev.length - 1 ? ', and ' : ', ')}<a href={`#${f.id}`}>{f.name}</a></>
+            ))} share anti-establishment orientation but
+            diverge sharply on what should replace the current system. This coalition would fracture
+            immediately after any "victory," just as the Girondins and Jacobins did in France,
+            or the Mensheviks and Bolsheviks did in Russia.
+          </p>
+        </div>
+
+        <div class="dynamics-block">
+          <h3>Strange Bedfellows</h3>
+          <p>
+            The most destabilizing alliances are the unexpected ones. Right Populists and the Labor
+            Movement share anti-corporate economic populism despite cultural opposition. Libertarian
+            Decentralists and Progressive Left both want to dismantle concentrated power, but they
+            disagree on what replaces it. History shows these cross-ideological alliances are fragile
+            but powerful in the short term.
+          </p>
+        </div>
+
+        <div class="dynamics-block">
+          <h3>The Kingmaker Problem</h3>
+          <p>
+            In every historical benchmark, the <a href="#security_apparatus">Security Apparatus</a> determined
+            the outcome. When the military stays loyal (China 1989), revolution fails. When it fractures
+            (Russia 1917), revolution succeeds. When it stands aside (Iran 1979), the balance tips to
+            whichever civilian faction is most organized. The US military's response to a legitimacy crisis
+            is the single variable with the highest outcome variance.
+          </p>
+        </div>
+
+        <div class="dynamics-block">
+          <h3>Brinton's Phase Transition</h3>
+          <p>
+            Crane Brinton's model predicts that revolutions move from a <em>moderate phase</em>,
+            where reformist factions like the {antiRev.map((f, i) => (
+              <>{i > 0 && ', '}<a href={`#${f.id}`}>{f.name}</a></>
+            ))} attempt to manage change within existing structures, to a <em>radical phase</em>
+            where more extreme factions seize control. The wildcards (
+            {wildcards.map((f, i) => (
+              <>{i > 0 && (i === wildcards.length - 1 ? ', and ' : ', ')}<a href={`#${f.id}`}>{f.name}</a></>
+            ))}) determine the speed and direction of this transition.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="factions-disclaimer">
+      <h2>A Note on This Analysis</h2>
+      <p>
+        This page presents <strong>scenario analysis</strong>, an analytical technique used by
+        intelligence agencies, think tanks, and strategic planners to explore possible futures. It is
+        not a prediction, endorsement, or advocacy for any faction or outcome. The projected factions
+        are archetypes derived from historical revolutionary patterns and current US political dynamics.
+      </p>
+      <p>
+        Real-world outcomes are far more complex than any model can capture. People hold overlapping
+        identities, change their minds, and form unpredictable coalitions. The value of faction analysis
+        is not in predicting exactly what will happen, but in understanding the structural pressures that
+        shape political behavior under stress.
+      </p>
+      <p>
+        For the structural indicators driving these projections, see the <a href="/">Dashboard</a>.
+        For the historical cases that inform these archetypes, see <a href="/history">Historical Context</a>.
+        For policy recommendations that could alter these trajectories, see the <a href="/think-tank">Think Tank</a>.
+      </p>
+    </section>
+  </main>
+</BaseLayout>

@@ -1,0 +1,496 @@
+/* ==========================================================================
+   Think Tank Page Styles
+   ========================================================================== */
+
+.think-tank-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+/* Hero */
+
+.think-tank-hero {
+  margin-bottom: 2rem;
+}
+
+.hero-split {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.hero-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  width: 80px;
+}
+
+.hero-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.hero-stability .hero-icon {
+  color: var(--zone-stable);
+}
+
+.hero-acceleration .hero-icon {
+  color: var(--zone-revolution);
+}
+
+.hero-side-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hero-stability .hero-side-label {
+  color: var(--zone-stable);
+}
+
+.hero-acceleration .hero-side-label {
+  color: var(--zone-revolution);
+}
+
+.hero-center {
+  flex: 1;
+  text-align: center;
+}
+
+.think-tank-page h1 {
+  font-size: 2rem;
+  margin: 0 0 0.25rem;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 0 0 0.75rem;
+}
+
+.hero-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Guide section */
+
+.think-tank-guide {
+  margin-bottom: 2rem;
+}
+
+.guide-content {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.guide-panel {
+  flex: 1;
+  padding: 1.25rem;
+}
+
+.guide-panel h3 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.guide-stability h3 {
+  color: var(--zone-stable);
+}
+
+.guide-acceleration h3 {
+  color: var(--zone-revolution);
+}
+
+.guide-panel p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.guide-panel em {
+  color: var(--text-primary);
+}
+
+.guide-divider {
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.guide-vs {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Factor navigation */
+
+.think-tank-nav {
+  margin-bottom: 2rem;
+}
+
+.section-heading {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem;
+}
+
+.factor-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.factor-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(26, 26, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.factor-nav-link:hover {
+  border-color: var(--accent);
+  background: rgba(232, 93, 4, 0.06);
+}
+
+.factor-nav-name {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.factor-nav-value {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+/* Policy Sections */
+
+.policy-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.policy-factor-section {
+  scroll-margin-top: 80px;
+}
+
+.policy-factor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.policy-factor-name {
+  font-size: 1.35rem;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.policy-factor-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.policy-factor-meta strong {
+  color: var(--text-primary);
+  font-family: monospace;
+}
+
+/* Dual Panels */
+
+.policy-dual-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.policy-panel {
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1.25rem;
+  border-top: 3px solid transparent;
+}
+
+.panel-stability {
+  border-top-color: var(--zone-stable);
+}
+
+.panel-acceleration {
+  border-top-color: var(--zone-revolution);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.panel-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.panel-stability .panel-icon {
+  color: var(--zone-stable);
+}
+
+.panel-acceleration .panel-icon {
+  color: var(--zone-revolution);
+}
+
+.panel-title {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.panel-stability .panel-title {
+  color: var(--zone-stable);
+}
+
+.panel-acceleration .panel-title {
+  color: var(--zone-revolution);
+}
+
+.panel-framing {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.panel-policies {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.policy-item {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.policy-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.policy-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.policy-title {
+  font-size: 0.9rem;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.policy-effect {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: monospace;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.effect-stability {
+  background: rgba(64, 145, 108, 0.15);
+  color: var(--zone-stable);
+}
+
+.effect-acceleration {
+  background: rgba(193, 18, 31, 0.15);
+  color: var(--zone-revolution);
+}
+
+.policy-description {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 0.5rem;
+}
+
+.policy-precedent {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding: 0.5rem 0.65rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+
+.precedent-label {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Synthesis */
+
+.think-tank-synthesis {
+  margin-bottom: 2.5rem;
+}
+
+.think-tank-synthesis h2 {
+  font-size: 1.35rem;
+  margin: 0 0 1rem;
+}
+
+.synthesis-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.synthesis-block {
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.synthesis-block h3 {
+  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+  color: var(--text-primary);
+}
+
+.synthesis-block p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.synthesis-block a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.synthesis-block a:hover {
+  text-decoration: underline;
+}
+
+/* Disclaimer */
+
+.think-tank-disclaimer {
+  padding: 1.25rem;
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border-left: 3px solid var(--text-secondary);
+}
+
+.think-tank-disclaimer h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+
+.think-tank-disclaimer p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0 0 0.75rem;
+}
+
+.think-tank-disclaimer p:last-child {
+  margin-bottom: 0;
+}
+
+.think-tank-disclaimer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.think-tank-disclaimer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive — stack panels on mobile */
+
+@media (max-width: 768px) {
+  .hero-split {
+    flex-direction: column;
+  }
+
+  .hero-side {
+    flex-direction: row;
+    width: auto;
+  }
+
+  .guide-content {
+    flex-direction: column;
+  }
+
+  .guide-divider {
+    padding: 0.5rem;
+    justify-content: center;
+  }
+
+  .policy-dual-panels {
+    grid-template-columns: 1fr;
+  }
+
+  .policy-factor-header {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .factor-nav-links {
+    flex-direction: column;
+  }
+
+  .factor-nav-link {
+    justify-content: space-between;
+  }
+}

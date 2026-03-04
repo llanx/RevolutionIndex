@@ -1,0 +1,92 @@
+---
+import type { Faction } from '../lib/data';
+
+export interface Props {
+  faction: Faction;
+  /** Map of faction IDs to names for displaying alliance/conflict labels */
+  factionNames: Record<string, string>;
+}
+
+const { faction, factionNames } = Astro.props;
+
+const stanceClasses: Record<string, string> = {
+  'pro-revolution': 'stance-pro',
+  'anti-revolution': 'stance-anti',
+  'opportunistic': 'stance-opportunistic',
+  'conditional': 'stance-conditional',
+  'kingmaker': 'stance-kingmaker',
+};
+
+const stanceClass = stanceClasses[faction.stance] || 'stance-pro';
+---
+
+<article class="faction-card" id={faction.id} style={`--faction-color: ${faction.color}`}>
+  <div class="faction-header">
+    <div class="faction-color-bar"></div>
+    <div class="faction-title-group">
+      <h2 class="faction-name">{faction.name}</h2>
+      <p class="faction-tagline">{faction.tagline}</p>
+    </div>
+    <span class={`faction-stance ${stanceClass}`}>{faction.stanceLabel}</span>
+  </div>
+
+  <div class="faction-body">
+    <div class="faction-base">
+      <div class="base-item">
+        <span class="base-label">Base</span>
+        <span class="base-value">{faction.base.demographics}</span>
+      </div>
+      <div class="base-item">
+        <span class="base-label">Geography</span>
+        <span class="base-value">{faction.base.geography}</span>
+      </div>
+      <div class="base-item">
+        <span class="base-label">Institutions</span>
+        <span class="base-value">{faction.base.institutions}</span>
+      </div>
+    </div>
+
+    <div class="faction-factor-alignment">
+      <span class="alignment-label">Factor Alignment</span>
+      <div class="alignment-badges">
+        <span class="badge badge-primary">{faction.factorAlignment.primary.replace(/_/g, ' ')}</span>
+        <span class="badge badge-secondary">{faction.factorAlignment.secondary.replace(/_/g, ' ')}</span>
+      </div>
+      <p class="alignment-description">{faction.factorAlignment.description}</p>
+    </div>
+
+    <div class="faction-relations">
+      {faction.alliances.length > 0 && (
+        <div class="relation-group">
+          <span class="relation-label">Alliances</span>
+          <div class="relation-tags">
+            {faction.alliances.map((id) => (
+              <a href={`#${id}`} class="relation-tag alliance-tag">{factionNames[id] || id}</a>
+            ))}
+          </div>
+        </div>
+      )}
+      {faction.conflicts.length > 0 && (
+        <div class="relation-group">
+          <span class="relation-label">Conflicts</span>
+          <div class="relation-tags">
+            {faction.conflicts.map((id) => (
+              <a href={`#${id}`} class="relation-tag conflict-tag">{factionNames[id] || id}</a>
+            ))}
+          </div>
+        </div>
+      )}
+      {faction.alliances.length === 0 && faction.conflicts.length === 0 && (
+        <div class="relation-group">
+          <span class="relation-label">Alliances</span>
+          <span class="relation-none">Allegiance depends entirely on circumstances and could align with any faction</span>
+        </div>
+      )}
+    </div>
+
+    <div class="faction-wildcard">
+      <span class="wildcard-label">Wildcard</span>
+      <p class="wildcard-text">{faction.wildcard}</p>
+    </div>
+  </div>
+</article>
