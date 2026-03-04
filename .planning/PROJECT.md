@@ -8,20 +8,38 @@ A data-driven research dashboard that calculates and displays a probability scor
 
 Produce a defensible, data-backed revolution probability score from freely available data — one number that synthesizes what academic research says matters into something actionable and understandable.
 
+## Current Milestone: v1.1 Build & Validate
+
+**Goal:** Implement data pipeline, build scoring model(s) from the 45-variable catalog, and validate against historical episodes to produce a defensible political stress score.
+
+**Target features:**
+- Data pipeline fetching from 25+ free sources with LOCF frequency alignment
+- Model architecture selection informed by literature mining (45 variables, 14 Strong-rated)
+- Working 0-100 political stress score with interpretable factor breakdowns
+- Backtesting against 6+ historical episodes (1968-2020)
+- Sensitivity analysis and uncertainty quantification
+- Validation report with honest pass/fail assessment
+
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+<!-- Shipped and confirmed valuable in v1.0. -->
+
+- ✓ AI-assisted literature mining to identify variables that historically precede revolutions — v1.0 Phase 2
+- ✓ Ranked variable catalog with evidence strength ratings and source papers — v1.0 Phase 2
+- ✓ Data sourcing audit — which predictive variables are freely available online as regularly-updated datasets — v1.0 Phase 3
+- ✓ Prior work validation — 3 models audited, math fixes documented, 18 data series verified — v1.0 Phase 1
 
 ### Active
 
-- [ ] AI-assisted literature mining to identify variables that historically precede revolutions
-- [ ] Ranked variable catalog with evidence strength ratings and source papers
-- [ ] Data sourcing audit — which predictive variables are freely available online as regularly-updated datasets
+<!-- Current scope for v1.1. Building toward these. -->
+
 - [ ] Model(s) that compute a 0-100 revolution probability score from sourced data
-- [ ] Score displayed on a research dashboard with historical trend and contributing factors
-- [ ] Weekly data refresh pipeline
+- [ ] Automated data pipeline fetching from all identified free sources
+- [ ] Backtesting and validation against historical crisis/quiet episodes
+- [ ] Sensitivity analysis and uncertainty quantification
+- [ ] Score interpretation with severity tiers and factor breakdowns
 
 ### Out of Scope
 
@@ -60,4 +78,4 @@ Produce a defensible, data-backed revolution probability score from freely avail
 | MVP-fast timeline | Get a working score quickly, iterate on quality later | — Pending |
 
 ---
-*Last updated: 2026-03-01 after initialization*
+*Last updated: 2026-03-03 after milestone v1.1 start*
