@@ -37,7 +37,7 @@ Plans:
 - [x] 01-03-PLAN.md — Consolidated validation report synthesizing all findings
 
 ### Phase 2: Literature Mining
-**Goal**: Produce a comprehensive, evidence-ranked catalog of variables that predict revolution/instability, along with candidate theoretical frameworks -- so model selection is driven by the full weight of academic evidence rather than three pre-chosen models
+**Goal**: Produce a comprehensive, evidence-ranked catalog of variables that predict revolution/instability, along with candidate theoretical frameworks -- so model selection is driven by the full weight of academic evidence rather than three pre-chosen models. Variables are cross-referenced against federal data APIs during cataloging to give Phase 3 a running start on data availability
 **Depends on**: Phase 1
 **Requirements**: LIT-01, LIT-02, LIT-03, LIT-04, LIT-05, LIT-06, LIT-07
 **Success Criteria** (what must be TRUE):
@@ -46,16 +46,19 @@ Plans:
   3. Candidate models/frameworks beyond the original 3 are identified and assessed for applicability to US context
   4. Candidate training/validation datasets (NAVCO, PITF, UCDP, etc.) are identified with documented coverage and access methods
   5. A synthesis document maps variables to theoretical frameworks and explicitly identifies gaps where theory suggests a variable matters but no measurement approach is obvious
-**Plans**: TBD
+  6. Each variable in the catalog has a preliminary data availability tag (fed-data/other-data/unknown) based on cross-referencing against the US Government Open Data MCP's 37 federal APIs
+**Plans**: 6 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
-- [ ] 02-03: TBD
-- [ ] 02-04: TBD
+- [ ] 02-01-PLAN.md — Core domain literature reviews: revolution prediction + democratic backsliding (Wave 1)
+- [ ] 02-02-PLAN.md — Core domain literature reviews: historical case studies + economic preconditions (Wave 1)
+- [ ] 02-03-PLAN.md — Adjacent domain literature reviews: social movement theory + media/information ecosystem (Wave 1)
+- [ ] 02-04-PLAN.md — Ranked variable catalog with MCP data availability cross-referencing (Wave 2)
+- [ ] 02-05-PLAN.md — Framework assessment + training/validation dataset inventory (Wave 2)
+- [ ] 02-06-PLAN.md — Synthesis document: variable-framework mapping, gap identification, Phase 1 open question responses (Wave 3)
 
 ### Phase 3: Data Sourcing
-**Goal**: Determine exactly which predictive variables can actually be measured with free data, producing a concrete inventory that constrains model building to what is empirically feasible
+**Goal**: Determine exactly which predictive variables can actually be measured with free data, building on Phase 2's preliminary data availability tags to produce a concrete inventory that constrains model building to what is empirically feasible
 **Depends on**: Phase 2
 **Requirements**: DATA-01, DATA-02, DATA-03, DATA-04, DATA-05
 **Success Criteria** (what must be TRUE):
@@ -112,7 +115,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Prior Work Validation | 3/3 | Complete    | 2026-03-02 |
-| 2. Literature Mining | 0/4 | Not started | - |
+| 2. Literature Mining | 0/6 | Not started | - |
 | 3. Data Sourcing | 0/3 | Not started | - |
 | 4. Model Building | 0/3 | Not started | - |
 | 5. Validation | 0/3 | Not started | - |
