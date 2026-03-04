@@ -13,7 +13,7 @@ This roadmap delivers a validated, data-backed political stress scoring system f
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Prior Work Validation** - Audit the existing 250 pages of theory and 18 data series to establish what holds up and what needs revision
-- [ ] **Phase 2: Literature Mining** - Exhaustive AI-assisted review across political science, economics, sociology, and conflict studies to discover predictive variables and candidate frameworks
+- [x] **Phase 2: Literature Mining** - Exhaustive AI-assisted review across political science, economics, sociology, and conflict studies to discover predictive variables and candidate frameworks
 - [ ] **Phase 3: Data Sourcing** - Map every discovered variable to freely available data sources, classify availability, and identify proxies for gaps
 - [ ] **Phase 4: Model Building** - Select architecture(s) informed by literature findings and data availability, implement data pipeline and scoring models
 - [ ] **Phase 5: Validation** - Backtest against historical episodes, quantify uncertainty, test for overfitting and spurious trends, produce pass/fail assessment
@@ -55,7 +55,7 @@ Plans:
 - [x] 02-03-PLAN.md — Adjacent domain literature reviews: social movement theory + media/information ecosystem (Wave 1)
 - [x] 02-04-PLAN.md — Ranked variable catalog with MCP data availability cross-referencing (Wave 2)
 - [x] 02-05-PLAN.md — Framework assessment + training/validation dataset inventory (Wave 2)
-- [ ] 02-06-PLAN.md — Synthesis document: variable-framework mapping, gap identification, Phase 1 open question responses (Wave 3)
+- [x] 02-06-PLAN.md — Synthesis document: variable-framework mapping, gap identification, Phase 1 open question responses (Wave 3)
 
 ### Phase 3: Data Sourcing
 **Goal**: Determine exactly which predictive variables can actually be measured with free data, building on Phase 2's preliminary data availability tags to produce a concrete inventory that constrains model building to what is empirically feasible
@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Prior Work Validation | 3/3 | Complete    | 2026-03-02 |
-| 2. Literature Mining | 5/6 | In Progress | - |
+| 2. Literature Mining | 6/6 | Complete    | 2026-03-04 |
 | 3. Data Sourcing | 0/3 | Not started | - |
 | 4. Model Building | 0/3 | Not started | - |
 | 5. Validation | 0/3 | Not started | - |
