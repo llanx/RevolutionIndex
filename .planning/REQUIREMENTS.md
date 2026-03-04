@@ -39,8 +39,8 @@ Requirements for initial release. V1 delivers validated research and working mod
 - [x] **MOD-01**: Select final model architecture(s) based on literature mining findings and data availability
 - [x] **MOD-02**: Implement data pipeline: fetch from APIs, LOCF frequency alignment, derived series, freshness tracking
 - [x] **MOD-03**: Implement selected model(s) as stateless pure functions returning structured ModelOutput
-- [ ] **MOD-04**: Implement ensemble/composite scoring if multiple models are used
-- [ ] **MOD-05**: Implement score interpretation labels mapping 0-100 to severity tiers
+- [x] **MOD-04**: Implement ensemble/composite scoring if multiple models are used
+- [x] **MOD-05**: Implement score interpretation labels mapping 0-100 to severity tiers
 
 ### Validation
 
@@ -123,8 +123,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOD-01 | Phase 4 | Complete |
 | MOD-02 | Phase 4 | Complete |
 | MOD-03 | Phase 4 | Complete |
-| MOD-04 | Phase 4 | Pending |
-| MOD-05 | Phase 4 | Pending |
+| MOD-04 | Phase 4 | Complete |
+| MOD-05 | Phase 4 | Complete |
 | TEST-01 | Phase 5 | Pending |
 | TEST-02 | Phase 5 | Pending |
 | TEST-03 | Phase 5 | Pending |
@@ -140,4 +140,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-01*
-*Last updated: 2026-03-04 after 04-01 plan completion*
+*Last updated: 2026-03-04 after 04-03 plan completion*

@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-last_updated: "2026-03-04T01:47:00Z"
+last_updated: "2026-03-04T10:15:00Z"
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 15
-  completed_plans: 14
+  completed_plans: 15
 ---
 
 # Project State
@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 4 IN PROGRESS. Plan 02 (model implementation) complete. All 5 scoring models (PSI, PLI, FSP, Georgescu SDT, V-Dem ERT) implemented with Phase 1 math fixes. Next: Plan 03 (pipeline integration + ensemble scoring).
+**Current focus:** Phase 4 COMPLETE. All 3 plans executed: pipeline infrastructure, 5 model implementations, ensemble scoring + JSON output. Full pipeline from raw data to dashboard JSON is automated. Next: Phase 5 (Model Validation).
 
 ## Current Position
 
-Phase: 4 of 5 (Model Building) -- IN PROGRESS
-Plan: 2 of 3 in current phase (Model Implementation complete)
-Status: Plan 04-02 COMPLETE -- 5 scoring models implemented with Phase 1 math fixes. Plan 03 next.
-Last activity: 2026-03-04 -- PSI/PLI/FSP models with Phase 1 corrections, Georgescu SDT and V-Dem ERT models implemented as stateless pure functions.
+Phase: 4 of 5 (Model Building) -- COMPLETE
+Plan: 3 of 3 in current phase (Pipeline Integration + Ensemble Scoring complete)
+Status: Phase 04 COMPLETE -- ensemble scoring, calibration, bootstrap CIs, and JSON output all implemented. Pipeline executable via `python models/run.py`.
+Last activity: 2026-03-04 -- Evidence-weighted ensemble, anchor-point calibration, bootstrap CIs, JSON output matching data.ts schema.
 
-Progress: [█████████░] 93%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 13min
-- Total execution time: 2.76 hours
+- Total plans completed: 15
+- Average duration: 12min
+- Total execution time: 2.91 hours
 
 **By Phase:**
 
@@ -43,11 +43,11 @@ Progress: [█████████░] 93%
 | 1 - Prior Work Validation | 3 | 43min | 14min |
 | 2 - Literature Mining | 6 | 51min | 9min |
 | 3 - Data Sourcing | 3 | 24min | 8min |
-| 4 - Model Building | 2/3 | 53min | 27min |
+| 4 - Model Building | 3/3 | 62min | 21min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (8min), 04-01 (45min), 03-03 (11min), 03-02 (8min), 03-01 (5min)
-- Trend: Phase 4 Plan 02 fast (model implementation with clear spec); Plan 01 was larger (infrastructure + migration)
+- Last 5 plans: 04-03 (9min), 04-02 (8min), 04-01 (45min), 03-03 (11min), 03-02 (8min)
+- Trend: Phase 4 Plans 02 and 03 fast (clear specs from prior plans); Plan 01 was larger (infrastructure + migration)
 
 *Updated after each plan completion*
 | Phase 03 P01 | 1 | 1 tasks | 1 files |
@@ -55,6 +55,7 @@ Progress: [█████████░] 93%
 | Phase 03 P03 | 1 | 2 tasks | 1 files |
 | Phase 04 P01 | 1 | 2 tasks | 13 files |
 | Phase 04 P02 | 1 | 2 tasks | 6 files |
+| Phase 04 P03 | 1 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -147,6 +148,11 @@ Recent decisions affecting current work:
 - [04-02]: FSP uses max-based leading-edge aggregation (60/40) instead of simple average for better early warning
 - [04-02]: Georgescu SDT uses weighted average (not multiplicative) per Georgescu 2023 empirical approach for developed economies
 - [04-02]: V-Dem ERT uses sigmoid-mapped 5-year rate-of-change for near-ceiling US institutional indicators
+- [04-03]: Linear calibration using two anchor classes: crisis (2008/2020 avg -> 65) and stable (1994-1997 avg -> 20)
+- [04-03]: Bootstrap CIs resample variables within each domain (not composite perturbation) for correct uncertainty propagation
+- [04-03]: History sampling: annual pre-2000, quarterly post-2000 for manageable file size covering all 6 Phase 5 validation episodes
+- [04-03]: Column naming bridge in ensemble.py handles pipeline-to-model column format difference
+- [Phase 04]: Model building complete -- 5 models, ensemble scoring, calibration, bootstrap CIs, JSON output all automated via `python models/run.py`
 
 ### Pending Todos
 
@@ -160,5 +166,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 04-02-PLAN.md (Model Implementation). Plan 02 of Phase 4 complete. Next: 04-03 (Pipeline Integration + Ensemble Scoring).
+Stopped at: Completed 04-03-PLAN.md (Pipeline Integration + Ensemble Scoring). Phase 4 COMPLETE. Next: Phase 5 (Model Validation).
 Resume file: None
