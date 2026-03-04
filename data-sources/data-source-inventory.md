@@ -912,3 +912,382 @@ Defining "anti-system" for the US context requires explicit criteria. Options in
 | MIT Election Data + Science Lab | #31 (CSV download) | No |
 | FEC (via MCP) | #11, #31 (candidate search) | No |
 | BLS / FRED | #15 (earnings by race series) | Yes (FRED key) |
+
+---
+
+## Domain 3: Institutional / Democratic Quality
+
+This domain covers 8 variables from the Phase 2 catalog that measure the quality of democratic institutions, checks and balances, and governance effectiveness. This is the largest gap in the existing 3 models -- the institutional dimension is entirely uncovered in Turchin PSI, Prospect Theory PLI, and Financial Stress Pathway (per Phase 2 synthesis finding). Most variables source from V-Dem v15, making this domain heavily dependent on a single dataset. Non-V-Dem alternatives (Freedom House, Grumbach, World Bank WGI, Bright Line Watch, Electoral Integrity Project) are documented for robustness.
+
+**Variables in this domain:** #13, #21, #22, #23, #24, #29, #32, #38
+
+**V-Dem Common Documentation:**
+All V-Dem variables share these access details:
+- **Download:** https://v-dem.net/data/the-v-dem-dataset/ -> Country-Year: V-Dem Full+Others -> CSV
+- **File:** V-Dem-CY-Full+Others-v15.csv
+- **Version:** v15 (released March 2025)
+- **US Coverage:** Full coding, 1789-present, annual
+- **License:** Creative Commons Attribution 4.0 International (CC BY 4.0)
+- **Update Frequency:** Annual (typically March release)
+- **Measurement Method:** Expert survey (country experts code each indicator), aggregated via Bayesian item response theory models
+- **API Key Required:** No -- free CSV download
+- **Rate Limits:** N/A (file download, not API)
+- **Known US Limitation:** Many V-Dem indices for the US are near the ceiling (maximum score) because the US has historically been coded as a full liberal democracy. This means absolute levels are less informative than within-country trends and rate-of-change. Recent V-Dem reports (2023-2025) have noted declining US scores on several indicators, but the variation is subtle compared to cross-national differences.
+
+---
+
+### Regime Type / Institutional Quality (#13)
+
+**Catalog Rating:** Strong -- Contested
+**Theoretical Concept:** The quality of democratic institutions and the degree to which the political system is a full democracy, partial democracy (anocracy), or autocracy. The PITF model's single strongest predictor -- Goldstone et al. (2010) find partial democracies with factionalism are 10-15x more failure-prone than full democracies or autocracies. Contested because Walter (2022) argues the US has moved toward the anocratic zone while Svolik (2019) contends established democracies have different risk dynamics.
+**Availability Classification:** Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Liberal Democracy Index | V-Dem v15 | v2x_libdem | Annual | 1789-present | Direct | No |
+| Polyarchy (Electoral Democracy) Index | V-Dem v15 | v2x_polyarchy | Annual | 1789-present | Direct | No |
+| Regimes of the World classification | V-Dem v15 | v2x_regime (0-3 ordinal) | Annual | 1789-present | Direct (categorical) | No |
+| Regimes of the World (ambiguous cases) | V-Dem v15 | v2x_regime_amb (0-9 ordinal) | Annual | 1789-present | Direct (finer-grained categorical) | No |
+| Freedom in the World scores | Freedom House | freedomhouse.org (PDF/Excel) | Annual | 1972-present | Direct | No |
+| Freedom in the World Aggregate/Subcategory Scores | Freedom House | freedomhouse.org/report/freedom-world | Annual | 2003-present (current methodology) | Direct | No |
+
+**Recommended:** V-Dem v2x_libdem (Liberal Democracy Index) as the primary measure, supplemented by v2x_polyarchy for the electoral democracy dimension. V-Dem provides the longest coverage (1789-present) with the most granular measurement (continuous 0-1 scale vs. Freedom House ordinal 1-7). For the rate-of-change analysis that matters for the US context, compute year-over-year change in v2x_libdem. Freedom House provides a well-known cross-validation source but has shorter coverage and coarser measurement.
+
+**Scale and Interpretation:**
+- v2x_libdem: Continuous 0-1 (0 = least democratic, 1 = most democratic). US typically scores 0.85-0.90.
+- v2x_polyarchy: Continuous 0-1. US typically scores 0.87-0.92.
+- v2x_regime: 0 = closed autocracy, 1 = electoral autocracy, 2 = electoral democracy, 3 = liberal democracy. US coded as 3 (liberal democracy) throughout modern period.
+- v2x_regime_amb: 0-9 scale with ambiguous cases split into separate categories.
+- Freedom House: 1 (most free) to 7 (least free) for Political Rights and Civil Liberties.
+
+**Rate Limits:** V-Dem: CSV download, no rate limits. Freedom House: report download, no rate limits.
+**License:** V-Dem: CC BY 4.0. Freedom House: data available for non-commercial use with attribution.
+**Known Gaps:**
+- Contested variable: The US is coded as a full liberal democracy (v2x_regime = 3) throughout the V-Dem dataset. Walter (2022) argues the US has moved toward "anocracy" based on Polity scores, but V-Dem does not code the US as having crossed any categorical threshold. The variation is in continuous index values, not regime type.
+- Do NOT use Polity V as a source -- it is deprecated (final version 2018, no longer updated). V-Dem is the current standard.
+- Freedom House's current methodology (with disaggregated subcategory scores) dates only from 2003. Earlier scores use a different aggregation method.
+- V-Dem expert surveys are retrospective for historical periods -- coding of 18th-19th century US institutions involves unavoidable historical judgment calls
+- Rate of change in v2x_libdem is more analytically useful for the US than the absolute level (which has been near ceiling)
+
+**Last Verified:** 2026-03-03 (V-Dem v15 confirmed released March 2025 via web research; Freedom House 2025 report confirmed published)
+
+---
+
+### Judicial Independence (#21)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The degree to which the judiciary operates independently of executive and legislative interference. A critical check on executive power and a pillar of democratic governance. Ginsburg & Huq (2018) identify judicial independence as one of five infrastructure domains vulnerable to democratic erosion. Levitsky & Ziblatt (2018) highlight the politicization of judicial appointments as a norm-breaking signal.
+**Availability Classification:** Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| High Court Independence | V-Dem v15 | v2juhcind | Annual | 1789-present | Direct | No |
+| Lower Court Independence | V-Dem v15 | v2juncind | Annual | 1789-present | Direct | No |
+| Judicial Constraints on Executive | V-Dem v15 | v2x_jucon | Annual | 1789-present | Direct (composite index) | No |
+| Compliance with High Court Rulings | V-Dem v15 | v2jucomp | Annual | 1789-present | Direct (behavioral indicator) | No |
+
+**Recommended:** V-Dem v2x_jucon (Judicial Constraints on Executive) as the primary measure. It is a composite index that captures both judicial independence and the judiciary's effective capacity to constrain executive action -- directly measuring the separation-of-powers function that matters for democratic quality. Supplement with v2juhcind (High Court Independence) and v2juncind (Lower Court Independence) for component-level analysis.
+
+**Scale and Interpretation:**
+- v2juhcind: Ordinal expert rating, aggregated to continuous interval via IRT. Higher = more independent.
+- v2juncind: Same scale as v2juhcind but for lower courts.
+- v2x_jucon: Composite index, continuous 0-1. Higher = stronger judicial constraints on executive.
+- v2jucomp: Ordinal expert rating on compliance with court rulings. Higher = more compliance.
+
+**Rate Limits:** V-Dem: CSV download, no rate limits.
+**License:** V-Dem: CC BY 4.0.
+**Known Gaps:**
+- US judicial independence scores have been near ceiling historically -- recent variation (if any) is subtle in the V-Dem coding
+- V-Dem expert surveys capture *de jure* and *de facto* independence but may lag real-time developments (e.g., inspector general firings, executive non-compliance with court orders)
+- The politicization of judicial appointments (Senate confirmation battles) may not be fully captured by V-Dem's measurement of judicial independence per se
+- No non-V-Dem quantitative alternative exists with comparable coverage -- Bright Line Watch expert surveys provide a supplementary signal since 2017 but are irregular
+
+**Last Verified:** 2026-03-03 (V-Dem v15 variable list confirmed via V-Dem codebook documentation)
+
+---
+
+### Freedom of Expression / Media Independence (#22)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The degree to which media operates independently of government control and citizens can freely express political views. A critical information channel for democratic accountability. Bermeo (2016) identifies media restriction as a common tool of executive aggrandizement in contemporary democratic backsliding episodes.
+**Availability Classification:** Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Freedom of Expression and Alternative Sources of Information | V-Dem v15 | v2x_freexp_altinf | Annual | 1789-present | Direct (composite index) | No |
+| Government Censorship Effort (Media) | V-Dem v15 | v2mecenefm | Annual | 1789-present | Direct (specific component) | No |
+| Media Bias | V-Dem v15 | v2mebias | Annual | 1789-present | Direct (media landscape indicator) | No |
+| Press Freedom Index | Reporters Without Borders (RSF) | rsf.org/en/index | Annual | 2002-present | Direct | No |
+| Freedom on the Net scores | Freedom House | freedomhouse.org/report/freedom-net | Annual | 2011-present | Direct (internet freedom dimension) | No |
+
+**Recommended:** V-Dem v2x_freexp_altinf (Freedom of Expression and Alternative Sources of Information) as the primary measure for its long coverage (1789-present) and comprehensive composite construction. Supplement with Reporters Without Borders Press Freedom Index for the most widely cited international press freedom ranking (2002-present) and Freedom House Freedom on the Net for the digital dimension (2011-present).
+
+**Scale and Interpretation:**
+- v2x_freexp_altinf: Composite index, continuous 0-1. Higher = more freedom. Includes government censorship, media bias, freedom of discussion, and alternative information access.
+- RSF Press Freedom Index: Continuous score (0-100 in current methodology, reversed from historical). Lower rank = more press freedom. US typically ranks 40th-50th globally (has declined from top 20 pre-2016).
+- Freedom on the Net: 0-100 aggregate score. Higher = more freedom. US typically scores 75-78.
+
+**Tradeoff: V-Dem vs. RSF vs. Freedom House:**
+- **V-Dem:** Longest coverage (1789-present), broadest concept (expression + information access), academic standard
+- **RSF:** Most widely cited in journalism/policy, captures media-specific threats, but short (2002-present) and methodology changed in 2022
+- **Freedom House FotN:** Captures internet/digital freedom specifically, very short (2011-present)
+- For this project, V-Dem as primary with RSF as robustness check is recommended.
+
+**Rate Limits:** V-Dem: CSV download. RSF: annual report/data download from rsf.org. Freedom House: report download.
+**License:** V-Dem: CC BY 4.0. RSF: data available with attribution. Freedom House: data available for non-commercial use with attribution.
+**Known Gaps:**
+- RSF methodology changed significantly in 2022 (new indicator framework), creating a comparability break with pre-2022 scores
+- US Freedom of Expression scores in V-Dem have been near ceiling historically; recent changes are subtle
+- None of these measures capture the *perception* of media bias or trust in media, which is captured by #28 (Media Trust, a different variable in the catalog)
+- Freedom on the Net scores (2011-present) are too short for meaningful time series analysis -- tag as "short series" if used
+
+**Last Verified:** 2026-03-03 (V-Dem v15 confirmed; RSF 2025 index confirmed published; Freedom House FotN 2024 report confirmed published)
+
+---
+
+### Legislative Constraints on Executive (#23)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The degree to which the legislature effectively constrains executive power through oversight, investigation, and legislative authority. A core separation-of-powers indicator. Ginsburg & Huq (2018) identify legislative constraints as one of five infrastructure domains vulnerable to constitutional retrogression.
+**Availability Classification:** Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Legislative Constraints on the Executive Index | V-Dem v15 | v2xlg_legcon | Annual | 1789-present | Direct (composite index) | No |
+| Executive Respects Constitution | V-Dem v15 | v2exrescon | Annual | 1789-present | Direct (executive behavior indicator) | No |
+| Legislature Investigates in Practice | V-Dem v15 | v2lginvstp | Annual | 1789-present | Direct (oversight function) | No |
+| Legislature Controls Resources | V-Dem v15 | v2lgfunds | Annual | 1789-present | Direct (power of the purse) | No |
+
+**Recommended:** V-Dem v2xlg_legcon (Legislative Constraints on the Executive Index) as the primary measure. It is a composite capturing multiple dimensions of legislative power: ability to investigate, question officials, control budgets, and override vetoes. Supplement with v2exrescon (Executive Respects Constitution) for the executive behavior dimension -- does the executive actually comply with constitutional constraints?
+
+**Scale and Interpretation:**
+- v2xlg_legcon: Composite index, continuous 0-1. Higher = stronger legislative constraints on executive.
+- v2exrescon: Ordinal expert rating, aggregated to interval. Higher = more executive respect for constitutional provisions.
+- v2lginvstp: Ordinal expert rating on legislative investigation capacity. Higher = more effective oversight.
+- v2lgfunds: Ordinal expert rating on legislative control of resources. Higher = more fiscal control.
+
+**Rate Limits:** V-Dem: CSV download, no rate limits.
+**License:** V-Dem: CC BY 4.0.
+**Known Gaps:**
+- US legislative constraints scores have been near ceiling historically in V-Dem coding -- the US system of divided powers has been a model case
+- Rate of change is more informative than absolute level for the US context
+- V-Dem's expert survey approach may not capture rapid changes in executive-legislative dynamics (e.g., government shutdowns, impoundment disputes, inspector general firings) until the following year's coding
+- No quantitative non-V-Dem alternative exists with comparable coverage for this specific concept -- the closest substitute is the generic "checks and balances" literature, which is more qualitative
+
+**Last Verified:** 2026-03-03 (V-Dem v15 variable list confirmed via V-Dem codebook documentation)
+
+---
+
+### Electoral Integrity / Fraud Perception (#24)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The degree to which elections are perceived as free, fair, and legitimate. Tucker (2007) finds that perceived electoral fraud triggered all Color Revolutions. Post-2020 US election denial represents a critical context where fraud perception diverges sharply from electoral integrity reality.
+**Availability Classification:** Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Clean Elections Index | V-Dem v15 | v2xel_frefair | Annual | 1789-present | Direct (structural electoral integrity) | No |
+| Election Management Body Autonomy | V-Dem v15 | v2elembaut | Annual | 1789-present | Direct (institutional independence) | No |
+| Election Government Intimidation | V-Dem v15 | v2elintim | Annual | 1789-present | Direct (coercion indicator) | No |
+| Perception of Electoral Integrity (PEI) | Electoral Integrity Project (Pippa Norris) | Harvard Dataverse download | Per election cycle | 2012-present (selected countries) | Direct (expert perception) | No |
+| State Democracy Index | Grumbach (2023) | Harvard Dataverse / author website | Annual | 2000-2018 (published range) | Strong proxy (state-level electoral quality) | No |
+
+**Recommended:** V-Dem v2xel_frefair (Clean Elections Index) as the primary structural measure. It captures whether elections are free from manipulation, intimidation, and fraud based on expert coding. For the perception dimension (critical in the post-2020 US context), supplement with the Electoral Integrity Project's PEI data (expert survey of election quality, available for US elections since 2012).
+
+**Scale and Interpretation:**
+- v2xel_frefair: Composite index, continuous 0-1. Higher = cleaner elections. US typically scores near maximum.
+- PEI: Expert survey rating (1-100 per election). US presidential elections have scored 62-72 (moderate by global standards, reflecting structural issues like gerrymandering and campaign finance).
+- Grumbach SDI: State-level democracy index capturing electoral rules, registration requirements, and gerrymandering. Higher = more democratic.
+
+**Rate Limits:** V-Dem: CSV download. PEI/Grumbach: academic dataverse download.
+**License:** V-Dem: CC BY 4.0. PEI: CC BY (Harvard Dataverse). Grumbach: academic open data.
+**Known Gaps:**
+- V-Dem captures structural electoral integrity but does NOT capture public perception of fraud -- a critical gap given post-2020 US politics where a significant minority believes elections were stolen despite structural integrity measures showing otherwise
+- PEI is available only from 2012 and covers selected elections -- not a continuous time series
+- Grumbach (2023) SDI is state-level, requiring national aggregation for composite indicator use. Published data range is 2000-2018; updates may extend coverage.
+- Survey data on fraud perception (e.g., "Do you believe the 2020 election was legitimate?") exists in various polls but is not systematically compiled into a time series
+- The gap between actual electoral integrity (V-Dem: high) and perceived integrity (diverging by partisanship) is itself the analytically important signal -- Phase 4 should consider modeling this gap
+
+**Last Verified:** 2026-03-03 (V-Dem v15 confirmed; PEI project confirmed active via Harvard Dataverse; Grumbach SDI confirmed via web research)
+
+---
+
+### Voter Access Restrictions / Partisan Gerrymandering (#29)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The degree to which electoral rules restrict voter participation or distort representation through gerrymandering. A primarily state-level phenomenon in the US. Grumbach (2023) documents significant cross-state variation in democratic quality, with voter access restrictions as a key dimension of state-level democratic backsliding.
+**Availability Classification:** Available (manual download) -- primarily state-level data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| State Democracy Index (voter access components) | Grumbach (2023) | Harvard Dataverse / author website (CSV) | Annual | 2000-2018 (published range) | Direct (comprehensive state-level measure) | No |
+| Efficiency gap (partisan gerrymandering measure) | Stephanopoulos & McGhee (2015) | Constructible from election returns | Per redistricting cycle (~decennial) | Computable for any election with district-level returns | Direct (quantitative gerrymandering metric) | No |
+| Cost of Voting Index | Li, Pomante & Schraufnagel (2018) | Academic dataset (Harvard Dataverse) | Per election cycle | 1996-2020 (published range) | Direct (comparative voter access measure) | No |
+| Voter restriction legislation tracking | Brennan Center for Justice | Published reports from brennancenter.org | Per legislative session | 2011-present (systematic tracking) | Strong proxy (legislative activity indicator) | No |
+
+**Recommended:** Grumbach (2023) State Democracy Index as the primary measure for its comprehensive, multi-dimensional approach to state-level democratic quality. It combines voter access rules, gerrymandering, campaign finance regulations, and other dimensions into a single state-level index. For national aggregation, compute population-weighted average across states. Supplement with the Cost of Voting Index (Li et al.) for a narrower voter-access-specific measure.
+
+**Construction Recipe (National Aggregation from State-Level Data):**
+1. Download Grumbach SDI data from Harvard Dataverse
+2. For each year, obtain SDI score for each state
+3. Compute population-weighted national average: sum(SDI_state * population_state) / total_population
+4. Alternatively, compute the standard deviation across states (captures cross-state divergence in democratic quality)
+5. Both the weighted average and the dispersion are analytically interesting
+
+**Rate Limits:** Academic dataverse: standard download, no rate limits. Brennan Center: report download.
+**License:** Grumbach SDI: academic open data (Harvard Dataverse). Cost of Voting Index: academic open data. Brennan Center: reports freely available.
+**Known Gaps:**
+- Grumbach SDI published range is 2000-2018 -- may need to check for updates extending coverage beyond 2018
+- The efficiency gap is computable only after each election with full district-level returns, making it available on a per-redistricting-cycle basis (roughly decennial, with updates after each election)
+- National aggregation from state-level data requires methodological choices (population weighting, median vs. mean, etc.) that are Phase 4 decisions
+- Voter restriction tracking (Brennan Center) is a count of legislative actions, not a continuous quality index -- more useful for narrative context than quantitative modeling
+- State-level measures capture the most policy-relevant variation but are harder to integrate into national-level composite indicators
+
+**Last Verified:** 2026-03-03 (Grumbach SDI confirmed via Harvard Dataverse; Cost of Voting Index confirmed via web research; Brennan Center reports confirmed available)
+
+---
+
+### Executive Aggrandizement (#32)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** Actions by elected executives that concentrate power beyond institutional norms. Bermeo (2016) identifies executive aggrandizement as the most common form of 21st-century democratic backsliding, replacing the military coups and electoral fraud of earlier eras. Haggard & Kaufman (2021) find executive aggrandizement occurred in 14 of 16 backsliding cases studied.
+**Availability Classification:** Available (manual download)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Executive Corruption Index | V-Dem v15 | v2x_execorr | Annual | 1789-present | Strong proxy (executive abuse of power) | No |
+| Executive Respects Constitution | V-Dem v15 | v2exrescon | Annual | 1789-present | Direct (constitutional compliance) | No |
+| Executive Attempts to Control Judiciary | V-Dem v15 | v2jupack | Annual | 1789-present | Direct (court-packing attempts) | No |
+| Executive Oversight by Legislature | V-Dem v15 | v2lgotovst | Annual | 1789-present | Direct (inverse indicator -- weak oversight enables aggrandizement) | No |
+| Bright Line Watch expert surveys | Bright Line Watch | brightlinewatch.org | Irregular (roughly quarterly since 2017) | 2017-present | Direct (expert assessment of democratic norm violations) | No |
+
+**Recommended:** V-Dem v2exrescon (Executive Respects Constitution) as the primary measure for its direct relevance to the aggrandizement concept and long coverage. Supplement with v2x_execorr (Executive Corruption Index) for the abuse-of-power dimension and v2jupack (judicial packing attempts) for a specific aggrandizement mechanism. For the most current US assessment, Bright Line Watch expert surveys (2017-present) provide real-time monitoring of democratic norm violations by experts in democratic governance.
+
+**Scale and Interpretation:**
+- v2exrescon: Ordinal expert rating, aggregated to interval. Higher = more respect for constitution.
+- v2x_execorr: Composite index, continuous 0-1. Higher = more executive corruption. (Note: reversed from other V-Dem indices -- higher is *worse*.)
+- v2jupack: Ordinal expert rating on executive attempts to increase the number of judges or replace judges to change court composition. Higher = fewer packing attempts.
+- Bright Line Watch: Expert ratings on a battery of democratic norm statements (1-4 Likert scale per item). Aggregated mean across items. Higher = healthier democratic norms.
+
+**Rate Limits:** V-Dem: CSV download. Bright Line Watch: report/data download from brightlinewatch.org.
+**License:** V-Dem: CC BY 4.0. Bright Line Watch: freely available academic data.
+**Known Gaps:**
+- V-Dem measures executive aggrandizement indirectly through its component indicators -- no single "executive aggrandizement" index exists in V-Dem. The concept must be operationalized from components.
+- Bright Line Watch data begins only in 2017 -- tag as "short series." It was created specifically to monitor US democratic norms during the Trump administration.
+- Bright Line Watch survey frequency is irregular (roughly quarterly but not fixed schedule) -- use LOCF for alignment
+- The concept of "executive aggrandizement" is inherently difficult to measure quantitatively -- it involves identifying departures from norms that are themselves contested. V-Dem's expert survey approach handles this better than any available alternative, but expert disagreement is embedded in the uncertainty estimates.
+- No pre-built time series of "executive aggrandizement events" exists for the US -- event coding would require Phase 4 construction work
+
+**Last Verified:** 2026-03-03 (V-Dem v15 confirmed; Bright Line Watch confirmed active with 2025 survey waves published)
+
+---
+
+### State Capacity / Institutional Quality (#38)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The government's ability to effectively deliver public services, enforce laws, and respond to crises. Fearon & Laitin (2003) find that weak state capacity predicts conflict regardless of ethnic composition. Kaufman & Haggard (2021) find that strong institutions buffer economic shocks from producing democratic backsliding. State capacity is multidimensional: extractive (taxation), coercive (law enforcement), and administrative (service delivery).
+**Availability Classification:** Available (manual download) + Available (free API) for World Bank
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Government Effectiveness (WGI) | World Bank Worldwide Governance Indicators | `wb_indicator` MCP: GE.EST | Annual | 1996-present | Direct (administrative capacity) | No |
+| Regulatory Quality (WGI) | World Bank Worldwide Governance Indicators | `wb_indicator` MCP: RQ.EST | Annual | 1996-present | Direct (regulatory capacity) | No |
+| Rule of Law (WGI) | World Bank Worldwide Governance Indicators | `wb_indicator` MCP: RL.EST | Annual | 1996-present | Direct (legal institutional quality) | No |
+| Control of Corruption (WGI) | World Bank Worldwide Governance Indicators | `wb_indicator` MCP: CC.EST | Annual | 1996-present | Direct (corruption control) | No |
+| V-Dem Government Effectiveness components | V-Dem v15 | v2clrspct (rigorous/impartial public admin) | Annual | 1789-present | Direct | No |
+| Hanson & Sigman (2021) latent state capacity | Academic dataset | Harvard Dataverse | Varies | Coverage varies by dimension | Direct (multi-dimensional) | No |
+
+**Recommended:** World Bank WGI Government Effectiveness (GE.EST) as the primary measure, accessible via MCP `wb_indicator` tool. The WGI provides standardized scores across 6 governance dimensions, with the US scored on each annually since 1996. Government Effectiveness specifically captures "perceptions of the quality of public services, the quality of the civil service and the degree of its independence from political pressures." Supplement with V-Dem v2clrspct for longer historical coverage and the Hanson & Sigman (2021) dataset for the multi-dimensional state capacity perspective.
+
+**Scale and Interpretation:**
+- WGI indicators: Continuous score approximately -2.5 to +2.5 (standard normal distribution centered on global mean of 0). Higher = better governance. US typically scores 1.3-1.7 on Government Effectiveness.
+- WGI also provides percentile rank (0-100) for easier interpretation.
+- V-Dem v2clrspct: Ordinal expert rating, aggregated to interval. Higher = more rigorous/impartial administration.
+- Hanson & Sigman: Latent factor scores (extractive, coercive, administrative) on standardized scales.
+
+**Rate Limits:** World Bank MCP tool: standard MCP limits. V-Dem: CSV download. Hanson & Sigman: academic dataverse download.
+**License:** World Bank WGI: CC BY 4.0. V-Dem: CC BY 4.0. Hanson & Sigman: academic open data.
+**Known Gaps:**
+- WGI starts only in 1996 -- limits backtesting. Data published biennially until 2002, then annually.
+- WGI is based on perceptions aggregated from multiple sources (surveys, expert assessments, think tank reports) -- it measures perceived rather than objective capacity
+- US state capacity has been near the top of global rankings throughout the WGI period, making within-country variation subtle
+- Hanson & Sigman (2021) dataset may not extend to the most recent years -- check for updates
+- The multidimensional nature of state capacity (extractive, coercive, administrative) means a single index may mask important divergences between dimensions
+- V-Dem's v2clrspct is one of many possible V-Dem indicators for state capacity; others include v2cltort (torture), v2clkill (political killings), v2clsocgrp (social group equality in civil liberties)
+
+**Last Verified:** 2026-03-03 (World Bank WGI confirmed available via MCP `wb_indicator`; V-Dem v15 confirmed; Hanson & Sigman dataset confirmed via web research)
+
+---
+
+## Domain Summary: Institutional / Democratic Quality
+
+### Coverage Assessment
+
+| Variable | # | Rating | Availability | Primary Source | Coverage Start |
+|----------|---|--------|-------------|----------------|----------------|
+| Regime Type / Institutional Quality | 13 | Strong* | Available (manual download) | V-Dem v2x_libdem | 1789 |
+| Judicial Independence | 21 | Moderate | Available (manual download) | V-Dem v2x_jucon | 1789 |
+| Freedom of Expression / Media Independence | 22 | Moderate | Available (manual download) | V-Dem v2x_freexp_altinf | 1789 |
+| Legislative Constraints on Executive | 23 | Moderate | Available (manual download) | V-Dem v2xlg_legcon | 1789 |
+| Electoral Integrity / Fraud Perception | 24 | Moderate | Available (manual download) | V-Dem v2xel_frefair | 1789 |
+| Voter Access Restrictions / Gerrymandering | 29 | Moderate | Available (manual download) | Grumbach SDI | 2000 |
+| Executive Aggrandizement | 32 | Moderate | Available (manual download) | V-Dem v2exrescon | 1789 |
+| State Capacity / Institutional Quality | 38 | Moderate | Available (manual download) + (free API) | World Bank WGI GE.EST | 1996 |
+
+*Asterisk indicates Contested variables
+
+### Key Statistics
+
+- **Total variables:** 8
+- **Available (manual download):** 7 (88%) -- primarily V-Dem CSV download
+- **Available (free API):** 1 (13%) -- #38 State Capacity via World Bank MCP tool
+- **Partially available (proxy needed):** 0
+- **Unavailable:** 0
+- **Strong-rated:** 1 (13%) -- #13 Regime Type
+- **Moderate-rated:** 7 (88%) -- #21, #22, #23, #24, #29, #32, #38
+- **Contested:** 1 -- #13 (Regime Type)
+- **Short series (post-2000 start):** 2 -- #29 Voter Access (Grumbach SDI, 2000), #38 State Capacity (WGI, 1996)
+- **Frequency mix:** Annual (8 of 8) -- all primary sources are annual
+- **V-Dem dependency:** 6 of 8 variables have V-Dem as primary source -- high single-source dependency
+- **MCP-verified components:** 1 -- World Bank WGI via `wb_indicator` MCP tool
+
+### Critical Gaps
+
+1. **V-Dem near-ceiling limitation:** All V-Dem indices for the US are near the maximum score throughout the dataset period. Absolute levels provide minimal discriminatory power for within-country analysis. Rate-of-change and sub-indicator decomposition are necessary to extract useful signal. Phase 4 should compute year-over-year changes and analyze sub-indicator trends rather than using raw index levels.
+
+2. **Electoral fraud perception gap (#24):** V-Dem captures structural electoral integrity (high for US) but not public perception of fraud (which diverged sharply post-2020). No systematic time series of fraud perception exists. Survey data from Pew, Gallup, and YouGov captures this post-2020 but is not compiled into a standardized series. Phase 4 may need to construct a perception-integrity gap variable.
+
+3. **State-level aggregation (#29):** Grumbach SDI and related voter access measures are state-level. National aggregation requires methodological choices (population weighting, dispersion measures) that are Phase 4 decisions. Published range (2000-2018) may need extension.
+
+4. **Single-source dependency:** 6 of 8 variables rely on V-Dem as the primary source. If V-Dem coding methodology changes or the dataset is not updated, this domain is disproportionately affected. Non-V-Dem alternatives are documented but are generally shorter in coverage and less comprehensive.
+
+### Data Sources Used
+
+| Source | Variables Served | API Key Required |
+|--------|-----------------|-----------------|
+| V-Dem v15 (v-dem.net) | #13, #21, #22, #23, #24, #32 (CSV download) | No |
+| Freedom House (freedomhouse.org) | #13, #22 (report/data download) | No |
+| Reporters Without Borders (rsf.org) | #22 (annual index download) | No |
+| Electoral Integrity Project (Harvard Dataverse) | #24 (per-election data) | No |
+| Grumbach State Democracy Index (Harvard Dataverse) | #24, #29 (state-level CSV) | No |
+| Cost of Voting Index (Harvard Dataverse) | #29 (per-election data) | No |
+| Brennan Center for Justice | #29 (published reports) | No |
+| Bright Line Watch (brightlinewatch.org) | #32 (survey data download) | No |
+| World Bank WGI (via MCP `wb_indicator`) | #38 (API access) | No |
+| Hanson & Sigman 2021 (Harvard Dataverse) | #38 (academic dataset) | No |
