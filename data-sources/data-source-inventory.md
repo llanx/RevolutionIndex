@@ -1291,3 +1291,652 @@ All V-Dem variables share these access details:
 | Bright Line Watch (brightlinewatch.org) | #32 (survey data download) | No |
 | World Bank WGI (via MCP `wb_indicator`) | #38 (API access) | No |
 | Hanson & Sigman 2021 (Harvard Dataverse) | #38 (academic dataset) | No |
+
+---
+
+## Domain 4: Social Mobilization & Trust
+
+This domain covers 11 variables from the Phase 2 catalog that measure social cohesion, collective action capacity, institutional trust, and attitudinal dispositions toward political engagement. The domain spans a wide range of evidence quality (2 Strong, 3 Moderate, 6 Weak) and relies heavily on survey data (ANES, Pew, Gallup, PRRI) rather than continuous time series. Survey-dependent variables present a common limitation: irregular frequency, changing methodology, and no API access. Several weak-rated variables are derived from the same parent datasets (ACLED for protest variables, ANES for attitudinal variables).
+
+**Variables in this domain:** #7, #12, #25, #26, #30, #34, #36, #37, #41, #42, #44
+
+---
+
+### Government Trust / State Legitimacy (#7)
+
+**Catalog Rating:** Strong
+**Theoretical Concept:** The degree to which the public trusts government institutions to act competently and in the public interest. Trust is a mediating variable that modulates the transmission of structural stress into political instability. When trust is high, societies absorb economic shocks without crisis; when low, even modest distress triggers mobilization. US trust declined from ~75% (1960s) to ~20% (2020s), removing the legitimacy buffer that historically absorbed structural pressures.
+**Availability Classification:** Available (manual download) -- periodic survey data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Trust in government: "How much of the time do you trust the government in Washington to do what is right?" | ANES Cumulative Data File | Variable VCF0604 from electionstudies.org | Biennial/quadrennial (election years) | 1958-2020 (Cumulative File) | Direct | No |
+| "Public Trust in Government: 1958-2025" | Pew Research Center | Published reports with data tables from pewresearch.org | Irregular (~annual since 1997, less frequent earlier) | 1958-2025 | Direct | No |
+| Confidence in institutions (Congress, Presidency, Supreme Court, etc.) | Gallup | Published annual reports from gallup.com | Annual (~June poll, 1973-present) | 1973-present | Direct | No |
+| ANES individual study trust questions | ANES | Individual Time Series study files from electionstudies.org | Per study | 2020, 2024 (standalone studies) | Direct | No |
+
+**Recommended:** ANES VCF0604 as the primary measure for standardized methodology and the longest harmonized time series (1958-2020 in cumulative file). The ANES question ("How much of the time do you trust the government in Washington to do what is right?") is the canonical measure in political science. Supplement with Pew trust data for higher frequency (roughly annual since 1997) and more recent coverage (through 2025). Gallup institutional confidence provides institution-specific breakdowns (Congress, Presidency, Supreme Court separately).
+
+**Construction Notes:**
+1. ANES VCF0604: Download cumulative data file from electionstudies.org
+2. Values: 1 = "none of the time", 2 = "some of the time", 3 = "most of the time", 4 = "just about always"
+3. Compute mean trust score per survey wave, or percentage responding "most/always" for comparability with Pew format
+4. For post-2020 data, use ANES individual Time Series studies
+
+**Rate Limits:** No API -- CSV download from electionstudies.org (free registration required). Pew and Gallup: no API, manual extraction from published reports/data tables.
+**License:** ANES: freely available for research, requires citation and NSF acknowledgment. Pew: data tables freely available in published reports with attribution. Gallup: published trend data freely available; raw microdata requires subscription.
+**Known Gaps:**
+- ANES frequency is biennial/quadrennial -- use LOCF for alignment with higher-frequency series per project decision
+- Pew trust data is compiled from multiple survey organizations over time (Pew, CBS/NYT, ABC/WashPost, CNN, Gallup), with varying question wording and methodology. The published time series harmonizes these but comparability is imperfect.
+- Gallup institutional confidence data is published in annual reports but not as a downloadable time series CSV -- requires manual extraction from Gallup.com trend pages
+- No single source provides a clean, API-accessible, monthly trust time series. All sources are periodic surveys with irregular spacing.
+- Post-2020 trust data may not be directly comparable to earlier periods due to extreme political polarization affecting survey response patterns
+
+**Last Verified:** 2026-03-03 (ANES website confirmed active, cumulative data file available; Pew trust report confirmed published through Dec 2025; Gallup institutional confidence confirmed published through 2025)
+
+---
+
+### Protest Frequency and Participation (#12)
+
+**Catalog Rating:** Strong
+**Theoretical Concept:** The frequency, size, and geographic spread of protest events. Core mobilization variable in social movement theory. Chenoweth & Stephan (2011) find that nonviolent campaigns with >3.5% population participation have never failed to achieve their objectives. Tarrow (1994) identifies protest cycles as the mechanism through which structural grievances become political action.
+**Availability Classification:** Available (manual download) -- with important coverage limitation
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| US protest and riot events | ACLED (Armed Conflict Location & Event Data Project) | API from acleddata.com; filter: country=United States, event_type=Protests,Riots | Real-time (weekly updates) | 2020-present (30,000+ US events) | Direct | Yes (free registration) |
+| US protest campaigns (aggregated) | NAVCO 3.0 (Nonviolent and Violent Campaigns and Outcomes) | CSV download from Harvard Dataverse | Per campaign | 1945-2013 (published range) | Strong proxy (campaign-level, not event-level) | No |
+| US protest event counts | Crowd Counting Consortium | CSV download from GitHub/website | Per event | 2017-present | Direct (manual compilation) | No |
+
+**Recommended:** ACLED US event data as the primary measure. ACLED provides real-time, event-level protest data with geographic coordinates, participant estimates, event type classification (protests, riots, demonstrations, strategic developments), and actor identification. Free registration required at acleddata.com to obtain API access key.
+
+**IMPORTANT -- Coverage Limitation:**
+ACLED US coverage begins January 2020 only. Pre-2020 US protest data requires historical compilation from alternative sources (GDELT, news archives, academic compilations). Tag as "short series." For backtesting against historical episodes (1960s civil rights, 1970s anti-war, 1999 WTO, 2011 Occupy), ACLED data is unavailable -- NAVCO and historical academic catalogs must be used.
+
+**ACLED API Access Details:**
+1. Register at acleddata.com (free academic/research registration)
+2. API endpoint: https://api.acleddata.com/acled/read
+3. Filter parameters: `iso=840` (US ISO code), `event_type` (Protests, Riots, Violence against civilians, etc.)
+4. Returns: JSON with fields including event_date, event_type, sub_event_type, country, admin1 (state), admin2 (county), location, latitude, longitude, source, fatalities, notes
+5. Rate limits: Varies by registration tier; standard academic access supports bulk downloads
+
+**Rate Limits:** ACLED API: registration-dependent; bulk export available. NAVCO: static download. Crowd Counting Consortium: static download.
+**License:** ACLED: free for academic/research use with attribution (CC BY 4.0 for academic use). NAVCO: academic open data. Crowd Counting Consortium: open data.
+**Known Gaps:**
+- ACLED US data starts January 2020 only -- this is the single most important limitation. No pre-2020 ACLED data for the US exists.
+- ACLED event counts reflect coding decisions about what constitutes a "protest event" -- methodological documentation should be reviewed for boundary cases
+- NAVCO is campaign-level aggregation (not event-level), covers 1945-2013, and focuses on major campaigns rather than individual protest events
+- Crowd Counting Consortium relies on manual compilation from media reports -- coverage may be uneven
+- Pre-2020 US protest event data does not exist in a single standardized source comparable to ACLED. The Global Database of Events, Language, and Tone (GDELT) captures some protest events from news reports but uses automated coding with higher noise.
+- Participant count estimates in ACLED are often ranges or absent -- protest size is harder to measure than protest frequency
+
+**Last Verified:** 2026-03-03 (ACLED website confirmed active, US data available from 2020, free registration confirmed; NAVCO confirmed via Harvard Dataverse; Crowd Counting Consortium confirmed active)
+
+---
+
+### Civil Society Density / Union Membership (#25)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The organizational density of civil society, measured through trade union membership as the primary indicator. Union membership serves as a proxy for broader civil society organizational capacity -- the infrastructure through which collective grievances are channeled into political action. McCarthy & Zald (1977) resource mobilization theory emphasizes organizational infrastructure as a precondition for collective action.
+**Availability Classification:** Available (manual download) -- annual news release data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Union membership rate (% of wage and salary workers) | BLS Current Population Survey | Annual news release from bls.gov/news.release/union2.htm | Annual (January release) | 1983-present (current CPS methodology) | Direct | No |
+| Union membership by state | BLS Current Population Survey | Annual news release tables (Table 5) | Annual | 1983-present | Direct (state-level breakdown) | No |
+| Union membership historical (pre-1983) | BLS / academic compilations | Troy & Sheflin (1985) historical data, various academic sources | Annual | 1930-1983 (approximate) | Direct (historical methodology) | No |
+
+**Recommended:** BLS annual union membership rate from the Current Population Survey as the primary measure. Published each January in the "Union Members" news release (USDL-XX-XXXX). The headline statistic is the percentage of wage and salary workers who are union members. National and state-level data available from 1983 under the current CPS methodology. For pre-1983 historical data, academic compilations (Troy & Sheflin 1985) extend the series back to approximately 1930.
+
+**Access Method:**
+1. Navigate to bls.gov/news.release/union2.htm for the most recent release
+2. Tables are available in HTML and PDF format
+3. Historical data: bls.gov/data/ -> Employment & Unemployment -> Union Membership
+4. No BLS API series ID exists for union membership rate -- data must be extracted from annual release tables
+5. Alternative: unionstats.com (Barry Hirsch and David Macpherson) provides downloadable time series compiled from CPS
+
+**Rate Limits:** N/A (annual news release download, not an API).
+**License:** Public domain (US government work). BLS data is freely available without restriction.
+**Known Gaps:**
+- No BLS API series for union membership rate -- data must be manually extracted from annual news release tables or obtained from academic compilations (unionstats.com)
+- Current CPS methodology dates from 1983 -- pre-1983 data uses different survey methodology and definitions, creating a comparability break
+- Annual frequency limits within-year variation detection
+- Union membership rate is a proxy for civil society density, not a direct measure -- other organizational forms (churches, civic associations, mutual aid societies) are not captured
+- State-level data enables geographic analysis but requires national aggregation decisions for composite indicator use
+
+**Last Verified:** 2026-03-03 (BLS union membership news release confirmed published January 2026 for 2025 data; unionstats.com confirmed active as academic compilation source)
+
+---
+
+### Youth Unemployment / Disconnection (#26)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The rate of unemployment or disengagement (NEET: not in education, employment, or training) among young people. Campante & Chor (2012) find youth unemployment >30% preceded Arab Spring uprisings. Goldstone (1991) identifies youth demographic bulges as a risk factor for instability. In the US context, youth unemployment has never reached the extreme levels associated with revolutionary risk globally, but elevated youth disconnection signals frustrated aspirations.
+**Availability Classification:** Available (free API)
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Youth Unemployment Rate (15-24, ILO estimate) | World Bank (via FRED) | SLUEM1524ZSUSA | Annual | 1991-present | Direct | Yes (FRED) |
+| Unemployment Rate - 16-19 years | BLS (via FRED) | LNS14000012 | Monthly | 1948-present | Direct (narrower age band) | Yes (FRED) |
+| Unemployment Rate - 20-24 years | BLS (via FRED) | LNS14000036 | Monthly | 1948-present | Direct (broader young adult) | Yes (FRED) |
+| Disconnected youth (NEET) rate | Census Bureau ACS | Derived from education enrollment + employment status variables | Annual | 2005-present (1-year ACS) | Direct (broader disconnection measure) | No (Census API) |
+
+**Recommended:** BLS LNS14000012 (unemployment rate, 16-19 years) and LNS14000036 (unemployment rate, 20-24 years) as the primary measures. They provide monthly frequency and long coverage (1948-present) compared to SLUEM1524ZSUSA's annual/1991 start. Compute a composite youth unemployment rate as a weighted average of the two age bands to approximate the ILO 15-24 definition. Supplement with Census ACS disconnected youth (NEET) data for the broader disengagement measure that captures youth who have left the labor force entirely.
+
+**Rate Limits:** FRED API: 120 requests/minute with API key. Census API: 500 requests/day without key.
+**License:** Public domain (US government work). World Bank data: CC BY 4.0.
+**Known Gaps:**
+- SLUEM1524ZSUSA is an annual ILO estimate (not a direct BLS measurement) with 1-2 year publication lag
+- BLS LNS series use US age definitions (16-19, 20-24) that do not exactly match the ILO 15-24 definition
+- Census ACS NEET data requires constructing the "disconnected youth" variable from multiple ACS variables (education enrollment, employment status, age) -- not a pre-computed series
+- US youth unemployment peaks (~20% for 16-19 age group in recessions) are far below the >30% threshold associated with revolutionary risk in the Arab Spring literature
+- Youth employment patterns have structural differences from adult employment (seasonal variation from school schedules, higher voluntary turnover) that affect interpretation
+
+**Last Verified:** 2026-03-03 (SLUEM1524ZSUSA confirmed active through 2025 observation via MCP `fred_series_info`; BLS LNS series confirmed active via FRED web)
+
+---
+
+### Democratic Commitment (Attitudinal) (#30)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The degree to which citizens express commitment to democratic governance as a political system, irrespective of satisfaction with current performance. Foa & Mounk (2016) argue that declining democratic commitment (especially among younger cohorts) is an early warning signal for democratic deconsolidation. Mounk (2018) documents declining support for democracy across Western democracies using World Values Survey data.
+**Availability Classification:** Available (manual download) -- periodic survey data with irregular frequency
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Support for democratic norms | ANES Cumulative Data File | Various democratic attitude questions from electionstudies.org | Biennial/quadrennial | 1948-2020 (Cumulative File) | Direct | No |
+| "Importance of living in a democracy" (10-point scale) | World Values Survey (WVS) | US waves from worldvaluessurvey.org | Irregular (US waves: 1981, 1990, 1995, 1999, 2006, 2011, 2017) | 1981-2017 (US waves) | Direct | No |
+| Expert assessment of democratic norm adherence | Bright Line Watch | Survey data from brightlinewatch.org | Irregular (~quarterly since 2017) | 2017-present | Direct (expert perception) | No |
+
+**Recommended:** World Values Survey (WVS) "importance of living in a democracy" question as the primary measure for cross-national comparability and direct relevance to the Foa & Mounk deconsolidation thesis. Supplement with ANES democratic attitude questions for longer US-specific coverage and Bright Line Watch for current expert assessment. All three sources have irregular frequency -- the WVS is the most intermittent (~7 US waves in 36 years).
+
+**Access Method:**
+1. WVS: Download from worldvaluessurvey.org/WVSDocumentationWVL.jsp (requires free registration)
+2. ANES: Download cumulative file from electionstudies.org (requires free registration)
+3. Bright Line Watch: Data downloads available at brightlinewatch.org
+
+**Rate Limits:** All three sources are download-based, no API rate limits.
+**License:** WVS: freely available for academic use with citation. ANES: freely available with citation and NSF acknowledgment. Bright Line Watch: freely available academic data.
+**Known Gaps:**
+- WVS US waves are extremely infrequent (~7 data points across 36 years) -- insufficient for time series modeling alone. Use primarily for level calibration and cross-national comparison.
+- The Foa & Mounk (2016) finding of declining democratic commitment has been contested by Voeten (2016) and others who argue the decline is overstated due to question interpretation effects
+- ANES does not include identical democratic commitment questions across all waves -- variable availability varies by study year
+- Bright Line Watch data begins 2017 -- tag as "short series"
+- Bright Line Watch surveys experts and the public separately -- the expert vs. public gap is itself analytically interesting
+- No single source provides a consistent, high-frequency democratic commitment time series for the US
+
+**Last Verified:** 2026-03-03 (WVS confirmed US waves available; ANES confirmed; Bright Line Watch confirmed active with 2025 survey waves)
+
+---
+
+### Conspiratorial Thinking Prevalence (#34)
+
+**Catalog Rating:** Weak
+**Theoretical Concept:** The prevalence of conspiratorial thinking in the population, measured through survey data on belief in specific conspiracy theories or general conspiratorial ideation. A weak-rated variable included per locked decision to catalog all identified variables regardless of evidence strength, but flagged for evidence limitations.
+**Availability Classification:** Available (manual download) -- periodic survey data, very limited time series
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Conspiracy belief questions (QAnon, election denial, etc.) | PRRI American Values Survey | Published reports from prri.org | Annual (~since 2020 for conspiracy items) | 2020-present (conspiracy-specific items) | Direct | No |
+| Conspiratorial ideation scales | Uscinski & Parent (2014) survey data | Academic publication appendix | One-time | 2012 (single survey) | Direct (historical baseline) | No |
+| Conspiracy belief items | Pew Research Center | Published reports from pewresearch.org | Irregular | Various (not systematic) | Direct | No |
+
+**Recommended:** PRRI American Values Survey as the primary source for the most recent and regularly updated conspiracy belief data. However, conspiracy-specific items in PRRI surveys only became systematic around 2020. No long-run time series of conspiratorial thinking prevalence exists for the US.
+
+**Rate Limits:** N/A (report/data download).
+**License:** PRRI: published data freely available with attribution. Academic survey data: varies by publication.
+**Known Gaps:**
+- **Weak-rated variable** -- limited empirical evidence linking conspiracy prevalence to political instability outcomes
+- No standardized, long-run time series exists -- conspiracy belief measurement is recent (post-2015 mostly) and inconsistent across surveys
+- PRRI conspiracy items are specific to current conspiracy theories (QAnon, election denial) -- not comparable to historical conspiracy beliefs (JFK, moon landing)
+- Question wording significantly affects measured prevalence -- "Do you believe in [specific conspiracy]?" vs. "Do you think powerful people often manipulate events?" produce very different results
+- Tag as "short series" (2020-present for systematic measurement)
+- No API access for any source
+
+**Last Verified:** 2026-03-03 (PRRI 2025 American Values Survey confirmed published; Pew conspiracy-related reports confirmed available)
+
+---
+
+### Protest Diffusion / Contagion (#36)
+
+**Catalog Rating:** Weak
+**Theoretical Concept:** The geographic and temporal spread of protest activity from initial sites to new locations. Beissinger (2002) documents how revolutionary episodes in the post-Soviet space exhibited contagion dynamics -- success in one country emboldened protest movements in neighbors. Lynch (2012) analyzes similar dynamics in the Arab Spring.
+**Availability Classification:** Partially available (proxy needed) -- derived from ACLED event data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Spatial-temporal clustering of protest events | Derived from ACLED US data | Constructed from ACLED API (same data as #12) | Constructible from event-level data | 2020-present (limited by ACLED US coverage) | Strong proxy (diffusion computed from event geography and timing) | Yes (ACLED registration) |
+
+**Recommended:** Construct a protest diffusion index from ACLED US event data using spatial-temporal clustering analysis.
+
+**Construction Recipe:**
+1. Obtain ACLED US protest events (same data as #12)
+2. For each protest event, compute geographic distance and temporal distance to all other events within a rolling window (e.g., 30 days, 500 km)
+3. Diffusion index = count of "daughter" events that occur within X km and Y days of an initial event
+4. Higher index = faster/wider geographic spread of protest activity
+5. Alternative: compute spatial autocorrelation (Moran's I) of protest frequency across US counties/states per time period
+
+**Rate Limits:** Same as ACLED (#12).
+**License:** ACLED: CC BY 4.0 for academic use.
+**Known Gaps:**
+- **Weak-rated variable** -- the diffusion/contagion concept is theoretically motivated but limited testing exists for US domestic protest dynamics
+- Derived from ACLED data (same source as #12 and #37) -- not an independent data source
+- ACLED US data starts 2020 only -- severely limits historical diffusion analysis
+- Diffusion vs. common-cause distinction: protests appearing in multiple cities simultaneously may reflect shared underlying conditions rather than actual contagion
+- Construction requires geospatial analysis capabilities in Phase 4
+- No pre-built diffusion index exists for US protest data
+
+**Last Verified:** 2026-03-03 (constructible from ACLED data documented under #12)
+
+---
+
+### Prior Protest Experience (#37)
+
+**Catalog Rating:** Weak
+**Theoretical Concept:** The accumulated history of protest activity in a region, which lowers barriers to future collective action. Klandermans (1997) and Granovetter (1978) model how prior participation experience reduces individual thresholds for joining future protests. Areas with higher historical protest activity are expected to mobilize faster in future episodes.
+**Availability Classification:** Partially available (proxy needed) -- derived from cumulative ACLED event data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Cumulative protest event counts by region | Derived from ACLED US data | Constructed from ACLED API (same data as #12) | Constructible from event-level data | 2020-present (limited by ACLED US coverage) | Strong proxy (cumulative count as experience proxy) | Yes (ACLED registration) |
+| Historical protest catalogs | Various academic compilations | Academic datasets, news archive compilations | Historical | Various (pre-2020 compilations exist but are not standardized) | Strong proxy (historical baseline) | No |
+
+**Recommended:** Construct cumulative protest event counts from ACLED US data as the primary measure.
+
+**Construction Recipe:**
+1. Obtain ACLED US protest events (same data as #12)
+2. For each geographic unit (state, county, city), compute cumulative count of protest events up to each time point
+3. Prior protest experience = log(1 + cumulative events in region over prior N years)
+4. Higher values = more protest infrastructure/experience in the area
+
+**Rate Limits:** Same as ACLED (#12).
+**License:** ACLED: CC BY 4.0 for academic use.
+**Known Gaps:**
+- **Weak-rated variable** -- individual-level protest experience (the theoretical concept) cannot be measured from aggregate event data
+- Derived from ACLED data (same source as #12 and #36) -- not an independent data source
+- ACLED US data starts 2020 only -- 4-5 years of history is insufficient to build meaningful cumulative experience measures
+- Pre-2020 protest history must come from non-standardized academic compilations with different event definitions and coverage
+- The theoretical concept is about individual participation experience, not regional event counts -- the proxy captures a related but distinct concept
+
+**Last Verified:** 2026-03-03 (constructible from ACLED data documented under #12)
+
+---
+
+### Institutional Legitimacy Denial (#41)
+
+**Catalog Rating:** Weak
+**Theoretical Concept:** Active rejection of the legitimacy of democratic institutions (distinct from mere distrust). Includes explicit claims that elections were stolen, that courts are illegitimate, or that government institutions do not have the right to govern. The post-2020 US context has elevated this from a fringe phenomenon to a significant political force.
+**Availability Classification:** Available (manual download) -- short series, irregular frequency
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Expert assessment of democratic norm adherence/violation | Bright Line Watch | Survey data from brightlinewatch.org | Irregular (~quarterly since 2017) | 2017-present | Direct (expert assessment of norm violations) | No |
+| Election denial survey items | Pew Research Center, YouGov, various | Published reports from multiple survey organizations | Irregular | 2020-present (systematic tracking) | Direct (public perception) | No |
+| ANES trust/legitimacy questions | ANES | Individual Time Series study files | Per study | 2020, 2024 | Direct (standardized survey instrument) | No |
+
+**Recommended:** Bright Line Watch expert surveys as the primary measure. Bright Line Watch was created specifically to monitor democratic norm adherence in the US, surveying political scientists and the public on a battery of democratic norm statements. The expert-public gap on legitimacy questions is itself analytically informative. Supplement with post-2020 election denial survey data from Pew and other organizations for the public perception dimension.
+
+**Rate Limits:** N/A (report/data download).
+**License:** Bright Line Watch: freely available academic data. Pew/YouGov: published reports freely available.
+**Known Gaps:**
+- **Weak-rated variable** -- the concept of "legitimacy denial" as distinct from general distrust is not well-operationalized in the quantitative literature
+- Bright Line Watch begins 2017 only -- tag as "short series"
+- Bright Line Watch frequency is irregular (roughly quarterly but not on fixed schedule)
+- Post-2020 election denial data is available from multiple survey organizations but not compiled into a standardized time series
+- No API access for any source
+- The distinction between "distrust" (#7) and "legitimacy denial" (#41) is conceptually important but empirically difficult to operationalize -- both may be captured by overlapping survey questions
+
+**Last Verified:** 2026-03-03 (Bright Line Watch confirmed active with 2025 survey waves; Pew election-related surveys confirmed published through 2025)
+
+---
+
+### Political Efficacy Beliefs (#42)
+
+**Catalog Rating:** Weak
+**Theoretical Concept:** The belief that one's political actions can influence government decisions (internal efficacy) and that government is responsive to citizen demands (external efficacy). Klandermans (1997, 2004) identifies perceived efficacy as a key mobilization determinant -- people are more likely to participate in collective action when they believe it can make a difference.
+**Availability Classification:** Available (manual download) -- periodic survey data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| External political efficacy | ANES Cumulative Data File | Variable VCF0613 from electionstudies.org | Biennial/quadrennial | 1952-2020 (Cumulative File) | Direct | No |
+| Internal political efficacy | ANES Cumulative Data File | Variable VCF0614 from electionstudies.org | Biennial/quadrennial | 1952-2020 (Cumulative File) | Direct | No |
+| ANES individual study efficacy questions | ANES | Individual Time Series study files | Per study | 2020, 2024 (standalone studies) | Direct | No |
+
+**Recommended:** ANES VCF0613 (external efficacy: "Public officials don't care much what people like me think") and VCF0614 (internal efficacy: "Sometimes politics and government seem so complicated that a person like me can't really understand what's going on") as the primary measures. Both are available in the cumulative data file from 1952-2020, providing one of the longest attitudinal time series in political science.
+
+**Rate Limits:** N/A (CSV download from electionstudies.org).
+**License:** ANES: freely available for research, requires citation and NSF acknowledgment.
+**Known Gaps:**
+- **Weak-rated variable** -- limited direct evidence linking political efficacy beliefs to instability outcomes (vs. participation)
+- Biennial/quadrennial frequency -- use LOCF for alignment
+- ANES question wording for efficacy items has evolved across waves -- the cumulative file harmonizes but some waves may have different formulations
+- External and internal efficacy have different theoretical implications: low external efficacy ("government doesn't care") + high internal efficacy ("I understand politics") is the mobilization-conducive combination per Klandermans
+- No non-ANES source provides comparable long-run efficacy data for the US
+
+**Last Verified:** 2026-03-03 (ANES cumulative file confirmed available; VCF0613 and VCF0614 confirmed present in cumulative file codebook)
+
+---
+
+### Cross-Class Coalition Formation (#44)
+
+**Catalog Rating:** Weak
+**Theoretical Concept:** The formation of political coalitions that span class boundaries, uniting elements of the elite, middle class, and working class. Wickham-Crowley (1992) and Foran (2005) identify cross-class coalitions as a critical success factor in revolutionary movements -- revolutions succeed when frustrated elites ally with mass grievances rather than pursuing separate agendas.
+**Availability Classification:** Unavailable -- no direct measure or strong proxy
+
+**Gap Documentation:**
+
+This variable has no standardized measurement and no existing data source that directly captures cross-class coalition formation in the US context.
+
+**Why Unavailable:**
+- No survey instrument systematically measures the class composition of political coalitions or movements in the US
+- The concept requires identifying both the existence of a coalition AND its cross-class composition -- neither is routinely measured
+- Union membership (#25) could serve as a very rough indicator of organized cross-class activity, but this mapping does not meet the "strong proxy" standard (union membership measures organizational density, not coalition breadth)
+- Electoral data could theoretically capture cross-class voting coalitions (e.g., income-diverse support for a candidate), but this requires individual-level survey data linked to class identification and coalition participation, which is not available as a time series
+
+**Nearest Potential Proxies (not meeting strong proxy standard):**
+- Union membership trends (#25) -- measures organizational capacity but not coalition composition
+- ANES coalition-related survey questions -- exist for specific elections but not as a continuous series
+- Exit poll data (income breakdowns of party vote share) -- available quadrennially but measures voting behavior, not coalition formation
+
+**Priority for Future Work:** Low -- the variable is weak-rated in the Phase 2 catalog, and the concept is more relevant to revolutionary dynamics in developing countries than to the US democratic backsliding context.
+
+**Last Verified:** 2026-03-03 (confirmed no standardized data source exists via comprehensive literature and data search)
+
+---
+
+## Domain Summary: Social Mobilization & Trust
+
+### Coverage Assessment
+
+| Variable | # | Rating | Availability | Primary Source | Coverage Start |
+|----------|---|--------|-------------|----------------|----------------|
+| Government Trust / State Legitimacy | 7 | Strong | Available (manual download) | ANES VCF0604 | 1958 |
+| Protest Frequency and Participation | 12 | Strong | Available (manual download) | ACLED US data | 2020 |
+| Civil Society Density / Union Membership | 25 | Moderate | Available (manual download) | BLS union membership release | 1983 |
+| Youth Unemployment / Disconnection | 26 | Moderate | Available (free API) | BLS LNS14000012/LNS14000036 | 1948 |
+| Democratic Commitment (Attitudinal) | 30 | Moderate | Available (manual download) | WVS + ANES | 1981 |
+| Conspiratorial Thinking Prevalence | 34 | Weak | Available (manual download) | PRRI surveys | 2020 |
+| Protest Diffusion / Contagion | 36 | Weak | Partially available (proxy needed) | Derived from ACLED | 2020 |
+| Prior Protest Experience | 37 | Weak | Partially available (proxy needed) | Derived from ACLED | 2020 |
+| Institutional Legitimacy Denial | 41 | Weak | Available (manual download) | Bright Line Watch | 2017 |
+| Political Efficacy Beliefs | 42 | Weak | Available (manual download) | ANES VCF0613/VCF0614 | 1952 |
+| Cross-Class Coalition Formation | 44 | Weak | Unavailable | None | N/A |
+
+### Key Statistics
+
+- **Total variables:** 11
+- **Available (free API):** 1 (9%) -- #26 Youth Unemployment
+- **Available (manual download):** 7 (64%) -- #7, #12, #25, #30, #34, #41, #42
+- **Partially available (proxy needed):** 2 (18%) -- #36, #37 (both derived from ACLED)
+- **Unavailable:** 1 (9%) -- #44 Cross-Class Coalition Formation
+- **Strong-rated:** 2 (18%) -- #7 Government Trust, #12 Protest Frequency
+- **Moderate-rated:** 3 (27%) -- #25, #26, #30
+- **Weak-rated:** 6 (55%) -- #34, #36, #37, #41, #42, #44
+- **Contested:** 0
+- **Short series (post-2000 start):** 4 -- #12 ACLED (2020), #34 PRRI (2020), #36 ACLED-derived (2020), #41 Bright Line Watch (2017)
+- **Frequency mix:** Monthly (1 via FRED), Annual (2), Biennial/quadrennial (3), Irregular (4), N/A (1)
+- **Survey-dependent:** 8 of 11 variables rely on periodic survey data with irregular frequency
+- **ACLED dependency:** 3 variables (#12, #36, #37) derive from a single dataset
+
+### Critical Gaps
+
+1. **ACLED US coverage (2020-present only):** Protest frequency (#12), protest diffusion (#36), and prior protest experience (#37) all depend on ACLED, which only covers the US from January 2020. Pre-2020 backtesting for protest variables requires non-standardized historical sources.
+
+2. **Survey frequency limitations:** Government trust (#7), democratic commitment (#30), political efficacy (#42), and legitimacy denial (#41) rely on periodic surveys with biennial, quadrennial, or irregular frequency. LOCF alignment is the project standard but introduces significant measurement lag for these variables.
+
+3. **Cross-class coalition unavailability (#44):** No data source exists for this theoretically important concept. This is a genuine measurement gap, not a sourcing failure. The variable is weak-rated, so the impact on overall model quality is limited.
+
+4. **Weak variable concentration:** 6 of 11 variables in this domain are weak-rated, the highest concentration of any domain. These variables add theoretical completeness but limited empirical value.
+
+### Data Sources Used
+
+| Source | Variables Served | API Key Required |
+|--------|-----------------|-----------------|
+| ANES (electionstudies.org) | #7, #30, #41, #42 (CSV download, free registration) | No |
+| ACLED (acleddata.com) | #12, #36, #37 (API with free registration) | Yes (free) |
+| BLS (bls.gov) | #25 (annual news release, manual extraction) | No |
+| BLS / FRED | #26 (LNS14000012, LNS14000036 via FRED API) | Yes (FRED key) |
+| World Bank (via FRED) | #26 (SLUEM1524ZSUSA via FRED API) | Yes (FRED key) |
+| Pew Research Center (pewresearch.org) | #7, #34 (published reports) | No |
+| Gallup (gallup.com) | #7 (published trend reports) | No |
+| World Values Survey (worldvaluessurvey.org) | #30 (CSV download, free registration) | No |
+| Bright Line Watch (brightlinewatch.org) | #41 (survey data download) | No |
+| PRRI (prri.org) | #34 (published reports) | No |
+
+---
+
+## Domain 5: Information / Media Ecosystem
+
+This domain covers 4 variables from the Phase 2 catalog related to information environments, media trust, and digital communication dynamics. This is the most data-scarce domain: 3 of 4 variables are classified as Unavailable, reflecting the fundamental measurement challenge that information ecosystem dynamics are recent phenomena without standardized ongoing measurement programs. Only media trust (#28) has systematic data, and even that relies on periodic survey reports rather than continuous time series.
+
+**Variables in this domain:** #28, #33, #35, #43
+
+---
+
+### Media Trust / Partisan Media Trust Gap (#28)
+
+**Catalog Rating:** Moderate
+**Theoretical Concept:** The degree to which the public trusts mass media institutions, and especially the partisan gap in media trust (difference between Democratic and Republican trust in media). Media trust is a precondition for shared factual basis in democratic deliberation. The partisan trust gap captures the divergence in information environments that enables parallel "realities."
+**Availability Classification:** Available (manual download) -- periodic survey data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| "Confidence in Mass Media" | Gallup | Annual poll, published reports from gallup.com | Annual (September poll) | 1973-present | Direct (aggregate trust) | No |
+| Media trust by party identification | Pew Research Center | Published reports from pewresearch.org | Irregular (~annual since 2014) | 2014-present (systematic partisan breakdown) | Direct (partisan trust gap) | No |
+| Digital News Report - US trust data | Reuters Institute (Oxford) | Annual report from reutersinstitute.politics.ox.ac.uk | Annual | 2012-present | Direct (cross-national context) | No |
+
+**Recommended:** Gallup "Confidence in Mass Media" as the primary aggregate trust measure for its long coverage (1973-present, annual). For the theoretically more important partisan trust gap, use Pew media trust surveys (2014-present) which systematically break down media trust by party identification. The partisan gap (e.g., 70% of Democrats trust media vs. 15% of Republicans) is more analytically relevant than the aggregate level.
+
+**Construction Recipe (Partisan Media Trust Gap):**
+1. From Pew published data: extract "% who trust national news media" by party identification (Democrat, Republican, Independent)
+2. Gap = Democrat trust % - Republican trust %
+3. Track gap over time -- increasing gap = more polarized information environments
+4. Supplement with Gallup aggregate trend for the overall level
+
+**Rate Limits:** N/A (annual reports/data tables, no API).
+**License:** Gallup: published trend data freely available with attribution. Pew: published data tables freely available with attribution. Reuters Institute: report freely available with attribution.
+**Known Gaps:**
+- No API access for any source -- all data must be manually extracted from published reports/data tables
+- Gallup aggregate measure masks the partisan divergence that is the theoretically important signal
+- Pew systematic partisan breakdown only available from 2014 -- tag as "short series" for the gap measure
+- Reuters Institute data provides cross-national context but uses different methodology from Gallup/Pew
+- "Media" is an increasingly ambiguous category -- trust in "the media" may mean different things to different respondents (cable news, newspapers, social media, etc.)
+- Trust in specific outlets (Fox News, CNN, NYT) may be more analytically useful than aggregate "media trust" but is not available as a systematic time series
+
+**Last Verified:** 2026-03-03 (Gallup media trust poll confirmed published through 2025; Pew media trust reports confirmed through 2025; Reuters Institute Digital News Report 2025 confirmed published)
+
+---
+
+### Misinformation Prevalence / Exposure (#33)
+
+**Catalog Rating:** Weak -- Contested
+**Theoretical Concept:** The prevalence of false or misleading information in the public information environment and the degree to which citizens are exposed to it. Vosoughi et al. (2018) demonstrated that false news spreads faster and farther on Twitter than true news, but this finding does not translate into a replicable measurement of misinformation exposure in the general population.
+**Availability Classification:** Unavailable -- no standardized, regularly-updated measure exists
+
+**Gap Documentation:**
+
+This variable has no standardized measurement and no existing data source that provides a regularly-updated time series of misinformation prevalence or exposure in the US.
+
+**Why Unavailable:**
+- No agreed-upon definition of "misinformation" exists that can be operationalized into a measurement instrument -- the boundary between misinformation, spin, propaganda, and legitimate opinion is inherently contested
+- Vosoughi et al. (2018) studied the spread of false news stories on one platform (Twitter) during one period -- not a replicable time series
+- Platform transparency reports (Meta, Google, Twitter/X) are irregular, incomparable across platforms, and increasingly restricted (Twitter/X reduced transparency reporting post-2022)
+- Fact-checking organization databases (PolitiFact, Snopes) capture checked claims but not prevalence or exposure
+- Academic research (Allcott & Gentzkow 2017; Guess et al. 2019) uses survey + social media data combinations that are not available as ongoing measurement programs
+
+**Nearest Potential Proxies (not meeting strong proxy standard):**
+- Platform transparency reports -- irregular, platform-specific, not comparable over time
+- Fact-check volume from PolitiFact/Snopes -- measures fact-checking effort, not misinformation prevalence
+- NewsGuard ratings -- commercial product, not freely available as time series
+
+**Contested Dimension:** Even the theoretical importance of misinformation exposure is debated. Guess et al. (2019) find that exposure to fake news sites was concentrated among a small fraction of the population (primarily older conservatives), suggesting that misinformation may be more of a symptom than a cause of polarization.
+
+**Priority for Future Work:** Low -- weak-rated, contested evidence, and the measurement challenge is fundamental (no consensus on what constitutes "misinformation").
+
+**Last Verified:** 2026-03-03 (confirmed no standardized data source exists via comprehensive literature and data search)
+
+---
+
+### Social Media Political Engagement (#35)
+
+**Catalog Rating:** Weak -- Contested
+**Theoretical Concept:** The role of social media platforms in facilitating political organization, information sharing, and collective action. Tufekci (2017) argues social media enables rapid mobilization but produces "weak ties" that limit sustained organization. Gonzalez-Bailon et al. (2011) study information diffusion in protest networks. The theoretical mechanism is that social media lowers coordination costs for collective action.
+**Availability Classification:** Unavailable -- no standardized, freely-available time series exists
+
+**Gap Documentation:**
+
+This variable has no standardized measurement and no freely available data source that provides a regularly-updated time series of political social media engagement in the US.
+
+**Why Unavailable:**
+- Social media platforms (Meta, X/Twitter, YouTube, TikTok) control the data that would be needed to measure political engagement -- they provide limited, irregular, and non-comparable public data
+- Twitter/X Academic API access was revoked in 2023, eliminating the primary research tool that academics used for social media political engagement research
+- Meta's CrowdTangle tool was shut down in 2024, removing another major research access point
+- No government agency or academic institution produces an ongoing US social media political engagement index
+- Pew Research Center conducts periodic social media surveys but these capture self-reported behavior, not observed behavior, and are not available as a consistent time series
+
+**Nearest Potential Proxies (not meeting strong proxy standard):**
+- Pew social media surveys -- irregular, self-reported, methodology changes across waves
+- Platform-specific APIs -- increasingly restrictive, expensive, and unreliable as data sources
+- CrowdTangle (Meta) -- shut down 2024, historical data access uncertain
+- Google Trends for political topics -- captures search interest, not social media engagement per se
+
+**Contested Dimension:** The direction of social media's political effect is debated. Tufekci (2017) argues social media enables "networked protests" but these are structurally weaker than traditional organization. Bail et al. (2018) find that exposure to opposing views on social media may actually increase polarization. The theoretical importance of social media political engagement may be overstated relative to underlying structural conditions.
+
+**Priority for Future Work:** Low -- weak-rated, contested evidence, and the data access landscape is deteriorating as platforms restrict research access.
+
+**Last Verified:** 2026-03-03 (confirmed no standardized freely available data source exists; Twitter/X Academic API revocation confirmed; CrowdTangle shutdown confirmed)
+
+---
+
+### Information Fragmentation / Echo Chambers (#43)
+
+**Catalog Rating:** Weak -- Contested
+**Theoretical Concept:** The degree to which citizens consume politically homogeneous information from siloed sources, creating "echo chambers" or "filter bubbles" that reinforce existing beliefs and reduce exposure to opposing viewpoints. Sunstein (2001, 2017) warns that information fragmentation undermines democratic deliberation. Bail et al. (2018) find limited evidence for strong echo chamber effects.
+**Availability Classification:** Unavailable -- no standardized measure of information ecosystem fragmentation exists
+
+**Gap Documentation:**
+
+This variable has no standardized measurement and no existing data source that provides a regularly-updated time series of information fragmentation or echo chamber prevalence in the US.
+
+**Why Unavailable:**
+- No agreed-upon methodology exists for measuring "information fragmentation" at the population level
+- Sunstein (2001) defined the concept theoretically but did not propose a replicable measurement
+- Bail et al. (2018) found that most Americans have more diverse media diets than the "echo chamber" thesis suggests -- the strength of the effect is contested
+- Measuring what information people actually consume (vs. what they claim to consume) requires platform data that is not publicly available
+- Cross-platform measurement is especially challenging: a person may watch Fox News, read the NYT, and scroll TikTok -- no single source captures this media diet
+
+**Nearest Potential Proxies (not meeting strong proxy standard):**
+- Pew media consumption surveys -- periodic, self-reported, methodology changes
+- News audience overlap data (Comscore, Nielsen) -- commercial/paywalled, not available as free time series
+- Google Trends / social media API data -- captures fragments of behavior, not overall information diet
+
+**Contested Dimension:** The echo chamber hypothesis itself is contested. Gentzkow & Shapiro (2011) find that online news consumption is less ideologically segregated than offline news (newspapers, TV). Guess et al. (2021) find limited evidence of filter bubble effects from algorithmic curation. The theoretical importance of echo chambers may be overstated.
+
+**Priority for Future Work:** Low -- weak-rated, actively contested evidence, and the measurement challenge is fundamental (requires population-level media diet tracking that doesn't exist).
+
+**Last Verified:** 2026-03-03 (confirmed no standardized data source exists via comprehensive literature and data search)
+
+---
+
+## Domain Summary: Information / Media Ecosystem
+
+### Coverage Assessment
+
+| Variable | # | Rating | Availability | Primary Source | Coverage Start |
+|----------|---|--------|-------------|----------------|----------------|
+| Media Trust / Partisan Media Trust Gap | 28 | Moderate | Available (manual download) | Gallup media trust poll | 1973 |
+| Misinformation Prevalence / Exposure | 33 | Weak* | Unavailable | None | N/A |
+| Social Media Political Engagement | 35 | Weak* | Unavailable | None | N/A |
+| Information Fragmentation / Echo Chambers | 43 | Weak* | Unavailable | None | N/A |
+
+*Asterisk indicates Contested variables
+
+### Key Statistics
+
+- **Total variables:** 4
+- **Available (manual download):** 1 (25%) -- #28 Media Trust
+- **Unavailable:** 3 (75%) -- #33 Misinformation, #35 Social Media, #43 Echo Chambers
+- **Strong-rated:** 0
+- **Moderate-rated:** 1 (25%) -- #28
+- **Weak-rated:** 3 (75%) -- #33, #35, #43
+- **Contested:** 3 -- #33, #35, #43
+- **Short series (post-2000 start):** 1 (of the 1 available) -- Pew partisan gap data starts 2014; Gallup starts 1973
+- **Frequency mix:** Annual (1), N/A (3)
+- **No API access** for any variable in this domain
+
+### Critical Gaps
+
+1. **Three unavailable variables:** Misinformation prevalence (#33), social media political engagement (#35), and information fragmentation (#43) are all classified as Unavailable. These represent genuine measurement gaps -- not sourcing failures. No standardized, freely available data source exists for any of the three.
+
+2. **Contested theoretical importance:** All three unavailable variables are also Contested -- the academic literature disagrees on whether these phenomena are as important as popular discourse suggests. This reduces the priority for future measurement development.
+
+3. **Media trust as sole measurable variable:** Only media trust (#28) has systematic data. The domain's theoretical contribution to the composite indicator is therefore very limited, resting on a single variable.
+
+### Data Sources Used
+
+| Source | Variables Served | API Key Required |
+|--------|-----------------|-----------------|
+| Gallup (gallup.com) | #28 (published annual reports) | No |
+| Pew Research Center (pewresearch.org) | #28 (published reports with partisan breakdowns) | No |
+| Reuters Institute (Oxford) | #28 (annual Digital News Report) | No |
+
+---
+
+## Standalone Variable
+
+### Neighborhood / Diffusion Effects - Allied Democracies (#39)
+
+**Catalog Rating:** Weak
+**Theoretical Concept:** The influence of democratic health in allied/neighboring democracies on US political trajectory. Goldstone et al. (2010) PITF model includes a neighborhood effect variable measuring the proportion of neighboring states experiencing instability. Huntington (1991) "wave" theory of democratization implies that democratic quality changes can cascade across allied democracies.
+**Availability Classification:** Available (manual download) -- constructible from V-Dem data
+
+#### Measures
+
+| Measure | Source | Series/Endpoint | Frequency | Coverage | Proxy Tier | API Key? |
+|---------|--------|-----------------|-----------|----------|------------|----------|
+| Liberal Democracy Index for OECD/NATO democracies | V-Dem v15 | v2x_libdem for multiple countries | Annual | 1789-present | Strong proxy (aggregate democratic health of allied nations) | No |
+| Freedom in the World scores for allied democracies | Freedom House | freedomhouse.org | Annual | 1972-present | Strong proxy (aggregate freedom score of allied nations) | No |
+
+**Recommended:** Construct a "democratic neighborhood" index from V-Dem data. This uses the same V-Dem v15 dataset already sourced for Domain 3, applied to a set of allied democracies rather than the US alone.
+
+**Construction Recipe:**
+1. Define "neighborhood" as OECD or NATO member democracies (approximately 30-38 countries depending on definition and time period)
+2. From V-Dem v15 CSV: extract v2x_libdem for each neighborhood country per year
+3. Compute: (a) mean v2x_libdem across neighborhood, (b) year-over-year change in neighborhood mean
+4. Diffusion pressure = rate of change in neighborhood democratic quality
+5. Negative change (declining democracy in allied states) = higher diffusion pressure on the US
+6. Alternative: count of neighborhood countries experiencing V-Dem score decline > 0.05 in a given year
+
+**Rate Limits:** V-Dem: CSV download, no rate limits. Freedom House: report download.
+**License:** V-Dem: CC BY 4.0. Freedom House: data available for non-commercial use with attribution.
+**Known Gaps:**
+- **Weak-rated variable** -- limited direct evidence that allied democratic health causes (rather than correlates with) US democratic trajectory
+- The "neighborhood" concept is less geographically intuitive for the US (ocean borders) than for European or Asian cases where physical proximity matters
+- Constructible from V-Dem data already in the project -- no additional data acquisition needed
+- The causal direction is ambiguous: do declining allied democracies pressure the US, or does the US democratic trajectory influence allies?
+- Definition of "neighborhood" (OECD vs. NATO vs. G7 vs. EU) affects results -- Phase 4 should test sensitivity to group definition
+- Freedom House provides a simpler alternative scoring system but with coarser measurement (1-7 ordinal vs. V-Dem continuous 0-1)
+
+**Last Verified:** 2026-03-03 (V-Dem v15 confirmed with multi-country data; Freedom House confirmed with country-level scores)
