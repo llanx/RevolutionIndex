@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Prior Work Validation** - Audit the existing 250 pages of theory and 18 data series to establish what holds up and what needs revision
 - [x] **Phase 2: Literature Mining** - Exhaustive AI-assisted review across political science, economics, sociology, and conflict studies to discover predictive variables and candidate frameworks
-- [ ] **Phase 3: Data Sourcing** - Map every discovered variable to freely available data sources, classify availability, and identify proxies for gaps
+- [x] **Phase 3: Data Sourcing** - Map every discovered variable to freely available data sources, classify availability, and identify proxies for gaps (completed 2026-03-04)
 - [ ] **Phase 4: Model Building** - Select architecture(s) informed by literature findings and data availability, implement data pipeline and scoring models
 - [ ] **Phase 5: Validation** - Backtest against historical episodes, quantify uncertainty, test for overfitting and spurious trends, produce pass/fail assessment
 
@@ -69,8 +69,8 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Methodology + Economic Stress domain sourcing (13 variables, MCP-verified)
-- [ ] 03-02-PLAN.md — Political Polarization & Elite Dynamics + Institutional/Democratic Quality domains (16 variables)
+- [x] 03-01-PLAN.md — Methodology + Economic Stress domain sourcing (13 variables, MCP-verified)
+- [x] 03-02-PLAN.md — Political Polarization & Elite Dynamics + Institutional/Democratic Quality domains (16 variables)
 - [ ] 03-03-PLAN.md — Social Mobilization & Trust + Information/Media domains + Availability Summary Matrix + Gap Analysis + Source Registry
 
 ### Phase 4: Model Building
@@ -116,6 +116,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Prior Work Validation | 3/3 | Complete    | 2026-03-02 |
 | 2. Literature Mining | 6/6 | Complete    | 2026-03-04 |
-| 3. Data Sourcing | 0/3 | Not started | - |
+| 3. Data Sourcing | 2/3 | Complete    | 2026-03-04 |
 | 4. Model Building | 0/3 | Not started | - |
 | 5. Validation | 0/3 | Not started | - |

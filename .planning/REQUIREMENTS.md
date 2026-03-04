@@ -28,11 +28,11 @@ Requirements for initial release. V1 delivers validated research and working mod
 
 ### Data Sourcing
 
-- [ ] **DATA-01**: For each variable in the catalog, determine if a freely available, regularly-updated online data source exists
-- [ ] **DATA-02**: For viable data sources, document API endpoints, series IDs, update frequency, historical coverage, and access method
-- [ ] **DATA-03**: Classify each variable as: available (free API), available (manual download), partially available (proxy needed), or unavailable
-- [ ] **DATA-04**: Produce a final data source inventory mapping viable variables to specific data endpoints
-- [ ] **DATA-05**: Identify fallback/proxy variables for critical inputs that lack ideal data sources
+- [x] **DATA-01**: For each variable in the catalog, determine if a freely available, regularly-updated online data source exists
+- [x] **DATA-02**: For viable data sources, document API endpoints, series IDs, update frequency, historical coverage, and access method
+- [x] **DATA-03**: Classify each variable as: available (free API), available (manual download), partially available (proxy needed), or unavailable
+- [x] **DATA-04**: Produce a final data source inventory mapping viable variables to specific data endpoints
+- [x] **DATA-05**: Identify fallback/proxy variables for critical inputs that lack ideal data sources
 
 ### Model Building
 
@@ -115,11 +115,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIT-05 | Phase 2 | Complete |
 | LIT-06 | Phase 2 | Complete |
 | LIT-07 | Phase 2 | Complete |
-| DATA-01 | Phase 3 | Pending |
-| DATA-02 | Phase 3 | Pending |
-| DATA-03 | Phase 3 | Pending |
-| DATA-04 | Phase 3 | Pending |
-| DATA-05 | Phase 3 | Pending |
+| DATA-01 | Phase 3 | Complete |
+| DATA-02 | Phase 3 | Complete |
+| DATA-03 | Phase 3 | Complete |
+| DATA-04 | Phase 3 | Complete |
+| DATA-05 | Phase 3 | Complete |
 | MOD-01 | Phase 4 | Pending |
 | MOD-02 | Phase 4 | Pending |
 | MOD-03 | Phase 4 | Pending |
