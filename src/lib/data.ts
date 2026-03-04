@@ -76,7 +76,7 @@ export interface Factor {
    * Stable machine-readable identifier.
    * Pipeline must use this exact string — it is used as a UI key
    * and as the join key between current.json and factors.json.
-   * Example: "economic_inequality"
+   * Example: "economic_stress"
    */
   id: string;
 
@@ -232,13 +232,13 @@ export interface BenchmarkFactorValue {
   note: string;
 }
 
-/** Known factor IDs used in benchmark comparisons. */
+/** Known factor IDs used in benchmark comparisons (5 domains from Phase 3). */
 export type BenchmarkFactorId =
-  | 'economic_inequality'
+  | 'economic_stress'
   | 'political_polarization'
-  | 'protest_intensity'
-  | 'institutional_trust'
-  | 'unemployment_stress';
+  | 'institutional_quality'
+  | 'social_mobilization'
+  | 'information_media';
 
 /** A single historical revolution benchmark. */
 export interface Benchmark {

@@ -6,8 +6,8 @@
   "zone": "Elevated Tension",
   "factors": [
     {
-      "id": "economic_inequality",
-      "name": "Economic Inequality",
+      "id": "economic_stress",
+      "name": "Economic Stress",
       "value": 0.72,
       "direction": "up",
       "weight": 0.22
@@ -20,22 +20,22 @@
       "weight": 0.20
     },
     {
-      "id": "protest_intensity",
-      "name": "Protest Activity",
+      "id": "social_mobilization",
+      "name": "Social Mobilization",
       "value": 0.58,
       "direction": "up",
       "weight": 0.25
     },
     {
-      "id": "institutional_trust",
-      "name": "Institutional Trust",
+      "id": "institutional_quality",
+      "name": "Institutional Quality",
       "value": 0.31,
       "direction": "down",
       "weight": 0.18
     },
     {
-      "id": "unemployment_stress",
-      "name": "Unemployment & Economic Stress",
+      "id": "information_media",
+      "name": "Information & Media",
       "value": 0.44,
       "direction": "neutral",
       "weight": 0.15

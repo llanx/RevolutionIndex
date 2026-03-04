@@ -16,8 +16,8 @@
       },
       "factorAlignment": {
         "primary": "political_polarization",
-        "secondary": "institutional_trust",
-        "description": "Activated by deepening cultural polarization and eroding trust in federal institutions. Views institutional decay as evidence the system is beyond reform."
+        "secondary": "institutional_quality",
+        "description": "Activated by deepening cultural polarization and eroding institutional quality. Views institutional decay as evidence the system is beyond reform."
       },
       "alliances": ["religious_traditionalists", "libertarian_decentralists"],
       "conflicts": ["establishment_center", "progressive_left"],
@@ -36,9 +36,9 @@
         "institutions": "Labor unions, activist networks, progressive media, university campuses, nonprofit organizations"
       },
       "factorAlignment": {
-        "primary": "economic_inequality",
-        "secondary": "unemployment_stress",
-        "description": "Driven by wealth concentration and economic precarity. Frames instability as a symptom of capitalism's structural failures and sees revolution as corrective, not destructive."
+        "primary": "economic_stress",
+        "secondary": "information_media",
+        "description": "Driven by economic stress and the media environment that shapes perception of inequality. Frames instability as a symptom of capitalism's structural failures and sees revolution as corrective, not destructive."
       },
       "alliances": ["labor_movement"],
       "conflicts": ["corporate_oligarchy", "right_populists"],
@@ -57,9 +57,9 @@
         "institutions": "Federal bureaucracy, mainstream media, think tanks, corporate boards, both party establishments"
       },
       "factorAlignment": {
-        "primary": "institutional_trust",
+        "primary": "institutional_quality",
         "secondary": "political_polarization",
-        "description": "Stake in institutional continuity makes them the natural anti-revolution force. But declining trust in the very institutions they defend erodes their legitimacy and recruitment base."
+        "description": "Stake in institutional continuity makes them the natural anti-revolution force. But declining institutional quality erodes their legitimacy and recruitment base."
       },
       "alliances": ["corporate_oligarchy"],
       "conflicts": ["right_populists", "progressive_left"],
@@ -78,9 +78,9 @@
         "institutions": "Tech companies, DAOs, crypto exchanges, libertarian think tanks, seasteading movements"
       },
       "factorAlignment": {
-        "primary": "unemployment_stress",
-        "secondary": "institutional_trust",
-        "description": "Views economic disruption as proof that centralized systems fail. Doesn't want revolution per se, but rather wants the old system to collapse so decentralized alternatives can fill the vacuum."
+        "primary": "information_media",
+        "secondary": "institutional_quality",
+        "description": "Operates primarily in the information and media domain through tech platforms and alternative media. Views institutional decay as proof that centralized systems fail, seeking decentralized replacements."
       },
       "alliances": ["right_populists"],
       "conflicts": ["establishment_center", "progressive_left"],
@@ -99,9 +99,9 @@
         "institutions": "Department of Defense, FBI, DHS, state National Guard units, police unions, veteran organizations"
       },
       "factorAlignment": {
-        "primary": "protest_intensity",
-        "secondary": "institutional_trust",
-        "description": "Directly confronts the consequences of rising protest intensity. Their response (suppress, stand down, or split) historically determines whether instability resolves or escalates into revolution."
+        "primary": "social_mobilization",
+        "secondary": "institutional_quality",
+        "description": "Directly confronts the consequences of rising social mobilization. Their response (suppress, stand down, or split) historically determines whether instability resolves or escalates into revolution."
       },
       "alliances": [],
       "conflicts": [],
@@ -120,9 +120,9 @@
         "institutions": "Fortune 500, Wall Street, major media conglomerates, lobbying firms, private equity"
       },
       "factorAlignment": {
-        "primary": "economic_inequality",
+        "primary": "economic_stress",
         "secondary": "political_polarization",
-        "description": "Both driver and beneficiary of inequality. Funds both sides of polarization through media ownership and campaign finance. Historically, oligarchic factions survive revolutions by switching allegiance to whichever side wins."
+        "description": "Both driver and beneficiary of economic stress. Funds both sides of polarization through media ownership and campaign finance. Historically, oligarchic factions survive revolutions by switching allegiance to whichever side wins."
       },
       "alliances": ["establishment_center"],
       "conflicts": ["progressive_left", "labor_movement"],
@@ -141,9 +141,9 @@
         "institutions": "AFL-CIO, SEIU, Teamsters, Amazon Labor Union, new-wave independent unions"
       },
       "factorAlignment": {
-        "primary": "unemployment_stress",
-        "secondary": "economic_inequality",
-        "description": "Activated by wage stagnation, job insecurity, and the widening gap between productivity and compensation. Historically, labor movements provide the mass mobilization base that other factions cannot generate alone."
+        "primary": "information_media",
+        "secondary": "economic_stress",
+        "description": "Media narratives about labor conditions shape public support for worker organizing. Activated by economic stress from wage stagnation, job insecurity, and the widening gap between productivity and compensation."
       },
       "alliances": ["progressive_left"],
       "conflicts": ["corporate_oligarchy", "libertarian_decentralists"],
@@ -163,7 +163,7 @@
       },
       "factorAlignment": {
         "primary": "political_polarization",
-        "secondary": "institutional_trust",
+        "secondary": "institutional_quality",
         "description": "Perceives cultural changes as existential threat. Revolutionary impulse is conditional, activated when secular institutions are seen as hostile to religious values. Provides moral justification framework for other right-aligned factions."
       },
       "alliances": ["right_populists"],

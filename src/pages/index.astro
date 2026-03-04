@@ -52,23 +52,23 @@ const gaugeMarkers = JSON.stringify(
 );
 
 // Build historical comparison insights for teaser
-const usInequality = current.factors.find(f => f.id === 'economic_inequality')?.value ?? 0;
-const usTrust = current.factors.find(f => f.id === 'institutional_trust')?.value ?? 0;
+const usEconomicStress = current.factors.find(f => f.id === 'economic_stress')?.value ?? 0;
+const usInstitutionalQuality = current.factors.find(f => f.id === 'institutional_quality')?.value ?? 0;
 
 const insights: { text: string; severity: 'exceeds' | 'approaching' }[] = [];
 
 for (const rev of benchmarks) {
-  const histTrust = rev.factors.institutional_trust.value;
-  if (usTrust < histTrust) {
+  const histQuality = rev.factors.institutional_quality.value;
+  if (usInstitutionalQuality < histQuality) {
     insights.push({
-      text: `US institutional trust is lower than pre-revolution ${rev.country} (${rev.year})`,
+      text: `US institutional quality is lower than pre-revolution ${rev.country} (${rev.year})`,
       severity: 'exceeds',
     });
   }
-  const histIneq = rev.factors.economic_inequality.value;
-  if (usInequality > histIneq - 0.10 && usInequality <= histIneq) {
+  const histEcon = rev.factors.economic_stress.value;
+  if (usEconomicStress > histEcon - 0.10 && usEconomicStress <= histEcon) {
     insights.push({
-      text: `US inequality is approaching ${rev.country} (${rev.year}) levels`,
+      text: `US economic stress is approaching ${rev.country} (${rev.year}) levels`,
       severity: 'approaching',
     });
   }
@@ -87,14 +87,14 @@ const zoneDeck: Record<string, string> = {
 // Build benchmark markers for factor bars
 type BarBenchmarkMarker = { label: string; value: number };
 const factorBenchmarks = new Map<string, BarBenchmarkMarker>();
-const comparedFactorIds: BenchmarkFactorId[] = ['economic_inequality', 'political_polarization', 'protest_intensity', 'institutional_trust', 'unemployment_stress'];
+const comparedFactorIds: BenchmarkFactorId[] = ['economic_stress', 'political_polarization', 'social_mobilization', 'institutional_quality', 'information_media'];
 
 for (const factorId of comparedFactorIds) {
   let extreme: BarBenchmarkMarker | null = null;
   for (const rev of benchmarks) {
     const fData = rev.factors[factorId];
     if (!fData) continue;
-    if (factorId === 'institutional_trust') {
+    if (factorId === 'institutional_quality') {
       if (!extreme || fData.value < extreme.value) {
         extreme = { label: `${rev.country} ${rev.year}`, value: fData.value };
       }

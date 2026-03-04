@@ -14,19 +14,19 @@ const currentFactorMap = new Map(current.factors.map(f => [f.id, f]));
 
 // Factor display names and IDs in display order
 const factorMeta = [
-  { id: 'economic_inequality', name: 'Economic Inequality' },
+  { id: 'economic_stress', name: 'Economic Stress' },
   { id: 'political_polarization', name: 'Political Polarization' },
-  { id: 'protest_intensity', name: 'Protest Activity' },
-  { id: 'institutional_trust', name: 'Institutional Trust' },
-  { id: 'unemployment_stress', name: 'Unemployment & Economic Stress' },
+  { id: 'social_mobilization', name: 'Social Mobilization' },
+  { id: 'institutional_quality', name: 'Institutional Quality' },
+  { id: 'information_media', name: 'Information & Media' },
 ];
 
 // Helper: determine comparison color
 // For most factors: higher historical = more severe. US exceeding = red.
-// For institutional_trust: lower value = less trust = worse. US lower than historical = red.
+// For institutional_quality: lower value = worse quality = worse. US lower than historical = red.
 function getComparisonClass(factorId: string, usValue: number, histValue: number): string {
-  if (factorId === 'institutional_trust') {
-    // Lower trust is worse. If US trust is lower than historical, that's alarming.
+  if (factorId === 'institutional_quality') {
+    // Lower quality is worse. If US quality is lower than historical, that's alarming.
     if (usValue < histValue - 0.05) return 'comparison-exceeds';
     if (usValue < histValue + 0.05) return 'comparison-approaching';
     return 'comparison-below';

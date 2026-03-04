@@ -2,9 +2,9 @@
   "_schema": "src/lib/data.ts#FactorsData",
   "factors": [
     {
-      "id": "economic_inequality",
-      "name": "Economic Inequality",
-      "description": "Measures the concentration of wealth and income disparities. Elevated inequality correlates with historical preconditions for mass unrest.",
+      "id": "economic_stress",
+      "name": "Economic Stress",
+      "description": "Measures the concentration of wealth, income disparities, and broad economic pressures on households. Elevated economic stress correlates with historical preconditions for mass unrest.",
       "current_value": 0.72,
       "historical": [
         { "date": "2026-02-01", "value": 0.70 },
@@ -24,9 +24,9 @@
       ]
     },
     {
-      "id": "protest_intensity",
-      "name": "Protest Activity",
-      "description": "Tracks frequency, size, and geographic spread of organized public demonstrations. A leading indicator of mass mobilization capacity.",
+      "id": "social_mobilization",
+      "name": "Social Mobilization",
+      "description": "Tracks frequency, size, and geographic spread of organized public demonstrations and collective action. A leading indicator of mass mobilization capacity.",
       "current_value": 0.58,
       "historical": [
         { "date": "2026-02-01", "value": 0.49 },
@@ -35,9 +35,9 @@
       ]
     },
     {
-      "id": "institutional_trust",
-      "name": "Institutional Trust",
-      "description": "Measures public confidence in government, judiciary, media, and law enforcement. Declining trust removes the legitimating mechanisms that prevent political violence.",
+      "id": "institutional_quality",
+      "name": "Institutional Quality",
+      "description": "Measures public confidence in and functional capacity of government, judiciary, media, and law enforcement. Declining institutional quality removes the legitimating mechanisms that prevent political violence.",
       "current_value": 0.31,
       "historical": [
         { "date": "2026-02-01", "value": 0.36 },
@@ -46,9 +46,9 @@
       ]
     },
     {
-      "id": "unemployment_stress",
-      "name": "Unemployment & Economic Stress",
-      "description": "Combines unemployment rate, underemployment, and household economic insecurity. Economic precarity creates conditions for political radicalization.",
+      "id": "information_media",
+      "name": "Information & Media",
+      "description": "Tracks the health of the information ecosystem including media fragmentation, misinformation prevalence, and narrative control. A degraded information environment amplifies all other instability factors.",
       "current_value": 0.44,
       "historical": [
         { "date": "2026-02-01", "value": 0.42 },

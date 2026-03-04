@@ -3,8 +3,8 @@
   "_note": "Policy analysis through dual lenses: stabilization and acceleration. Each factor has policies that could reduce or increase its contribution to the Revolution Index.",
   "factors": [
     {
-      "id": "economic_inequality",
-      "name": "Economic Inequality",
+      "id": "economic_stress",
+      "name": "Economic Stress",
       "currentValue": 0.72,
       "weight": 0.22,
       "stability": {
@@ -33,7 +33,7 @@
       },
       "acceleration": {
         "header": "The Accelerationist's View",
-        "framing": "Inequality is the structural foundation that makes all other instability factors worse. It's also the hardest factor for the establishment to address because the beneficiaries of inequality control the policy levers.",
+        "framing": "Economic stress is the structural foundation that makes all other instability factors worse. It's also the hardest factor for the establishment to address because the beneficiaries of inequality control the policy levers.",
         "policies": [
           {
             "title": "Regressive Tax Cuts During Expansion",
@@ -111,8 +111,8 @@
       }
     },
     {
-      "id": "protest_intensity",
-      "name": "Protest Activity",
+      "id": "social_mobilization",
+      "name": "Social Mobilization",
       "currentValue": 0.58,
       "weight": 0.25,
       "stability": {
@@ -141,7 +141,7 @@
       },
       "acceleration": {
         "header": "The Accelerationist's View",
-        "framing": "Protest is the leading indicator. It's where structural grievances become visible and organized. The transition from protest to revolution requires a critical mass that Chenoweth estimates at 3.5% sustained active participation.",
+        "framing": "Social mobilization is the leading indicator. It's where structural grievances become visible and organized. The transition from protest to revolution requires a critical mass that Chenoweth estimates at 3.5% sustained active participation.",
         "policies": [
           {
             "title": "Suppress Peaceful Protest",
@@ -165,13 +165,13 @@
       }
     },
     {
-      "id": "institutional_trust",
-      "name": "Institutional Trust",
+      "id": "institutional_quality",
+      "name": "Institutional Quality",
       "currentValue": 0.31,
       "weight": 0.18,
       "stability": {
         "header": "The Stabilizer's View",
-        "framing": "Trust is the invisible infrastructure of democratic governance. When it collapses, every institution must justify its existence through coercion rather than consent, an unsustainable position.",
+        "framing": "Institutional quality is the invisible infrastructure of democratic governance. When it erodes, every institution must justify its existence through coercion rather than consent, an unsustainable position.",
         "policies": [
           {
             "title": "Radical Transparency Reforms",
@@ -195,7 +195,7 @@
       },
       "acceleration": {
         "header": "The Accelerationist's View",
-        "framing": "Institutional trust at 31% means the legitimacy crisis is already advanced. Every institution now operates on borrowed time, one major failure away from irreversible collapse.",
+        "framing": "Institutional quality at 31% means the legitimacy crisis is already advanced. Every institution now operates on borrowed time, one major failure away from irreversible collapse.",
         "policies": [
           {
             "title": "Institutional Capture",
@@ -219,55 +219,55 @@
       }
     },
     {
-      "id": "unemployment_stress",
-      "name": "Unemployment & Economic Stress",
+      "id": "information_media",
+      "name": "Information & Media",
       "currentValue": 0.44,
       "weight": 0.15,
       "stability": {
         "header": "The Stabilizer's View",
-        "framing": "Economic stress is the most visceral instability factor because it hits people in their daily lives. It's also the most responsive to policy intervention, making it the easiest factor to address with political will.",
+        "framing": "The information environment shapes how people perceive economic conditions and institutional quality. A healthy media ecosystem enables democratic accountability. A fragmented one enables parallel realities.",
         "policies": [
           {
-            "title": "Counter-Cyclical Fiscal Policy",
-            "description": "Automatic stabilizers that increase spending during downturns and reduce it during expansions. Unemployment benefits, infrastructure investment, and direct payments that activate without legislative delay.",
+            "title": "Local Journalism Investment",
+            "description": "Fund local news through public-interest media grants, tax incentives for local newsrooms, and community-owned media cooperatives. Local journalism provides the shared factual basis that national media has lost.",
             "projectedEffect": "-2 to -4 points",
-            "precedent": "2009 ARRA / 2020 CARES Act: Both prevented economic downturns from cascading into social crises, though the 2020 response was faster and more effective at preventing household collapse."
+            "precedent": "BBC model (1922-present): Public service broadcasting provides baseline factual reporting that commercial media lacks incentive to produce, supporting informed democratic participation."
           },
           {
-            "title": "Job Retraining & Transition Support",
-            "description": "Comprehensive retraining programs with income replacement for displaced workers. Trade Adjustment Assistance on steroids, covering not just trade displacement but automation, AI, and industry shifts.",
+            "title": "Platform Transparency Requirements",
+            "description": "Mandate algorithmic transparency, researcher access to recommendation systems, and disclosure of content amplification patterns. When citizens understand how information is curated, they can make more informed media choices.",
             "projectedEffect": "-1 to -2 points",
-            "precedent": "Denmark's flexicurity model: Combines flexible labor markets with generous unemployment benefits and active retraining, maintaining low unemployment stress despite high economic dynamism."
+            "precedent": "EU Digital Services Act (2022): Requiring platforms to disclose content moderation practices and algorithmic decision-making created the first systematic transparency framework for digital media."
           },
           {
-            "title": "Safety Net Expansion",
-            "description": "Universal healthcare, childcare subsidies, and housing assistance decouple basic security from employment status. When losing a job doesn't mean losing healthcare and housing, economic stress is dramatically reduced.",
-            "projectedEffect": "-2 to -3 points",
-            "precedent": "Post-WWII welfare state expansion (1945-1975): Universal programs in healthcare, education, and housing across Western democracies coincided with the most politically stable period in modern history."
+            "title": "Media Literacy Education",
+            "description": "Integrate critical media literacy into K-12 curriculum covering source evaluation, algorithmic awareness, and propaganda recognition. Long-term investment in democratic resilience through informed citizenship.",
+            "projectedEffect": "-1 to -2 points",
+            "precedent": "Finland's media literacy program: Comprehensive K-12 media literacy education makes Finland consistently among the most resilient to disinformation in European comparisons."
           }
         ]
       },
       "acceleration": {
         "header": "The Accelerationist's View",
-        "framing": "Economic stress is the trigger. It's what converts abstract political grievances into personal desperation. People don't revolt because they disagree with policy. They revolt because they can't feed their families.",
+        "framing": "The information environment is the accelerant. It determines how fast economic stress and political polarization convert into mobilization. In a fragmented media landscape, grievances spread faster than solutions.",
         "policies": [
           {
-            "title": "Austerity During Downturns",
-            "description": "Cutting government spending during recessions, the exact moment when people need support most, creates the maximum perception of government indifference. It's the policy equivalent of telling drowning people to swim harder.",
-            "projectedEffect": "+3 to +5 points",
-            "precedent": "Sri Lanka 2022: Austerity measures during an economic crisis (54.6% inflation, fuel shortages) triggered the Aragalaya movement that stormed the presidential palace within months."
-          },
-          {
-            "title": "Offshoring Without Transition",
-            "description": "Moving manufacturing overseas while providing no retraining or transition support creates permanent economic casualties in specific regions. These 'left behind' communities become recruiting grounds for revolutionary movements.",
-            "projectedEffect": "+2 to +3 points",
-            "precedent": "Rust Belt collapse (1980s-2000s): Deindustrialization without transition created 'deaths of despair' regions that became the political base for anti-establishment populism."
-          },
-          {
-            "title": "Benefit Cuts During Stagnation",
-            "description": "Reducing unemployment benefits, food assistance, or healthcare access during periods of wage stagnation creates a squeeze from both sides. When both income and safety nets shrink simultaneously, economic stress escalates rapidly.",
+            "title": "Destroy Local Journalism",
+            "description": "When local news dies, communities lose their shared factual basis. National partisan media fills the vacuum, converting local issues into national culture war battlegrounds. Hedge fund acquisition of local newspapers accelerates this process.",
             "projectedEffect": "+2 to +4 points",
-            "precedent": "Russia 1917: The combination of wartime inflation, food shortages, and government indifference to civilian suffering created the bread riots that triggered the February Revolution."
+            "precedent": "Pre-Civil War partisan press: When the only news sources were explicitly partisan, political disagreement became existential and compromise impossible."
+          },
+          {
+            "title": "Algorithmic Outrage Amplification",
+            "description": "Social media algorithms optimized for engagement systematically amplify the most emotionally provocative content. Outrage generates clicks, clicks generate ad revenue, and the information environment becomes a radicalization engine.",
+            "projectedEffect": "+2 to +3 points",
+            "precedent": "Myanmar 2017: Facebook's recommendation algorithm amplified anti-Rohingya content, contributing to conditions that preceded genocide. The platform later acknowledged its role."
+          },
+          {
+            "title": "State Information Manipulation",
+            "description": "Government manipulation of information channels, including pressuring social media companies, selectively declassifying intelligence, and using government media to attack journalistic institutions, destroys the information commons.",
+            "projectedEffect": "+3 to +5 points",
+            "precedent": "Russia's information warfare model: Systematic confusion of the information environment ('firehose of falsehood') makes citizens unable to distinguish truth from propaganda, leading to political apathy or radicalization."
           }
         ]
       }
