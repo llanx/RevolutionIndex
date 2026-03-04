@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Prior Work Validation** - Audit the existing 250 pages of theory and 18 data series to establish what holds up and what needs revision
 - [x] **Phase 2: Literature Mining** - Exhaustive AI-assisted review across political science, economics, sociology, and conflict studies to discover predictive variables and candidate frameworks
 - [x] **Phase 3: Data Sourcing** - Map every discovered variable to freely available data sources, classify availability, and identify proxies for gaps (completed 2026-03-04)
-- [x] **Phase 4: Model Building** - Select architecture(s) informed by literature findings and data availability, implement data pipeline and scoring models (completed 2026-03-04)
+- [ ] **Phase 4: Model Building** - Select architecture(s) informed by literature findings and data availability, implement data pipeline and scoring models (gap closure in progress)
 - [ ] **Phase 5: Validation** - Backtest against historical episodes, quantify uncertainty, test for overfitting and spurious trends, produce pass/fail assessment
 
 ## Phase Details
@@ -85,10 +85,13 @@ Plans:
   5. Score interpretation labels map the 0-100 range to human-readable severity tiers (e.g., low/moderate/elevated/high/crisis)
 **Plans**: 3 plans
 
+**Plans**: 4 plans
+
 Plans:
 - [x] 04-01-PLAN.md — Architecture selection + data pipeline + schema update (Wave 1)
 - [x] 04-02-PLAN.md — Implement 5 models (PSI, PLI, FSP, Georgescu SDT, V-Dem ERT) as pure functions (Wave 2)
 - [x] 04-03-PLAN.md — Ensemble scoring, calibration, bootstrap CIs, JSON output (Wave 3)
+- [ ] 04-04-PLAN.md — Gap closure: fix bootstrap n=1000 and history 1960-1978 zero entries (Wave 1, gap closure)
 
 ### Phase 5: Validation
 **Goal**: Determine whether the model(s) produce meaningful signal by testing against historical ground truth -- answering the question "should we trust this score?"
@@ -117,5 +120,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Prior Work Validation | 3/3 | Complete    | 2026-03-02 |
 | 2. Literature Mining | 6/6 | Complete    | 2026-03-04 |
 | 3. Data Sourcing | 3/3 | Complete    | 2026-03-04 |
-| 4. Model Building | 3/3 | Complete    | 2026-03-04 |
+| 4. Model Building | 3/4 | Gap Closure | 2026-03-04 |
 | 5. Validation | 0/3 | Not started | - |
