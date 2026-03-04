@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-04T01:58:26.906Z"
+status: in-progress
+last_updated: "2026-03-04T04:36:08Z"
 progress:
-  total_phases: 2
+  total_phases: 3
   completed_phases: 2
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 10
+  completed_plans: 10
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 2 COMPLETE. Literature Mining finished -- 45 variables cataloged, 9 frameworks assessed, 13 datasets inventoried, synthesis complete. Ready for Phase 3 (Data Sourcing).
+**Current focus:** Phase 3 IN PROGRESS. Data Sourcing -- mapping 45 variables to concrete data sources. Economic Stress domain (13 variables) complete. Political/Institutional and Social/Information domains remaining.
 
 ## Current Position
 
-Phase: 2 of 5 (Literature Mining) -- COMPLETE
-Plan: 6 of 6 in current phase (all complete -- Wave 1 domain reviews + Wave 2 catalog/frameworks/datasets + Wave 3 synthesis)
-Status: Phase 2 Complete -- Ready for Phase 3 Planning
-Last activity: 2026-03-04 -- Synthesis document complete. All 7 Phase 1 open questions resolved.
+Phase: 3 of 5 (Data Sourcing) -- IN PROGRESS
+Plan: 1 of 3 in current phase (Economic Stress domain complete)
+Status: Executing Phase 3 -- Plan 01 complete, Plans 02-03 remaining
+Last activity: 2026-03-04 -- Economic Stress domain sourced (13 variables, 10 available via free API, 3 constructible)
 
-Progress: [████████░░] 80%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
@@ -42,13 +42,14 @@ Progress: [████████░░] 80%
 |-------|-------|-------|----------|
 | 1 - Prior Work Validation | 3 | 43min | 14min |
 | 2 - Literature Mining | 6 | 51min | 9min |
+| 3 - Data Sourcing | 1 | 5min | 5min |
 
 **Recent Trend:**
-- Last 5 plans: 02-06 (6min), 02-05 (10min), 02-04 (9min), 02-01 (9min), 02-02 (9min)
-- Trend: stable (accelerating on synthesis task)
+- Last 5 plans: 03-01 (5min), 02-06 (6min), 02-05 (10min), 02-04 (9min), 02-01 (9min)
+- Trend: stable (accelerating on data sourcing)
 
 *Updated after each plan completion*
-| Phase 02 P06 | 6 | 1 tasks | 1 files |
+| Phase 03 P01 | 1 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,12 @@ Recent decisions affecting current work:
 - [02-06]: Information/media variables have widest gap between perceived importance and empirical evidence (all 6 Weak-rated or Contested)
 - [02-06]: Economic variables have strongest evidence (7/13 Strong) and best data availability (11/13 fed-data)
 - [Phase 02]: Existing 3 models cover only 27% of 45 discovered variables -- institutional/democratic quality dimension entirely uncovered
+- [03-01]: CSCICP03USM665S handling: drop weight from FSP ETI and redistribute (not UMCSENT to preserve zero-overlap, not Conference Board CCI which is paid)
+- [03-01]: PRS85006173 recommended for labor share (nonfarm business sector, more commonly cited than GDP-based W270RE1A156NBEA)
+- [03-01]: TDSP recommended for household debt (debt service ratio 1980-present, measures burden not just level, better than HDTGPDUSQ163N which starts 2005)
+- [03-01]: Georgescu education-job mismatch proxy documented with construction recipe; WID top 1% income share as fallback with longer history
+- [03-01]: FIXHAI recommended for housing affordability (composite of prices, rates, and income in single index)
+- [03-01]: STLFSI4 confirmed as correct financial stress index version (STLFSI/2/3 superseded, TEDRATE discontinued)
 
 ### Pending Todos
 
@@ -119,5 +126,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 02-06-PLAN.md (Literature Mining Synthesis). Phase 2 complete. All 6 plans executed. Ready for Phase 3 planning.
+Stopped at: Completed 03-01-PLAN.md (Economic Stress Domain Data Sourcing). 13 variables sourced with verified series IDs. Plans 02-03 remaining.
 Resume file: None
