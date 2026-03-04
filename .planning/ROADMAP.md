@@ -50,9 +50,9 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Core domain literature reviews: revolution prediction + democratic backsliding (Wave 1)
-- [ ] 02-02-PLAN.md — Core domain literature reviews: historical case studies + economic preconditions (Wave 1)
-- [ ] 02-03-PLAN.md — Adjacent domain literature reviews: social movement theory + media/information ecosystem (Wave 1)
+- [x] 02-01-PLAN.md — Core domain literature reviews: revolution prediction + democratic backsliding (Wave 1)
+- [x] 02-02-PLAN.md — Core domain literature reviews: historical case studies + economic preconditions (Wave 1)
+- [x] 02-03-PLAN.md — Adjacent domain literature reviews: social movement theory + media/information ecosystem (Wave 1)
 - [ ] 02-04-PLAN.md — Ranked variable catalog with MCP data availability cross-referencing (Wave 2)
 - [ ] 02-05-PLAN.md — Framework assessment + training/validation dataset inventory (Wave 2)
 - [ ] 02-06-PLAN.md — Synthesis document: variable-framework mapping, gap identification, Phase 1 open question responses (Wave 3)
@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Prior Work Validation | 3/3 | Complete    | 2026-03-02 |
-| 2. Literature Mining | 1/6 | In Progress | - |
+| 2. Literature Mining | 4/6 | In Progress | - |
 | 3. Data Sourcing | 0/3 | Not started | - |
 | 4. Model Building | 0/3 | Not started | - |
 | 5. Validation | 0/3 | Not started | - |

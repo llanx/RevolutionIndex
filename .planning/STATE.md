@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 2 in progress: Literature Mining (adjacent domain reviews complete).
+**Current focus:** Phase 2 in progress: Literature Mining (Wave 1 domain reviews complete, Wave 2 next).
 
 ## Current Position
 
 Phase: 2 of 5 (Literature Mining) -- IN PROGRESS
-Plan: 3 of 6 in current phase (3 complete)
-Status: Phase 2 In Progress
-Last activity: 2026-03-04 -- Completed 02-03-PLAN.md (Adjacent Domain Literature Reviews)
+Plan: 3 of 6 in current phase (3 complete -- all Wave 1 domain reviews)
+Status: Phase 2 In Progress -- Wave 1 Complete, Wave 2 Ready
+Last activity: 2026-03-04 -- Wave 1 complete (plans 01, 02, 03 executed in parallel)
 
-Progress: [████░░░░░░] 33%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 13min
-- Total execution time: 0.85 hours
+- Total plans completed: 6
+- Average duration: 11min
+- Total execution time: 1.15 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 - Prior Work Validation | 3 | 43min | 14min |
-| 2 - Literature Mining | 1 | 8min | 8min |
+| 2 - Literature Mining | 3 | 26min | 9min |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (8min), 01-03 (14min), 01-02 (4min), 01-01 (25min)
+- Last 5 plans: 02-01 (9min), 02-02 (9min), 02-03 (8min), 01-03 (14min), 01-02 (4min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -61,6 +61,17 @@ Recent decisions affecting current work:
 - [02-03]: DW-NOMINATE congressional polarization identified as strongest media/info domain variable -- exceptional data quality (1789-present)
 - [02-03]: Survey problem flagged -- most media/information variables are periodic surveys, not continuous time-series, limiting backtesting utility
 - [02-03]: 22 adjacent-domain variables discovered (12 social movement + 10 media/info) for variable catalog
+- [02-01]: Georgescu (2023) education-job mismatch identified as potentially better EMP proxy than top 1% income share for US context
+- [02-01]: Affective polarization (not ideological) is the most consistently cited predictor of democratic backsliding across 16 comparative cases
+- [02-01]: No post-2023 Turchin PSI operationalization update found -- Phase 1 Open Question #1 resolved
+- [02-01]: PITF regime type predictor now directly debated for the US (Walter 2022 vs. Svolik 2019) -- included as Tier 2 applicability
+- [02-01]: State-level disaggregation (Grumbach) captures US democratic variation that national-level measures miss
+- [02-01]: 40 variables extracted across revolution prediction (20) and democratic backsliding (20) domains for variable catalog
+- [02-02]: Military loyalty (strongest global revolution predictor) classified as Not Applicable for US -- stable civilian control
+- [02-02]: Housing affordability identified as US analog to food price triggers in historical revolutions
+- [02-02]: Funke et al. (2016) confirmed as strongest empirical economic-to-political transmission mechanism (financial crisis -> 30% far-right vote increase, 5-10 year lag)
+- [02-02]: Rolling z-scores recommended over min-max normalization for trending US macroeconomic series
+- [02-02]: 33 variables extracted across both reviews (13 historical + 20 economic) for variable catalog
 
 ### Pending Todos
 
@@ -74,5 +85,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 02-03-PLAN.md (Adjacent Domain Literature Reviews). Phase 2 plans 01-03 in parallel Wave 1.
+Stopped at: All Wave 1 plans (01, 02, 03) complete. 6 domain reviews done, ~95 variables discovered. Wave 2 (04, 05) ready for variable cataloging and framework assessment.
 Resume file: None

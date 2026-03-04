@@ -20,7 +20,7 @@ Requirements for initial release. V1 delivers validated research and working mod
 
 - [x] **LIT-01**: Conduct exhaustive LLM-assisted review of revolution prediction literature across political science, economics, sociology, and conflict studies
 - [ ] **LIT-02**: Conduct exhaustive LLM-assisted review of democratic backsliding and state failure literature
-- [ ] **LIT-03**: Conduct exhaustive LLM-assisted review of historical revolution case studies and precondition analysis
+- [x] **LIT-03**: Conduct exhaustive LLM-assisted review of historical revolution case studies and precondition analysis
 - [ ] **LIT-04**: Produce a ranked variable catalog with evidence strength ratings, source papers, and theoretical justification for each variable
 - [ ] **LIT-05**: Identify candidate models/frameworks from literature that may supplement or replace the existing 3 models
 - [ ] **LIT-06**: Identify candidate training/validation datasets (NAVCO, PITF, UCDP, etc.) for model evaluation
@@ -110,7 +110,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VAL-06 | Phase 1 | Complete |
 | LIT-01 | Phase 2 | Complete |
 | LIT-02 | Phase 2 | Pending |
-| LIT-03 | Phase 2 | Pending |
+| LIT-03 | Phase 2 | Complete |
 | LIT-04 | Phase 2 | Pending |
 | LIT-05 | Phase 2 | Pending |
 | LIT-06 | Phase 2 | Pending |
