@@ -1940,3 +1940,312 @@ This variable has no standardized measurement and no existing data source that p
 - Freedom House provides a simpler alternative scoring system but with coarser measurement (1-7 ordinal vs. V-Dem continuous 0-1)
 
 **Last Verified:** 2026-03-03 (V-Dem v15 confirmed with multi-country data; Freedom House confirmed with country-level scores)
+
+---
+
+## Availability Summary Matrix
+
+This matrix provides an at-a-glance classification of all 45 variables from the Phase 2 catalog. It synthesizes the domain-by-domain entries above into a single reference table for Phase 4.
+
+| # | Variable | Evidence Rating | Availability | Primary Source | Frequency | Coverage | Short Series? |
+|---|----------|----------------|-------------|----------------|-----------|----------|---------------|
+| 1 | Income / Wealth Inequality | Strong -- Contested | Available (free API) | SIPOVGINIUSA (FRED) | Annual | 1963-present | No |
+| 2 | Real Wage Growth / Labor Share | Strong | Available (free API) | PRS85006173 (FRED) | Quarterly | 1947-present | No |
+| 3 | Political Polarization (Congressional) | Strong | Available (manual download) | VoteView DW-NOMINATE | Per Congress | 1789-present | No |
+| 4 | Affective Polarization | Strong | Available (manual download) | ANES VCF0218/VCF0224 | Biennial/quadrennial | 1948-2020 | No |
+| 5 | State Fiscal Distress | Strong -- Contested | Available (free API) | GFDEGDQ188S (FRED) | Quarterly | 1966-present | No |
+| 6 | Financial Crisis / Systemic Stress | Strong | Available (free API) | STLFSI4 (FRED) | Weekly | 1993-present | No |
+| 7 | Government Trust / State Legitimacy | Strong | Available (manual download) | ANES VCF0604 | Biennial/quadrennial | 1958-2020 | No |
+| 8 | Elite Overproduction | Strong | Partially available (proxy needed) | Constructed (Census + BLS) | Annual | 2005-present | Yes |
+| 9 | Unemployment Rate | Strong | Available (free API) | UNRATE (FRED) | Monthly | 1948-present | No |
+| 10 | GDP Growth Rate | Strong | Available (free API) | A191RL1Q225SBEA (FRED) | Quarterly | 1947-present | No |
+| 11 | Elite Factionalism / Fragmentation | Strong | Partially available (proxy needed) | Constructed (VoteView intra-party SD) | Per Congress | 1789-present | No |
+| 12 | Protest Frequency and Participation | Strong | Available (manual download) | ACLED US data | Real-time (weekly) | 2020-present | Yes |
+| 13 | Regime Type / Institutional Quality | Strong -- Contested | Available (manual download) | V-Dem v2x_libdem | Annual | 1789-present | No |
+| 14 | Relative Deprivation / Expectation-Reality Gap | Moderate | Partially available (proxy needed) | Constructed (UMCSENT - GDP) | Monthly | 1952-present | No |
+| 15 | Horizontal Inequality (Between-Group) | Moderate | Available (free API) | Census racial income ratios | Annual | 1967-present | No |
+| 16 | Housing Affordability | Moderate | Available (free API) | FIXHAI (FRED) | Monthly | 1971-present | No |
+| 17 | Inflation Rate | Moderate | Available (free API) | CPIAUCSL (FRED) | Monthly | 1947-present | No |
+| 18 | Consumer Confidence / Sentiment | Moderate | Available (free API) | UMCSENT (FRED) | Monthly | 1952-present | No |
+| 19 | Intra-Elite Wealth Gap | Moderate | Available (free API) | WFRBSTP1300/WFRBST01134 (FRED) | Quarterly | 1989-present | No |
+| 20 | Middle-Class Income Share | Moderate | Available (manual download) | Census quintile shares | Annual | 1967-present | No |
+| 21 | Judicial Independence | Moderate | Available (manual download) | V-Dem v2x_jucon | Annual | 1789-present | No |
+| 22 | Freedom of Expression / Media Independence | Moderate | Available (manual download) | V-Dem v2x_freexp_altinf | Annual | 1789-present | No |
+| 23 | Legislative Constraints on Executive | Moderate | Available (manual download) | V-Dem v2xlg_legcon | Annual | 1789-present | No |
+| 24 | Electoral Integrity / Fraud Perception | Moderate | Available (manual download) | V-Dem v2xel_frefair | Annual | 1789-present | No |
+| 25 | Civil Society Density / Union Membership | Moderate | Available (manual download) | BLS union membership release | Annual | 1983-present | No |
+| 26 | Youth Unemployment / Disconnection | Moderate | Available (free API) | LNS14000012 (FRED) | Monthly | 1948-present | No |
+| 27 | Household Debt / Leverage | Moderate | Available (free API) | TDSP (FRED) | Quarterly | 1980-present | No |
+| 28 | Media Trust / Partisan Media Trust Gap | Moderate | Available (manual download) | Gallup media trust poll | Annual | 1973-present | No |
+| 29 | Voter Access Restrictions / Gerrymandering | Moderate | Available (manual download) | Grumbach SDI | Annual | 2000-2018 | Yes |
+| 30 | Democratic Commitment (Attitudinal) | Moderate | Available (manual download) | WVS + ANES | Irregular | 1981-present | No |
+| 31 | Anti-System Party Vote Share | Moderate | Available (manual download) | MIT Election Lab + coding | Per election | 1789-present | No |
+| 32 | Executive Aggrandizement | Moderate | Available (manual download) | V-Dem v2exrescon | Annual | 1789-present | No |
+| 33 | Misinformation Prevalence / Exposure | Weak -- Contested | Unavailable | None | N/A | N/A | N/A |
+| 34 | Conspiratorial Thinking Prevalence | Weak | Available (manual download) | PRRI surveys | Annual | 2020-present | Yes |
+| 35 | Social Media Political Engagement | Weak -- Contested | Unavailable | None | N/A | N/A | N/A |
+| 36 | Protest Diffusion / Contagion | Weak | Partially available (proxy needed) | Derived from ACLED | Constructible | 2020-present | Yes |
+| 37 | Prior Protest Experience | Weak | Partially available (proxy needed) | Derived from ACLED | Constructible | 2020-present | Yes |
+| 38 | State Capacity / Institutional Quality | Moderate | Available (free API) | World Bank WGI GE.EST | Annual | 1996-present | No |
+| 39 | Neighborhood / Diffusion Effects | Weak | Available (manual download) | V-Dem (multi-country) | Annual | 1789-present | No |
+| 40 | Cost of Living Pressure (Composite) | Moderate | Partially available (proxy needed) | Constructed (CPI components) | Monthly | 1957-present | No |
+| 41 | Institutional Legitimacy Denial | Weak | Available (manual download) | Bright Line Watch | Irregular | 2017-present | Yes |
+| 42 | Political Efficacy Beliefs | Weak | Available (manual download) | ANES VCF0613/VCF0614 | Biennial/quadrennial | 1952-2020 | No |
+| 43 | Information Fragmentation / Echo Chambers | Weak -- Contested | Unavailable | None | N/A | N/A | N/A |
+| 44 | Cross-Class Coalition Formation | Weak | Unavailable | None | N/A | N/A | N/A |
+| 45 | Wealth Concentration (Top 0.1%) | Strong | Available (free API) | WFRBSTP1300 (FRED) | Quarterly | 1989-present | No |
+
+### Availability Count Verification
+
+| Classification | Count | Variables |
+|---------------|-------|-----------|
+| **Available (free API)** | 15 | #1, #2, #5, #6, #9, #10, #15, #16, #17, #18, #19, #26, #27, #38, #45 |
+| **Available (manual download)** | 20 | #3, #4, #7, #12, #13, #20, #21, #22, #23, #24, #25, #28, #29, #30, #31, #32, #34, #39, #41, #42 |
+| **Partially available (proxy needed)** | 6 | #8, #11, #14, #36, #37, #40 |
+| **Unavailable** | 4 | #33, #35, #43, #44 |
+| **Total** | **45** | |
+
+**Note:** #45 (Wealth Concentration) counts in "Available (free API)" because WFRBSTP1300 is on FRED, even though WID supplement is manual download. Classification reflects primary source access method.
+
+### Evidence Rating Distribution
+
+| Rating | Count | Variables |
+|--------|-------|-----------|
+| **Strong** | 14 | #1, #2, #3, #4, #5, #6, #7, #8, #9, #10, #11, #12, #13, #45 |
+| **Moderate** | 21 | #14, #15, #16, #17, #18, #19, #20, #21, #22, #23, #24, #25, #26, #27, #28, #29, #30, #31, #32, #38, #40 |
+| **Weak** | 10 | #33, #34, #35, #36, #37, #39, #41, #42, #43, #44 |
+| **Contested** | 6 | #1, #5, #13, #33, #35, #43 |
+
+Total: 14 + 21 + 10 = 45. Contested is an overlay marker, not a separate rating tier.
+
+### Short Series Summary
+
+| # | Variable | Coverage Start | Reason |
+|---|----------|---------------|--------|
+| 8 | Elite Overproduction | 2005 | Census ACS availability |
+| 12 | Protest Frequency | 2020 | ACLED US coverage start |
+| 29 | Voter Access Restrictions | 2000 | Grumbach SDI published range |
+| 34 | Conspiratorial Thinking | 2020 | PRRI systematic measurement start |
+| 36 | Protest Diffusion | 2020 | Derived from ACLED |
+| 37 | Prior Protest Experience | 2020 | Derived from ACLED |
+| 41 | Institutional Legitimacy Denial | 2017 | Bright Line Watch creation |
+
+**Total short series:** 7 of 45 (16%)
+
+---
+
+## Gap Analysis
+
+This section documents all variables classified as "Unavailable" or "Partially available (proxy needed)" -- the variables that require special handling in Phase 4.
+
+### Unavailable Variables
+
+These variables have no direct measure or strong proxy identified. They are documented as measurement gaps and flagged for future work.
+
+#### 1. Cross-Class Coalition Formation (#44) -- Weak
+
+**Theoretical Importance:** Moderate -- Wickham-Crowley (1992) and Foran (2005) identify cross-class coalitions as a success factor in revolutionary movements, but the concept is more relevant to developing-country revolutionary dynamics than US democratic backsliding.
+
+**Why Unavailable:** No survey instrument systematically measures the class composition of political coalitions. The concept requires identifying both coalition existence AND cross-class composition -- neither is routinely measured in the US.
+
+**Nearest Proxy:** Union membership (#25) as a rough indicator of organized cross-class activity. Does NOT meet strong proxy standard because union membership measures organizational density, not coalition breadth.
+
+**Priority for Future Work:** Low -- weak-rated, more relevant to developing-country dynamics than US context.
+
+#### 2. Misinformation Prevalence / Exposure (#33) -- Weak, Contested
+
+**Theoretical Importance:** Moderate (but contested) -- Vosoughi et al. (2018) demonstrated false news spreads faster on social media, but no ongoing measurement program exists. Guess et al. (2019) find exposure concentrated in a small population fraction, questioning the mechanism's importance.
+
+**Why Unavailable:** No agreed-upon definition of "misinformation" exists that can be operationalized. Platform data (the only potential source) is increasingly restricted. No government or academic institution produces an ongoing misinformation exposure index.
+
+**Nearest Proxy:** Fact-check volume from PolitiFact/Snopes (measures checking effort, not prevalence). Platform transparency reports (irregular, incomparable, restricted).
+
+**Priority for Future Work:** Low -- weak-rated, contested evidence, fundamental measurement challenge.
+
+#### 3. Social Media Political Engagement (#35) -- Weak, Contested
+
+**Theoretical Importance:** Low-Moderate (contested) -- Tufekci (2017) argues social media enables rapid but structurally weak mobilization. Bail et al. (2018) find opposing-view exposure on social media may increase rather than decrease polarization.
+
+**Why Unavailable:** Platform data access is deteriorating: Twitter/X Academic API revoked (2023), Meta CrowdTangle shut down (2024). No government or academic institution produces an ongoing social media political engagement index.
+
+**Nearest Proxy:** Pew social media surveys (irregular, self-reported). Google Trends (captures search, not engagement).
+
+**Priority for Future Work:** Low -- weak-rated, contested evidence, data access landscape deteriorating.
+
+#### 4. Information Fragmentation / Echo Chambers (#43) -- Weak, Contested
+
+**Theoretical Importance:** Low-Moderate (contested) -- Sunstein (2001) theorized echo chambers, but Gentzkow & Shapiro (2011) find online news consumption is less segregated than offline. Bail et al. (2018) find limited evidence for strong echo chamber effects.
+
+**Why Unavailable:** No agreed-upon methodology for measuring population-level information fragmentation. Measuring actual media consumption (vs. self-reported) requires platform data that is not publicly available. Cross-platform measurement is especially challenging.
+
+**Nearest Proxy:** Pew media consumption surveys (periodic, self-reported). News audience overlap data (commercial/paywalled).
+
+**Priority for Future Work:** Low -- weak-rated, actively contested evidence, fundamental measurement challenge.
+
+### Partially Available Variables (Proxy Needed)
+
+These variables have constructible proxies from available data sources. Construction recipes are documented in the domain entries above.
+
+#### 1. Elite Overproduction (#8) -- Strong
+
+**What Is Available:** Census ACS education attainment data (2005-present, annual); BLS JOLTS professional job openings (2000-present, monthly); WID top 1% income share (1913-present, annual); Fed DFA top 1% wealth share (1989-present, quarterly).
+
+**What Is Missing:** No pre-built "elite overproduction" index exists. The Georgescu education-job mismatch proxy must be constructed from Census + BLS components.
+
+**Construction Recipe:** (Advanced degree holders per capita) / (professional job openings rate). See #8 entry for detailed recipe.
+
+**Proxy Validity:** Moderate -- Georgescu (2023) validated education-job mismatch as an SDT proxy for OECD countries but not specifically for the US. WID income share is a weaker but longer-history alternative.
+
+**Phase 4 Priority:** High -- Strong-rated variable, core to Turchin PSI.
+
+#### 2. Elite Factionalism / Fragmentation (#11) -- Strong
+
+**What Is Available:** VoteView DW-NOMINATE scores for all members of Congress (1789-present).
+
+**What Is Missing:** No pre-built "elite factionalism" index exists. Intra-party standard deviation must be computed from member-level DW-NOMINATE scores.
+
+**Construction Recipe:** Standard deviation of nominate_dim1 within each party per Congress. See #11 entry for detailed recipe.
+
+**Proxy Validity:** Moderate -- DW-NOMINATE SD captures ideological dispersion but not all forms of factionalism (patronage, generational). PITF uses categorical 0-3 expert coding, which captures a different concept.
+
+**Phase 4 Priority:** High -- Strong-rated variable, core to Goldstone/PITF framework.
+
+#### 3. Relative Deprivation / Expectation-Reality Gap (#14) -- Moderate
+
+**What Is Available:** UMCSENT consumer sentiment (1952-present, monthly); GDP growth, employment data (long coverage, various frequencies).
+
+**What Is Missing:** No single series captures the "gap between expectations and reality." Must be constructed as the normalized difference between subjective sentiment and objective economic performance.
+
+**Construction Recipe:** UMCSENT z-score minus GDP/employment z-score. See #14 entry for detailed recipe.
+
+**Proxy Validity:** Moderate -- theoretically grounded in Davies (1962) J-curve and prospect theory, but no standard operationalization exists in the literature.
+
+**Phase 4 Priority:** Medium -- Moderate-rated, core to prospect theory model.
+
+#### 4. Protest Diffusion / Contagion (#36) -- Weak
+
+**What Is Available:** ACLED US protest events (2020-present) with geographic coordinates and timestamps.
+
+**What Is Missing:** No pre-built diffusion index exists. Spatial-temporal clustering analysis must be performed on ACLED event data.
+
+**Construction Recipe:** Compute geographic and temporal proximity of protest events; count "daughter" events within distance/time thresholds. See #36 entry.
+
+**Proxy Validity:** Low -- theoretical concept (Beissinger 2002) not validated for US domestic protest dynamics. Short coverage (2020+).
+
+**Phase 4 Priority:** Low -- weak-rated, short series, derived measure.
+
+#### 5. Prior Protest Experience (#37) -- Weak
+
+**What Is Available:** ACLED US protest events (2020-present) with geographic location.
+
+**What Is Missing:** Cumulative protest event counts must be computed from event-level data. Only 4-5 years of history available.
+
+**Construction Recipe:** Cumulative event count by geographic unit over rolling window. See #37 entry.
+
+**Proxy Validity:** Low -- individual-level concept proxied by aggregate event counts. Insufficient history (2020+) for meaningful cumulative measures.
+
+**Phase 4 Priority:** Low -- weak-rated, short series, derived measure.
+
+#### 6. Cost of Living Pressure - Composite (#40) -- Moderate
+
+**What Is Available:** All CPI components (food, shelter, energy, medical care, transportation, education) on FRED, monthly, long coverage (1947-1957 starts).
+
+**What Is Missing:** No single "essential cost pressure" index exists. Must be constructed as a budget-weighted composite of CPI component growth rates.
+
+**Construction Recipe:** Weight CPI component growth rates by household budget shares (shelter 33%, food 13%, etc.). See #40 entry.
+
+**Proxy Validity:** High -- directly uses official government price data; construction method is straightforward. Alternative: headline CPI (CPIAUCSL) as simpler proxy.
+
+**Phase 4 Priority:** Medium -- Moderate-rated, but simpler CPI alternative available.
+
+### Gap Analysis Summary
+
+| Category | Count | Strong | Moderate | Weak |
+|----------|-------|--------|----------|------|
+| Unavailable | 4 | 0 | 0 | 4 |
+| Partially available | 6 | 2 | 2 | 2 |
+| **Total gaps** | **10** | **2** | **2** | **6** |
+
+**Key finding:** All 4 unavailable variables are weak-rated with low priority for future work. The 2 strong-rated partially available variables (#8 Elite Overproduction, #11 Elite Factionalism) have documented construction recipes using established academic datasets. No strong-rated variable is unavailable.
+
+---
+
+## Source Registry
+
+This registry catalogs all unique data sources referenced in the inventory, with access details sufficient for Phase 4 implementation.
+
+| Source | Type | Access Method | URL | API Key Required | Rate Limits | License | Variables Served |
+|--------|------|---------------|-----|------------------|-------------|---------|-----------------|
+| FRED (Federal Reserve Economic Data) | Federal API | MCP tools (`fred_search`, `fred_series_info`) or REST API | https://fred.stlouisfed.org/docs/api/fred/ | Yes (free registration) | 120 requests/minute | Public domain (US gov't work) | #1, #2, #5, #6, #9, #10, #14, #16, #17, #18, #19, #26, #27, #45 |
+| BLS (Bureau of Labor Statistics) | Federal API | MCP tools (`bls_search_series`, `bls_series_data`, `bls_cpi_breakdown`) or REST API | https://api.bls.gov/ | Yes (free registration for v2; v1 no key, lower limits) | v2: 500 queries/day; v1: 25 queries/day | Public domain (US gov't work) | #2, #8, #17, #25, #26, #40 |
+| BEA (Bureau of Economic Analysis) | Federal API | MCP tool (`bea_gdp_national`) or REST API | https://apps.bea.gov/api/ | Yes (free registration) | 100 requests/minute | Public domain (US gov't work) | #5, #10, #14 |
+| Census Bureau | Federal API | MCP tools (`census_search_variables`, `census_query`) or REST API | https://api.census.gov/ | No (limited without key; key available free) | 500 requests/day without key | Public domain (US gov't work) | #1, #8, #15, #20, #26 |
+| Treasury Fiscal Data | Federal API | MCP tools (`search_datasets`, `query_fiscal_data`) | https://fiscaldata.treasury.gov/api/ | No | No documented limits | Public domain (US gov't work) | #5 |
+| HUD (Dept. of Housing and Urban Development) | Federal API | MCP tool (`hud_fair_market_rents`) | https://www.huduser.gov/portal/dataset/fmr-api.html | No | No documented limits | Public domain (US gov't work) | #16 |
+| World Bank WGI | International org API | MCP tool (`wb_indicator`) | https://info.worldbank.org/governance/wgi/ | No | Standard MCP limits | CC BY 4.0 | #38 |
+| V-Dem v15 | Academic dataset | CSV download | https://v-dem.net/data/the-v-dem-dataset/ | No | N/A (file download) | CC BY 4.0 | #13, #21, #22, #23, #24, #32, #39 |
+| VoteView | Academic dataset | CSV download | https://voteview.com/data | No | N/A (file download) | Free for academic use | #3, #11 |
+| WID.world | Academic dataset | R package (`wid-r-tool`) or bulk CSV download | https://wid.world/data/ | No | No documented limits | CC BY 4.0 | #1, #8, #19, #20, #45 |
+| ACLED | Academic dataset | REST API (with free registration) | https://acleddata.com/ | Yes (free registration) | Registration-dependent; bulk export available | CC BY 4.0 (academic use) | #12, #36, #37 |
+| ANES | Academic dataset | CSV download (free registration) | https://electionstudies.org/ | No | N/A (file download) | Free for research (cite + NSF acknowledgment) | #4, #7, #30, #41, #42 |
+| Pew Research Center | Published reports | Manual extraction from reports/data tables | https://www.pewresearch.org/ | No | N/A (report download) | Free with attribution | #7, #28, #34 |
+| Gallup | Published reports | Manual extraction from trend reports | https://news.gallup.com/ | No | N/A (report access) | Published trends free; microdata requires subscription | #7, #28 |
+| Freedom House | International org reports | Report/data download | https://freedomhouse.org/ | No | N/A (report download) | Free for non-commercial use with attribution | #13, #22, #39 |
+| MIT Election Data + Science Lab | Academic dataset | CSV download from Harvard Dataverse | https://electionlab.mit.edu/ | No | N/A (file download) | CC BY 4.0 | #31 |
+| FEC (Federal Election Commission) | Federal API | MCP tool (`fec_search_candidates`) | https://api.open.fec.gov/ | No | Standard MCP limits | Public domain (US gov't work) | #11, #31 |
+| Grumbach State Democracy Index | Academic dataset | CSV download from Harvard Dataverse | https://dataverse.harvard.edu/ | No | N/A (file download) | Academic open data | #24, #29 |
+| Bright Line Watch | Academic dataset | Survey data download | https://brightlinewatch.org/ | No | N/A (file download) | Free academic data | #32, #41 |
+| PRRI (Public Religion Research Institute) | Published reports | Manual extraction from reports | https://www.prri.org/ | No | N/A (report download) | Free with attribution | #34 |
+| World Values Survey | Academic dataset | CSV download (free registration) | https://www.worldvaluessurvey.org/ | No | N/A (file download) | Free for academic use with citation | #30 |
+| Reporters Without Borders (RSF) | International org reports | Annual index download | https://rsf.org/en/index | No | N/A (report download) | Free with attribution | #22 |
+| Electoral Integrity Project | Academic dataset | Per-election data from Harvard Dataverse | https://dataverse.harvard.edu/ | No | N/A (file download) | CC BY (Harvard Dataverse) | #24 |
+| Reuters Institute (Oxford) | Published reports | Annual report download | https://reutersinstitute.politics.ox.ac.uk/ | No | N/A (report download) | Free with attribution | #28 |
+| Hanson & Sigman (2021) | Academic dataset | CSV from Harvard Dataverse | https://dataverse.harvard.edu/ | No | N/A (file download) | Academic open data | #38 |
+
+### Source Registry Summary
+
+- **Total unique sources:** 25
+- **Federal API sources (MCP-accessible):** 7 (FRED, BLS, BEA, Census, Treasury, HUD, FEC)
+- **International organization APIs:** 1 (World Bank WGI via MCP)
+- **Academic datasets (CSV download):** 11 (V-Dem, VoteView, WID, ACLED, ANES, MIT Election Lab, Grumbach, Bright Line Watch, WVS, Electoral Integrity Project, Hanson & Sigman)
+- **Published reports (manual extraction):** 6 (Pew, Gallup, Freedom House, PRRI, RSF, Reuters Institute)
+- **API key required:** 5 sources (FRED, BLS, BEA, Census optional, ACLED) -- all free registration
+- **No API key required:** 20 sources
+
+### Variables Served Verification
+
+All 45 catalog numbers appear in at least one Source Registry row:
+- #1 (FRED, Census, WID), #2 (FRED, BLS), #3 (VoteView), #4 (ANES), #5 (FRED, BEA, Treasury)
+- #6 (FRED), #7 (ANES, Pew, Gallup), #8 (Census, BLS, WID), #9 (FRED), #10 (FRED, BEA)
+- #11 (VoteView, FEC), #12 (ACLED), #13 (V-Dem, Freedom House), #14 (FRED, BEA)
+- #15 (Census, FRED), #16 (FRED, HUD), #17 (FRED, BLS), #18 (FRED), #19 (FRED, WID)
+- #20 (Census, WID), #21 (V-Dem), #22 (V-Dem, RSF, Freedom House), #23 (V-Dem)
+- #24 (V-Dem, Electoral Integrity Project, Grumbach), #25 (BLS), #26 (FRED, Census)
+- #27 (FRED), #28 (Gallup, Pew, Reuters Institute), #29 (Grumbach), #30 (WVS, ANES)
+- #31 (MIT Election Lab, FEC), #32 (V-Dem, Bright Line Watch), #33 (Unavailable -- no source)
+- #34 (PRRI, Pew), #35 (Unavailable -- no source), #36 (ACLED-derived), #37 (ACLED-derived)
+- #38 (World Bank WGI, V-Dem, Hanson & Sigman), #39 (V-Dem, Freedom House)
+- #40 (FRED, BLS), #41 (Bright Line Watch, ANES), #42 (ANES)
+- #43 (Unavailable -- no source), #44 (Unavailable -- no source), #45 (FRED, WID)
+
+**Note:** Variables #33, #35, #43, #44 are classified Unavailable -- they have no source in the registry by definition. All 41 available/partially-available variables are covered.
+
+---
+
+## Document Footer
+
+**Total variables cataloged:** 45
+**Total unique data sources:** 25
+**Date completed:** 2026-03-04
+**Phase:** 03 - Data Sourcing
+**Next phase:** Phase 4 (Model Building) -- machine-readable config (Python `config.py` updates) derived from this inventory
+**Prepared by:** Phase 3 data sourcing analysis
+
+**Verification note:** All series IDs, API endpoints, and download URLs were verified as of 2026-03-03/04. Re-verification is recommended before Phase 4 execution if more than 30 days have elapsed, as series can be discontinued (see CSCICP03USM665S precedent) or endpoints can change.
+
+**Classification breakdown:**
+- Available (free API): 15 variables (33%)
+- Available (manual download): 20 variables (44%)
+- Partially available (proxy needed): 6 variables (13%)
+- Unavailable: 4 variables (9%)
+- **Total measurable: 41 of 45 (91%)**
