@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-03-01)
 ## Current Position
 
 Phase: 2 of 5 (Literature Mining) -- IN PROGRESS
-Plan: 3 of 6 in current phase (3 complete -- all Wave 1 domain reviews)
-Status: Phase 2 In Progress -- Wave 1 Complete, Wave 2 Ready
-Last activity: 2026-03-04 -- Wave 1 complete (plans 01, 02, 03 executed in parallel)
+Plan: 4 of 6 in current phase (4 complete -- Wave 1 domain reviews + variable catalog)
+Status: Phase 2 In Progress -- Variable Catalog Complete, Framework Assessment Next
+Last activity: 2026-03-04 -- Variable catalog (Plan 04) complete. 45 ranked variables from 6 domain reviews.
 
-Progress: [████░░░░░░] 40%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: 11min
-- Total execution time: 1.15 hours
+- Total execution time: 1.30 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 - Prior Work Validation | 3 | 43min | 14min |
-| 2 - Literature Mining | 3 | 26min | 9min |
+| 2 - Literature Mining | 4 | 35min | 9min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (9min), 02-02 (9min), 02-03 (8min), 01-03 (14min), 01-02 (4min)
+- Last 5 plans: 02-04 (9min), 02-01 (9min), 02-02 (9min), 02-03 (8min), 01-03 (14min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -72,6 +72,12 @@ Recent decisions affecting current work:
 - [02-02]: Funke et al. (2016) confirmed as strongest empirical economic-to-political transmission mechanism (financial crisis -> 30% far-right vote increase, 5-10 year lag)
 - [02-02]: Rolling z-scores recommended over min-max normalization for trending US macroeconomic series
 - [02-02]: 33 variables extracted across both reviews (13 historical + 20 economic) for variable catalog
+- [02-04]: 45 concept-level variables cataloged from ~95 raw discoveries, with evidence ratings (14 Strong, 21 Moderate, 10 Weak) and data availability tags (18 fed-data, 21 other-data, 6 unknown)
+- [02-04]: 4 variables marked Contested: Income/Wealth Inequality, State Fiscal Distress, Regime Type, and several media/information variables
+- [02-04]: 5 theoretically important variables excluded by measurability filter; 7 excluded as not applicable to US
+- [02-04]: Wealth Concentration (Top 0.1%) treated as separate from general inequality -- captures qualitatively different elite capture dynamics
+- [02-04]: Housing affordability included as standalone variable -- US analog to historical food price triggers
+- [02-04]: Data availability without MCP: tags assigned from domain review knowledge and 02-RESEARCH.md coverage map; to be verified in Phase 3
 
 ### Pending Todos
 
@@ -85,5 +91,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: All Wave 1 plans (01, 02, 03) complete. 6 domain reviews done, ~95 variables discovered. Wave 2 (04, 05) ready for variable cataloging and framework assessment.
+Stopped at: Completed 02-04-PLAN.md (Variable Catalog). 45 ranked variables cataloged. Plans 05 (Framework Assessment) and 06 (Synthesis) remain in Phase 2.
 Resume file: None
