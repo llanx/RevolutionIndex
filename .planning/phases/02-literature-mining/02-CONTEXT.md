@@ -28,6 +28,13 @@ Produce a comprehensive, evidence-ranked catalog of variables that predict revol
 - **Measurability filter**: Only catalog variables that have at least one known measurement approach or proxy — theoretically important but unmeasurable variables are excluded
 - **Proxy capture**: Each variable entry lists the specific measurement/proxy used in each citing study (e.g., 'Gini coefficient' for inequality, 'V-Dem liberal democracy index' for democratic quality)
 
+### Data availability cross-referencing
+- **Early availability check**: When cataloging each variable, cross-reference against the US Government Open Data MCP's available data sources (FRED, BLS, BEA, Census, Treasury, FEC, etc.) to note whether a known federal data source exists
+- **Classification during cataloging**: Each variable entry in the catalog gets a preliminary data availability tag: `fed-data` (known federal API source via MCP), `other-data` (known non-federal source like WID, V-Dem), `unknown` (no source identified yet)
+- **Not a gate**: Data availability does NOT filter variables out during Phase 2 — the measurability filter already handles unmeasurable variables. This tag is informational, giving Phase 3 a head start
+- **MCP as discovery tool**: The MCP server provides 198 tools across 37 federal APIs. During variable cataloging, use it to spot-check whether a variable (e.g., "unemployment rate", "Gini coefficient", "government debt-to-GDP") has a directly queryable federal data source
+- **Scope limitation**: This is a quick cross-reference, not exhaustive data sourcing. Spend no more than ~30 seconds per variable on this check. Full data sourcing remains Phase 3's job
+
 ### Framework evaluation
 - **Primary criterion: data availability** — can the model's required inputs actually be measured for the US with available data? Theoretical fit is secondary
 - **Independent evaluation**: Assess each candidate framework on its own merits, not compared against the existing 3 models (comparison happens in a later phase)
@@ -44,6 +51,7 @@ Produce a comprehensive, evidence-ranked catalog of variables that predict revol
 - Hybrid evidence rating — combines quantitative rigor with theoretical breadth to avoid penalizing important variables simply because their field is young or hard to quantify
 - Separate documents — recommended given the volume of systematic coverage across 6 fields; keeps individual artifacts usable by downstream agents without parsing irrelevant material
 - Hybrid catalog format — summary table for human scanning, detailed entries for agent consumption; best of both approaches
+- Data availability cross-referencing — added to give Phase 3 a running start; the US Gov Open Data MCP provides direct queryability against 37 federal APIs during cataloging, turning what would be a Phase 3 cold-start into an incremental check during Phase 2 variable entry
 
 </decisions>
 
