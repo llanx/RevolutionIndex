@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Prior Work Validation | 3/3 | Complete    | 2026-03-02 |
-| 2. Literature Mining | 4/6 | In Progress | - |
+| 2. Literature Mining | 3/6 | In Progress | - |
 | 3. Data Sourcing | 0/3 | Not started | - |
 | 4. Model Building | 0/3 | Not started | - |
 | 5. Validation | 0/3 | Not started | - |
