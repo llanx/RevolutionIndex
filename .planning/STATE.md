@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 2 in progress: Literature Mining (Wave 1 domain reviews complete, Wave 2 next).
+**Current focus:** Phase 2 in progress: Literature Mining (Wave 1 + Wave 2 complete, Wave 3 synthesis next).
 
 ## Current Position
 
 Phase: 2 of 5 (Literature Mining) -- IN PROGRESS
-Plan: 4 of 6 in current phase (4 complete -- Wave 1 domain reviews + variable catalog)
-Status: Phase 2 In Progress -- Variable Catalog Complete, Framework Assessment Next
-Last activity: 2026-03-04 -- Variable catalog (Plan 04) complete. 45 ranked variables from 6 domain reviews.
+Plan: 5 of 6 in current phase (5 complete -- Wave 1 domain reviews + Wave 2 catalog/frameworks/datasets)
+Status: Phase 2 In Progress -- Framework Assessment + Dataset Inventory Complete, Synthesis Next
+Last activity: 2026-03-04 -- Framework assessment (9 candidates) and dataset inventory (13 datasets) complete.
 
-Progress: [█████░░░░░] 50%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 11min
-- Total execution time: 1.30 hours
+- Total plans completed: 8
+- Average duration: 10min
+- Total execution time: 1.47 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 - Prior Work Validation | 3 | 43min | 14min |
-| 2 - Literature Mining | 4 | 35min | 9min |
+| 2 - Literature Mining | 5 | 45min | 9min |
 
 **Recent Trend:**
-- Last 5 plans: 02-04 (9min), 02-01 (9min), 02-02 (9min), 02-03 (8min), 01-03 (14min)
+- Last 5 plans: 02-05 (10min), 02-04 (9min), 02-01 (9min), 02-02 (9min), 02-03 (8min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -78,6 +78,13 @@ Recent decisions affecting current work:
 - [02-04]: Wealth Concentration (Top 0.1%) treated as separate from general inequality -- captures qualitatively different elite capture dynamics
 - [02-04]: Housing affordability included as standalone variable -- US analog to historical food price triggers
 - [02-04]: Data availability without MCP: tags assigned from domain review knowledge and 02-RESEARCH.md coverage map; to be verified in Phase 3
+- [02-05]: Georgescu SDT and V-Dem ERT strongly recommended for Phase 4 -- best data availability and US applicability among 9 candidate frameworks
+- [02-05]: Collier-Hoeffler greed/grievance model not recommended -- core mechanism (resource financing) inapplicable to US
+- [02-05]: Phase 1 Open Questions #6 (frameworks beyond 3 models) and #7 (sensitivity analysis methods) definitively addressed
+- [02-05]: V-Dem ranked as #1 dataset for project utility (1789-present, 483 indicators, comprehensive US coding)
+- [02-05]: ACLED ranked as #2 for real-time US monitoring (2020-present, 30K+ events); ANES #3 for attitudinal validation
+- [02-05]: Zero-event constraint requires multi-source validation strategy: sub-crisis backtesting, cross-national thresholds, financial crisis calibration, attitudinal corroboration
+- [02-05]: COINr sensitivity analysis (Morris screening + Sobol indices) recommended for composite indicators with 50+ parameters
 
 ### Pending Todos
 
@@ -91,5 +98,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 02-04-PLAN.md (Variable Catalog). 45 ranked variables cataloged. Plans 05 (Framework Assessment) and 06 (Synthesis) remain in Phase 2.
+Stopped at: Completed 02-05-PLAN.md (Framework Assessment + Dataset Inventory). 9 frameworks assessed, 13 datasets inventoried. Plan 06 (Synthesis) is the final plan in Phase 2.
 Resume file: None

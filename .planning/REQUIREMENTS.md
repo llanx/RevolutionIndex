@@ -22,8 +22,8 @@ Requirements for initial release. V1 delivers validated research and working mod
 - [x] **LIT-02**: Conduct exhaustive LLM-assisted review of democratic backsliding and state failure literature
 - [x] **LIT-03**: Conduct exhaustive LLM-assisted review of historical revolution case studies and precondition analysis
 - [x] **LIT-04**: Produce a ranked variable catalog with evidence strength ratings, source papers, and theoretical justification for each variable
-- [ ] **LIT-05**: Identify candidate models/frameworks from literature that may supplement or replace the existing 3 models
-- [ ] **LIT-06**: Identify candidate training/validation datasets (NAVCO, PITF, UCDP, etc.) for model evaluation
+- [x] **LIT-05**: Identify candidate models/frameworks from literature that may supplement or replace the existing 3 models
+- [x] **LIT-06**: Identify candidate training/validation datasets (NAVCO, PITF, UCDP, etc.) for model evaluation
 - [ ] **LIT-07**: Produce a synthesis document mapping discovered variables to theoretical frameworks and identifying gaps
 
 ### Data Sourcing
@@ -112,8 +112,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LIT-02 | Phase 2 | Complete |
 | LIT-03 | Phase 2 | Complete |
 | LIT-04 | Phase 2 | Complete |
-| LIT-05 | Phase 2 | Pending |
-| LIT-06 | Phase 2 | Pending |
+| LIT-05 | Phase 2 | Complete |
+| LIT-06 | Phase 2 | Complete |
 | LIT-07 | Phase 2 | Pending |
 | DATA-01 | Phase 3 | Pending |
 | DATA-02 | Phase 3 | Pending |
