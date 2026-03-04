@@ -8,7 +8,7 @@ progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 15
-  completed_plans: 13
+  completed_plans: 14
 ---
 
 # Project State
@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 4 IN PROGRESS. Plan 01 (architecture + pipeline) complete. 5-model ensemble architecture selected, data pipeline infrastructure built, factor IDs migrated to 5-domain taxonomy. Next: Plan 02 (model implementation).
+**Current focus:** Phase 4 IN PROGRESS. Plan 02 (model implementation) complete. All 5 scoring models (PSI, PLI, FSP, Georgescu SDT, V-Dem ERT) implemented with Phase 1 math fixes. Next: Plan 03 (pipeline integration + ensemble scoring).
 
 ## Current Position
 
 Phase: 4 of 5 (Model Building) -- IN PROGRESS
-Plan: 1 of 3 in current phase (Architecture + Pipeline complete)
-Status: Plan 04-01 COMPLETE -- architecture selected, pipeline infrastructure built, factor IDs migrated. Plan 02 next.
-Last activity: 2026-03-04 -- 5-model ensemble architecture documented, 41-variable pipeline config created, factor IDs migrated to 5-domain taxonomy across all files.
+Plan: 2 of 3 in current phase (Model Implementation complete)
+Status: Plan 04-02 COMPLETE -- 5 scoring models implemented with Phase 1 math fixes. Plan 03 next.
+Last activity: 2026-03-04 -- PSI/PLI/FSP models with Phase 1 corrections, Georgescu SDT and V-Dem ERT models implemented as stateless pure functions.
 
-Progress: [█████████░] 87%
+Progress: [█████████░] 93%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
+- Total plans completed: 14
 - Average duration: 13min
-- Total execution time: 2.63 hours
+- Total execution time: 2.76 hours
 
 **By Phase:**
 
@@ -43,17 +43,18 @@ Progress: [█████████░] 87%
 | 1 - Prior Work Validation | 3 | 43min | 14min |
 | 2 - Literature Mining | 6 | 51min | 9min |
 | 3 - Data Sourcing | 3 | 24min | 8min |
-| 4 - Model Building | 1/3 | 45min | 45min |
+| 4 - Model Building | 2/3 | 53min | 27min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (45min), 03-03 (11min), 03-02 (8min), 03-01 (5min), 02-06 (6min)
-- Trend: Phase 4 plans are larger scope (pipeline infrastructure + schema migration)
+- Last 5 plans: 04-02 (8min), 04-01 (45min), 03-03 (11min), 03-02 (8min), 03-01 (5min)
+- Trend: Phase 4 Plan 02 fast (model implementation with clear spec); Plan 01 was larger (infrastructure + migration)
 
 *Updated after each plan completion*
 | Phase 03 P01 | 1 | 1 tasks | 1 files |
 | Phase 03 P02 | 1 | 2 tasks | 1 files |
 | Phase 03 P03 | 1 | 2 tasks | 1 files |
 | Phase 04 P01 | 1 | 2 tasks | 13 files |
+| Phase 04 P02 | 1 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -140,6 +141,12 @@ Recent decisions affecting current work:
 - [04-01]: Variable #39 (Neighborhood/Diffusion Effects) assigned to INSTITUTIONAL_QUALITY domain
 - [04-01]: Factor IDs migrated across entire codebase to 5-domain taxonomy: economic_stress, political_polarization, institutional_quality, social_mobilization, information_media
 - [04-01]: current.json and factors.json demo data IDs updated for cross-reference consistency (Astro pages join on factor ID across benchmark and current data)
+- [04-02]: PSI uses geometric mean (MMP*EMP*SFD)^(1/3) per Phase 1 critical review A1 fix
+- [04-02]: PLI K constants reduced 10x with additive bonuses; velocity bug fixed with actual rate-of-change computation
+- [04-02]: FSP drops CSCICP03USM665S, redistributes weight to unemployment 0.38, labor share 0.30, inflation 0.22, household debt 0.10
+- [04-02]: FSP uses max-based leading-edge aggregation (60/40) instead of simple average for better early warning
+- [04-02]: Georgescu SDT uses weighted average (not multiplicative) per Georgescu 2023 empirical approach for developed economies
+- [04-02]: V-Dem ERT uses sigmoid-mapped 5-year rate-of-change for near-ceiling US institutional indicators
 
 ### Pending Todos
 
@@ -153,5 +160,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 04-01-PLAN.md (Architecture Selection + Pipeline Infrastructure). Plan 01 of Phase 4 complete. Next: 04-02 (Model Implementation).
+Stopped at: Completed 04-02-PLAN.md (Model Implementation). Plan 02 of Phase 4 complete. Next: 04-03 (Pipeline Integration + Ensemble Scoring).
 Resume file: None
