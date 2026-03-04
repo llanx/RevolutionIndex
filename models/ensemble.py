@@ -162,13 +162,20 @@ def _build_raw_history(
 
     For months where some domains lack data, compute from available
     domains only (exclude missing, don't treat as zero).
+
+    Minimum coverage: at least 2 domains must have valid data for a month
+    to be included. This prevents misleading near-zero scores for early
+    years (pre-1979) when most variables lack data coverage.
     """
+    MIN_DOMAINS_REQUIRED = 2  # At least 2 of 5 domains must have data
+
     history = []
 
     for date_idx in domain_scores_df.index:
         row = domain_scores_df.loc[date_idx]
         weighted_sum = 0.0
         total_weight = 0.0
+        valid_domain_count = 0
 
         for domain in Domain:
             domain_id = domain.value
@@ -176,8 +183,9 @@ def _build_raw_history(
                 weight = DOMAIN_WEIGHTS[domain]
                 weighted_sum += float(row[domain_id]) * weight
                 total_weight += weight
+                valid_domain_count += 1
 
-        if total_weight > 0:
+        if total_weight > 0 and valid_domain_count >= MIN_DOMAINS_REQUIRED:
             # Scale domain scores (0.0-1.0) to composite (0-100)
             composite = (weighted_sum / total_weight) * 100.0
             date_str = date_idx.strftime("%Y-%m-%d")
