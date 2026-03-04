@@ -4,56 +4,261 @@
     {
       "id": "economic_stress",
       "name": "Economic Stress",
-      "description": "Measures the concentration of wealth, income disparities, and broad economic pressures on households. Elevated economic stress correlates with historical preconditions for mass unrest.",
-      "current_value": 0.72,
+      "description": "Measures economic pressures that academic research links to political instability, including wage stagnation, inequality, unemployment, inflation, housing costs, and financial system stress.",
+      "current_value": 0.3632,
       "historical": [
-        { "date": "2026-02-01", "value": 0.70 },
-        { "date": "2026-02-15", "value": 0.71 },
-        { "date": "2026-03-01", "value": 0.72 }
+        {
+          "date": "2016-01-31",
+          "value": 0.3643
+        },
+        {
+          "date": "2017-01-31",
+          "value": 0.3613
+        },
+        {
+          "date": "2018-01-31",
+          "value": 0.3328
+        },
+        {
+          "date": "2019-01-31",
+          "value": 0.3421
+        },
+        {
+          "date": "2020-01-31",
+          "value": 0.384
+        },
+        {
+          "date": "2021-01-31",
+          "value": 0.3345
+        },
+        {
+          "date": "2022-01-31",
+          "value": 0.3391
+        },
+        {
+          "date": "2023-01-31",
+          "value": 0.3282
+        },
+        {
+          "date": "2024-01-31",
+          "value": 0.3374
+        },
+        {
+          "date": "2025-01-31",
+          "value": 0.3461
+        },
+        {
+          "date": "2025-12-31",
+          "value": 0.3632
+        }
       ]
     },
     {
       "id": "political_polarization",
       "name": "Political Polarization",
-      "description": "Tracks the degree of ideological divergence between major political factions. High polarization reduces the possibility of negotiated resolution to grievances.",
-      "current_value": 0.78,
+      "description": "Tracks partisan division at both elite (congressional voting) and mass (public attitudes) levels, including affective polarization and anti-system sentiment.",
+      "current_value": 0.5051,
       "historical": [
-        { "date": "2026-02-01", "value": 0.74 },
-        { "date": "2026-02-15", "value": 0.76 },
-        { "date": "2026-03-01", "value": 0.78 }
-      ]
-    },
-    {
-      "id": "social_mobilization",
-      "name": "Social Mobilization",
-      "description": "Tracks frequency, size, and geographic spread of organized public demonstrations and collective action. A leading indicator of mass mobilization capacity.",
-      "current_value": 0.58,
-      "historical": [
-        { "date": "2026-02-01", "value": 0.49 },
-        { "date": "2026-02-15", "value": 0.53 },
-        { "date": "2026-03-01", "value": 0.58 }
+        {
+          "date": "2016-01-31",
+          "value": 0.4793
+        },
+        {
+          "date": "2017-01-31",
+          "value": 0.4899
+        },
+        {
+          "date": "2018-01-31",
+          "value": 0.4644
+        },
+        {
+          "date": "2019-01-31",
+          "value": 0.502
+        },
+        {
+          "date": "2020-01-31",
+          "value": 0.5005
+        },
+        {
+          "date": "2021-01-31",
+          "value": 0.5354
+        },
+        {
+          "date": "2022-01-31",
+          "value": 0.53
+        },
+        {
+          "date": "2023-01-31",
+          "value": 0.5
+        },
+        {
+          "date": "2024-01-31",
+          "value": 0.5538
+        },
+        {
+          "date": "2025-01-31",
+          "value": 0.5369
+        },
+        {
+          "date": "2025-12-31",
+          "value": 0.5051
+        }
       ]
     },
     {
       "id": "institutional_quality",
       "name": "Institutional Quality",
-      "description": "Measures public confidence in and functional capacity of government, judiciary, media, and law enforcement. Declining institutional quality removes the legitimating mechanisms that prevent political violence.",
-      "current_value": 0.31,
+      "description": "Monitors the health of democratic institutions including judicial independence, legislative constraints on executive power, electoral integrity, and freedom of expression.",
+      "current_value": 0.2919,
       "historical": [
-        { "date": "2026-02-01", "value": 0.36 },
-        { "date": "2026-02-15", "value": 0.33 },
-        { "date": "2026-03-01", "value": 0.31 }
+        {
+          "date": "2016-01-31",
+          "value": 0.2751
+        },
+        {
+          "date": "2017-01-31",
+          "value": 0.2867
+        },
+        {
+          "date": "2018-01-31",
+          "value": 0.2907
+        },
+        {
+          "date": "2019-01-31",
+          "value": 0.3122
+        },
+        {
+          "date": "2020-01-31",
+          "value": 0.3998
+        },
+        {
+          "date": "2021-01-31",
+          "value": 0.3316
+        },
+        {
+          "date": "2022-01-31",
+          "value": 0.3151
+        },
+        {
+          "date": "2023-01-31",
+          "value": 0.2946
+        },
+        {
+          "date": "2024-01-31",
+          "value": 0.3547
+        },
+        {
+          "date": "2025-01-31",
+          "value": 0.3016
+        },
+        {
+          "date": "2025-12-31",
+          "value": 0.2919
+        }
+      ]
+    },
+    {
+      "id": "social_mobilization",
+      "name": "Social Mobilization",
+      "description": "Measures collective action capacity and social trust, including protest activity, organizational density, government trust, and democratic commitment.",
+      "current_value": 0.409,
+      "historical": [
+        {
+          "date": "2016-01-31",
+          "value": 0.4416
+        },
+        {
+          "date": "2017-01-31",
+          "value": 0.367
+        },
+        {
+          "date": "2018-01-31",
+          "value": 0.3682
+        },
+        {
+          "date": "2019-01-31",
+          "value": 0.3885
+        },
+        {
+          "date": "2020-01-31",
+          "value": 0.4312
+        },
+        {
+          "date": "2021-01-31",
+          "value": 0.3771
+        },
+        {
+          "date": "2022-01-31",
+          "value": 0.3678
+        },
+        {
+          "date": "2023-01-31",
+          "value": 0.3893
+        },
+        {
+          "date": "2024-01-31",
+          "value": 0.4165
+        },
+        {
+          "date": "2025-01-31",
+          "value": 0.3968
+        },
+        {
+          "date": "2025-12-31",
+          "value": 0.409
+        }
       ]
     },
     {
       "id": "information_media",
       "name": "Information & Media",
-      "description": "Tracks the health of the information ecosystem including media fragmentation, misinformation prevalence, and narrative control. A degraded information environment amplifies all other instability factors.",
-      "current_value": 0.44,
+      "description": "Tracks media trust levels and partisan media consumption gaps that academic research associates with democratic resilience.",
+      "current_value": 0.5066,
       "historical": [
-        { "date": "2026-02-01", "value": 0.42 },
-        { "date": "2026-02-15", "value": 0.43 },
-        { "date": "2026-03-01", "value": 0.44 }
+        {
+          "date": "2016-01-31",
+          "value": 0.4961
+        },
+        {
+          "date": "2017-01-31",
+          "value": 0.4178
+        },
+        {
+          "date": "2018-01-31",
+          "value": 0.5539
+        },
+        {
+          "date": "2019-01-31",
+          "value": 0.3987
+        },
+        {
+          "date": "2020-01-31",
+          "value": 0.5447
+        },
+        {
+          "date": "2021-01-31",
+          "value": 0.4087
+        },
+        {
+          "date": "2022-01-31",
+          "value": 0.3713
+        },
+        {
+          "date": "2023-01-31",
+          "value": 0.5429
+        },
+        {
+          "date": "2024-01-31",
+          "value": 0.4044
+        },
+        {
+          "date": "2025-01-31",
+          "value": 0.4772
+        },
+        {
+          "date": "2025-12-31",
+          "value": 0.5066
+        }
       ]
     }
   ]
