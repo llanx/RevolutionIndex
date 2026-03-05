@@ -33,6 +33,7 @@ from config import (
     get_variables_by_domain,
 )
 from normalize import normalize_variable
+from fetchers import try_auto_fetch
 
 
 # ---------------------------------------------------------------------------
@@ -272,16 +273,24 @@ def construct_proxy(
         return load_manual_source(variable)
 
     # #11: Elite Factionalism (intra-party DW-NOMINATE SD)
-    # Requires VoteView data that must be manually loaded
     if cat_num == 11:
+        result = try_auto_fetch(variable)
+        if result is not None:
+            return result
         return load_manual_source(variable)
 
     # #36: Protest Diffusion (ACLED-derived)
     if cat_num == 36:
+        result = try_auto_fetch(variable)
+        if result is not None:
+            return result
         return load_manual_source(variable)
 
     # #37: Prior Protest Experience (ACLED-derived)
     if cat_num == 37:
+        result = try_auto_fetch(variable)
+        if result is not None:
+            return result
         return load_manual_source(variable)
 
     return None
@@ -435,18 +444,28 @@ def fetch_all(api_key: str, start_year: int = 1947) -> pd.DataFrame:
             except Exception as e:
                 print(f"  [component] {sid}: FAILED - {e}")
 
-    # Phase 2: Load manual download data
+    # Phase 2: Load manual download data (try auto-fetch first)
     manual_vars = [v for v in VARIABLES if v.source_type == SourceType.MANUAL_DOWNLOAD]
     print(f"\nLoading {len(manual_vars)} manual download variables...")
     for var in manual_vars:
+        # Try automated fetcher first
+        series = try_auto_fetch(var)
+        if series is not None:
+            raw_data[str(var.catalog_number)] = series
+            print(f"  [{var.catalog_number}] {var.name}: "
+                  f"{len(series)} observations (auto-fetched)")
+            continue
+
+        # Fall back to manually-placed cached file
         series = load_manual_source(var)
         if series is not None:
             raw_data[str(var.catalog_number)] = series
             print(f"  [{var.catalog_number}] {var.name}: "
-                  f"{len(series)} observations")
+                  f"{len(series)} observations (cached)")
         else:
             print(f"  [{var.catalog_number}] {var.name}: "
-                  f"NOT FOUND (place data in data/raw/var_{var.catalog_number}/)")
+                  f"NOT AVAILABLE (auto-fetch failed, no cache in "
+                  f"data/raw/var_{var.catalog_number}/)")
 
     # Phase 3: Construct proxy variables
     constructed_vars = [
