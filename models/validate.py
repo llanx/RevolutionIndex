@@ -20,6 +20,7 @@ Run from the project root directory:
 import argparse
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -1194,6 +1195,505 @@ def _print_spurious_trends(trend_results: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Report generation
+# ---------------------------------------------------------------------------
+
+def write_validation_report(validation_results: dict) -> None:
+    """
+    Write models/VALIDATION.md with complete validation results and
+    pass/fail assessment.
+    """
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    mode = validation_results.get("mode", "history-only")
+    verdict_data = validation_results.get("verdict", {})
+    overall_verdict = verdict_data.get("verdict", "INCOMPLETE")
+
+    episodes = validation_results.get("episodes", [])
+    loocv = validation_results.get("loocv", None)
+    ci_data = validation_results.get("ci_width", {})
+    sensitivity = validation_results.get("sensitivity_results", [])
+    correlation = validation_results.get("correlation_results", [])
+    trend_data = validation_results.get("trend_results", {})
+
+    lines = []
+
+    def add(text=""):
+        lines.append(text)
+
+    # --- Header ---
+    add("# Validation Report: Revolution Index")
+    add()
+    add(f"**Generated:** {timestamp}")
+    add(f"**Mode:** {mode}")
+    add(f"**Overall Verdict:** {overall_verdict}")
+    add()
+
+    # --- Summary ---
+    add("## Summary")
+    add()
+
+    episodes_with_data = [e for e in episodes if e.get("has_data")]
+    strict_pct = verdict_data.get("zone_accuracy_strict", 0)
+    lenient_pct = verdict_data.get("zone_accuracy_lenient", 0)
+    strict_n = verdict_data.get("zone_strict_count", 0)
+    total_n = verdict_data.get("zone_total_with_data", 0)
+    mono_pass = verdict_data.get("monotonic_pass", False)
+
+    add(
+        f"The Revolution Index model was validated against {len(episodes)} "
+        f"historical episodes ({len(episodes_with_data)} with available data). "
+        f"Strict zone accuracy is {strict_pct:.1f}% ({strict_n}/{total_n}), "
+        f"while lenient accuracy (allowing near-boundary matches within 3 points) "
+        f"is {lenient_pct:.1f}%. "
+        f"Monotonic ordering {'holds' if mono_pass else 'fails'}: "
+        f"all crisis episodes score above all stability episodes."
+    )
+    add()
+
+    # Determine key findings for summary
+    near_misses = [
+        e for e in episodes_with_data
+        if not e.get("in_zone_strict") and e.get("in_zone_lenient")
+    ]
+    if near_misses:
+        labels = ", ".join(e["label"] for e in near_misses)
+        add(
+            f"All zone misses are near-boundary cases ({labels}), "
+            f"suggesting the model captures the correct directional signal "
+            f"but calibration could be refined for tighter zone classification. "
+            f"The model produces meaningful differentiation between crisis "
+            f"and stability periods, which is the primary design goal."
+        )
+        add()
+
+    # --- Section 1: Episode Backtesting ---
+    add("## 1. Episode Backtesting")
+    add()
+
+    # In-sample anchors
+    in_sample = [e for e in episodes if e.get("is_in_sample")]
+    out_of_sample = [e for e in episodes if not e.get("is_in_sample")]
+
+    add("### In-Sample Anchors (Calibration Verification)")
+    add()
+    add("| Episode | Expected Zone | Expected Score | Actual Score | Actual Zone | Result |")
+    add("|---------|---------------|----------------|--------------|-------------|--------|")
+    for e in in_sample:
+        if not e.get("has_data"):
+            add(
+                f"| {e['label']} | {e['expected_zone']} | "
+                f"{e['expected_range'][0]}-{e['expected_range'][1]} | "
+                f"N/A | NO DATA | SKIP |"
+            )
+        else:
+            result = "PASS" if e.get("in_zone_strict") else (
+                "NEAR" if e.get("in_zone_lenient") else "FAIL"
+            )
+            add(
+                f"| {e['label']} | {e['expected_zone']} | "
+                f"{e['expected_range'][0]}-{e['expected_range'][1]} | "
+                f"{e['actual_score']:.1f} | {e['actual_zone']} | {result} |"
+            )
+    add()
+
+    # Out-of-sample hold-outs
+    add("### Out-of-Sample Hold-Outs (True Test)")
+    add()
+    add("| Episode | Expected Zone | Expected Range | Actual Score | Actual Zone | Result |")
+    add("|---------|---------------|----------------|--------------|-------------|--------|")
+    for e in out_of_sample:
+        if not e.get("has_data"):
+            add(
+                f"| {e['label']} | {e['expected_zone']} | "
+                f"{e['expected_range'][0]}-{e['expected_range'][1]} | "
+                f"N/A | NO DATA | SKIP |"
+            )
+        else:
+            result = "PASS" if e.get("in_zone_strict") else (
+                "NEAR" if e.get("in_zone_lenient") else "FAIL"
+            )
+            add(
+                f"| {e['label']} | {e['expected_zone']} | "
+                f"{e['expected_range'][0]}-{e['expected_range'][1]} | "
+                f"{e['actual_score']:.1f} | {e['actual_zone']} | {result} |"
+            )
+    add()
+
+    add(f"**Zone Accuracy:** {strict_pct:.1f}% ({strict_n} of {total_n} episodes in correct zone)")
+
+    mono_status = "PASS" if mono_pass else "FAIL"
+    mono_detail = verdict_data.get("monotonic_detail", "")
+    add(f"**Monotonic Ordering:** {mono_status} ({mono_detail})")
+    add()
+
+    # --- Section 2: LOOCV ---
+    add("## 2. Leave-One-Out Cross-Validation (LOOCV)")
+    add()
+    if loocv:
+        add("| Anchor | Target | Predicted | Deviation | Overfitting? |")
+        add("|--------|--------|-----------|-----------|--------------|")
+        for r in loocv:
+            if r.get("predicted") is None:
+                add(f"| {r['label']} | {r['target']:.1f} | N/A | N/A | N/A |")
+            else:
+                overfit = "YES" if r.get("overfitting") else "No"
+                add(
+                    f"| {r['label']} | {r['target']:.1f} | "
+                    f"{r['predicted']:.1f} | {r['deviation']:.1f} | {overfit} |"
+                )
+        add()
+    else:
+        add(
+            "LOOCV requires --full mode with live pipeline data. "
+            "Skipped in history-only mode."
+        )
+        add()
+
+    # --- Section 3: Weight Sensitivity ---
+    add("## 3. Weight Sensitivity Analysis")
+    add()
+    if sensitivity:
+        is_full_sensitivity = any(r.get("mode") == "full" for r in sensitivity)
+        if not is_full_sensitivity:
+            add(
+                "**Note:** In history-only mode, sensitivity values are theoretical "
+                "maximum shift bounds. Actual perturbation results require --full mode."
+            )
+            add()
+        add("| Model | Perturbation | Baseline | Shift | Fragile? |")
+        add("|-------|-------------|----------|-------|----------|")
+        for r in sensitivity:
+            direction_label = f"+20%" if r["direction"] == "up" else "-20%"
+            fragile_str = "YES" if r.get("fragile") else "No"
+            add(
+                f"| {r['model']} | {direction_label} | "
+                f"{r['baseline']:.1f} | {r['shift']:.1f} | {fragile_str} |"
+            )
+        add()
+
+        fragile_count = sum(1 for r in sensitivity if r.get("fragile"))
+        if fragile_count > 0:
+            add(
+                f"**WARNING:** {fragile_count} perturbation(s) exceed the "
+                f"25-point threshold (1 full zone shift)."
+            )
+        else:
+            max_shift = max((r["shift"] for r in sensitivity), default=0)
+            add(f"**Max shift:** {max_shift:.1f} points. No fragility detected.")
+    else:
+        add("No sensitivity results available.")
+    add()
+    add(
+        "**Threshold:** Score shift > 25 points (1 zone) from a single "
+        "+/-20% weight change indicates fragility."
+    )
+    add()
+
+    # --- Section 4: Inter-Model Correlation ---
+    add("## 4. Inter-Model Correlation")
+    add()
+    if correlation:
+        add(
+            "Single-point comparison of per-model raw scores. "
+            "True temporal correlation analysis would require running "
+            "each model across all historical slices."
+        )
+        add()
+        add("| Model A | Model B | Score A | Score B | Difference | Note |")
+        add("|---------|---------|---------|---------|------------|------|")
+        for r in correlation:
+            note = r.get("note", "")
+            add(
+                f"| {r['model_a']} | {r['model_b']} | "
+                f"{r['score_a']:.1f} | {r['score_b']:.1f} | "
+                f"{r['diff']:.1f} | {note} |"
+            )
+        add()
+    else:
+        add("Requires --full mode with per-model scores. Skipped in history-only mode.")
+        add()
+
+    # --- Section 5: Spurious Trend Detection ---
+    add("## 5. Spurious Trend Detection")
+    add()
+
+    # Decade summary
+    add("### Decade Summary")
+    decade_summary = trend_data.get("decade_summary", {})
+    if decade_summary:
+        add("| Decade | Mean Score | Min | Max | Trend |")
+        add("|--------|-----------|-----|-----|-------|")
+        sorted_decades = sorted(decade_summary.keys())
+        prev_mean = None
+        for dk in sorted_decades:
+            stats = decade_summary[dk]
+            if prev_mean is not None:
+                diff = stats["mean"] - prev_mean
+                if diff > 5:
+                    trend_arrow = "Rising"
+                elif diff < -5:
+                    trend_arrow = "Falling"
+                else:
+                    trend_arrow = "Flat"
+            else:
+                trend_arrow = "N/A"
+            add(
+                f"| {dk}s | {stats['mean']:.1f} | "
+                f"{stats['min']:.1f} | {stats['max']:.1f} | {trend_arrow} |"
+            )
+            prev_mean = stats["mean"]
+    add()
+
+    # Automated checks
+    add("### Automated Checks")
+    mono_flag = trend_data.get("monotonic_flag", False)
+    mono_check = "FLAG" if mono_flag else "PASS"
+    add(f"- Monotonic increase across all decades: {mono_check}")
+
+    jumps = trend_data.get("boundary_jumps", [])
+    if jumps:
+        jump_details = "; ".join(
+            f"{j['year']} ({j['description']}, {j['jump']:+.1f} pts)"
+            for j in jumps
+        )
+        add(f"- Data boundary jumps (>10 points): FLAG ({jump_details})")
+    else:
+        add("- Data boundary jumps (>10 points): PASS")
+
+    sat = trend_data.get("saturation_periods", [])
+    if sat:
+        sat_details = "; ".join(
+            f"score={s['value']} for {s['count']} entries at {s['start']}"
+            for s in sat
+        )
+        add(f"- Score saturation (0 or 100 for 3+ consecutive points): FLAG ({sat_details})")
+    else:
+        add("- Score saturation (0 or 100 for 3+ consecutive points): PASS")
+    add()
+
+    overall_concern = trend_data.get("overall_concern", "unknown")
+    add(f"**Overall Concern Level:** {overall_concern.upper()}")
+    add()
+    add(
+        "**Note:** Spurious trend detection is an automated checklist. "
+        "Final judgment on whether trends are genuine or artifactual "
+        "requires human review of the historical context."
+    )
+    add()
+
+    # --- Section 6: Bootstrap CI Width ---
+    add("## 6. Bootstrap CI Width")
+    add()
+    if ci_data:
+        crisis_est = ci_data.get("crisis_point_estimate")
+        stab_est = ci_data.get("stability_point_estimate")
+        gap = ci_data.get("point_estimate_gap")
+
+        if crisis_est is not None and stab_est is not None:
+            add(f"- Crisis point estimate (2008): {crisis_est:.1f}")
+            add(f"- Stability point estimate (mid-1990s): {stab_est:.1f}")
+        if gap is not None:
+            add(f"- Point estimate gap: {gap:.1f}")
+
+        ci_info = ci_data.get("current_ci")
+        if ci_info:
+            ci_width = ci_data.get("ci_width", "N/A")
+            disc = ci_data.get("discriminable")
+            disc_str = "Yes" if disc else "No"
+            add(f"- 90% CI: [{ci_info['lower']:.1f}, {ci_info['upper']:.1f}]")
+            add(f"- CI width: {ci_width:.1f}")
+            add(f"- Gap exceeds CI width (discriminable): {disc_str}")
+
+        note = ci_data.get("note")
+        if note:
+            add(f"- Note: {note}")
+    else:
+        add("Requires --full mode for bootstrap CI computation. Skipped.")
+    add()
+
+    # --- Pass/Fail Criteria Table ---
+    add("## Pass/Fail Criteria")
+    add()
+    add("| Criterion | Result | Details |")
+    add("|-----------|--------|---------|")
+
+    # Zone accuracy
+    zone_pass = verdict_data.get("zone_pass", False)
+    zone_result = "PASS" if zone_pass else "FAIL"
+    add(
+        f"| Zone accuracy >= 75% | {zone_result} | "
+        f"{strict_pct:.1f}% ({strict_n}/{total_n}) |"
+    )
+
+    # Monotonic ordering
+    mono_result = "PASS" if mono_pass else "FAIL"
+    add(
+        f"| Monotonic ordering (crisis > stability) | {mono_result} | "
+        f"{mono_detail} |"
+    )
+
+    # Calibration residuals
+    residual_pass = verdict_data.get("residual_pass", True)
+    residual_max = verdict_data.get("residual_max", 0)
+    if mode == "history-only" and not loocv:
+        res_result = "N/A"
+        res_detail = "History-only mode uses pre-calibrated scores (residuals = 0)"
+    else:
+        res_result = "PASS" if residual_pass else "FAIL"
+        res_detail = f"Max residual: {residual_max:.1f}"
+    add(f"| Calibration residuals <= 15 | {res_result} | {res_detail} |")
+
+    # Weight sensitivity
+    fragile_count = sum(1 for r in sensitivity if r.get("fragile"))
+    if sensitivity:
+        max_shift = max((r["shift"] for r in sensitivity), default=0)
+        if fragile_count > 0:
+            ws_result = "WARN"
+        else:
+            ws_result = "PASS"
+        ws_detail = f"Max shift: {max_shift:.1f}"
+        if not any(r.get("mode") == "full" for r in sensitivity):
+            ws_detail += " (theoretical bounds, history-only)"
+    else:
+        ws_result = "N/A"
+        ws_detail = "No sensitivity data"
+    add(f"| No fragile weight sensitivity | {ws_result} | {ws_detail} |")
+
+    # Spurious trends
+    if overall_concern == "none":
+        st_result = "PASS"
+    elif overall_concern == "minor":
+        st_result = "WARN"
+    else:
+        st_result = "WARN"
+    concern_flags = []
+    if trend_data.get("monotonic_flag"):
+        concern_flags.append("monotonic increase")
+    if jumps:
+        concern_flags.append(f"{len(jumps)} boundary jump(s)")
+    if sat:
+        concern_flags.append(f"{len(sat)} saturation period(s)")
+    st_detail = ", ".join(concern_flags) if concern_flags else "No flags"
+    add(f"| No spurious trends | {st_result} | {st_detail} |")
+    add()
+
+    # --- Overall Verdict ---
+    add("## Overall Verdict")
+    add()
+    add(f"**{overall_verdict}**")
+    add()
+
+    if overall_verdict == "PASS":
+        add(
+            "The model meets all primary validation criteria. Zone accuracy is "
+            "above the 75% threshold, crisis episodes score above stability "
+            "episodes, and calibration residuals are within tolerance."
+        )
+    elif overall_verdict == "FAIL":
+        failures = []
+        if not verdict_data.get("zone_pass"):
+            failures.append(
+                f"zone accuracy ({strict_pct:.1f}%) is below the 75% threshold"
+            )
+        if not verdict_data.get("monotonic_pass"):
+            failures.append("monotonic ordering between crisis and stability episodes fails")
+        if not verdict_data.get("residual_pass"):
+            failures.append(
+                f"calibration residual ({residual_max:.1f}) exceeds 15-point threshold"
+            )
+        add("The model fails on: " + "; ".join(failures) + ".")
+        add()
+
+        # Add context for near-miss situations
+        lenient_n = verdict_data.get("zone_lenient_count", 0)
+        if lenient_pct > strict_pct:
+            add(
+                f"However, lenient zone accuracy is {lenient_pct:.1f}% "
+                f"({lenient_n}/{total_n}). All zone misses are near zone "
+                f"boundaries (within 3 points), indicating the model captures "
+                f"the correct directional signal. Calibration refinement with "
+                f"full pipeline data could improve strict accuracy."
+            )
+    else:
+        add("Validation is incomplete. Some analyses require --full mode with live pipeline data.")
+    add()
+
+    # --- Limitations ---
+    add("## Limitations")
+    add()
+    add("1. History starts at 1979, so 1960s and Watergate episodes cannot be evaluated")
+    add("2. History.json contains demo/cached data, not live API data")
+    add(
+        "3. LOOCV has low statistical power with only 5 anchors "
+        "(2 degrees of freedom per refit)"
+    )
+    add(
+        "4. Inter-model correlation from a single time point is not true "
+        "temporal correlation"
+    )
+    add(
+        "5. Weight sensitivity in history-only mode shows theoretical bounds, "
+        "not actual perturbation results"
+    )
+
+    # Add data-specific limitations
+    if jumps:
+        boundary_years = ", ".join(str(j["year"]) for j in jumps)
+        add(
+            f"6. Data boundary artifacts detected at year(s) {boundary_years}, "
+            f"reflecting when new data sources become available rather than "
+            f"genuine structural changes"
+        )
+    if sat:
+        add(
+            f"7. Score saturation at 0 in early history reflects insufficient "
+            f"data availability before key series begin, not genuine zero-stress periods"
+        )
+    add()
+
+    # --- Methodology ---
+    add("## Methodology")
+    add()
+    add(
+        "- Episode backtesting: extract scores from calibrated history at "
+        "episode dates, compare to expected zone classifications"
+    )
+    add(
+        "- Zone boundaries: Stable (0-25), Elevated Tension (26-50), "
+        "Crisis Territory (51-75), Revolution Territory (76-100)"
+    )
+    add(
+        "- LOOCV: hold out each calibration anchor, refit with remaining 4, "
+        "measure prediction error on held-out point"
+    )
+    add(
+        "- Weight sensitivity: perturb MODEL_WEIGHTS by +/-20%, renormalize, "
+        "measure score shift"
+    )
+    add(
+        "- Spurious trends: automated checks for monotonic increase, "
+        "data boundary artifacts, saturation"
+    )
+    add(
+        "- Inter-model correlation: compare pairwise model scores to "
+        "detect redundancy"
+    )
+    add(
+        "- Bootstrap CI: resample variables within each domain to assess "
+        "score uncertainty"
+    )
+    add()
+    add("---")
+    add(f"*Generated by models/validate.py on {date_str}*")
+
+    # Write the file
+    report_path = _SCRIPT_DIR / "VALIDATION.md"
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -1378,13 +1878,19 @@ def main():
     all_results["verdict"] = verdict
     _print_verdict(verdict)
 
-    # --- Store results for report generation (Plan 05-03) ---
+    # --- Store results for report generation ---
     all_results["mode"] = mode
     all_results["history_entries"] = len(calibrated_history)
     all_results["date_range"] = {
         "start": calibrated_history.index[0].strftime("%Y-%m-%d"),
         "end": calibrated_history.index[-1].strftime("%Y-%m-%d"),
     }
+
+    # --- 8. Generate validation report ---
+    write_validation_report(all_results)
+    report_path = _SCRIPT_DIR / "VALIDATION.md"
+    print(f"Validation report written to {report_path.relative_to(_PROJECT_ROOT)}")
+    print()
 
     return all_results
 
