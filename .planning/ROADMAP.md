@@ -83,15 +83,13 @@ Plans:
   3. Each model accepts the unified dataset and returns a structured output containing a 0-100 score, component scores, and factor contributions -- as a stateless pure function
   4. If multiple models are used, an ensemble/composite score is computed with documented weighting rationale
   5. Score interpretation labels map the 0-100 range to human-readable severity tiers (e.g., low/moderate/elevated/high/crisis)
-**Plans**: 3 plans
-
 **Plans**: 4 plans
 
 Plans:
-- [x] 04-01-PLAN.md — Architecture selection + data pipeline + schema update (Wave 1)
-- [x] 04-02-PLAN.md — Implement 5 models (PSI, PLI, FSP, Georgescu SDT, V-Dem ERT) as pure functions (Wave 2)
-- [x] 04-03-PLAN.md — Ensemble scoring, calibration, bootstrap CIs, JSON output (Wave 3)
-- [ ] 04-04-PLAN.md — Gap closure: fix bootstrap n=1000 and history 1960-1978 zero entries (Wave 1, gap closure)
+- [x] 04-01-PLAN.md -- Architecture selection + data pipeline + schema update (Wave 1)
+- [x] 04-02-PLAN.md -- Implement 5 models (PSI, PLI, FSP, Georgescu SDT, V-Dem ERT) as pure functions (Wave 2)
+- [x] 04-03-PLAN.md -- Ensemble scoring, calibration, bootstrap CIs, JSON output (Wave 3)
+- [x] 04-04-PLAN.md -- Gap closure: fix bootstrap n=1000 and history 1960-1978 zero entries (Wave 1, gap closure)
 
 ### Phase 5: Validation
 **Goal**: Determine whether the model(s) produce meaningful signal by testing against historical ground truth -- answering the question "should we trust this score?"
@@ -103,12 +101,12 @@ Plans:
   3. Bootstrap confidence intervals are computed for all scores, and the intervals are narrow enough to distinguish crisis from non-crisis periods
   4. Sensitivity analysis across plausible parameter ranges shows the model is not brittle -- conclusions hold across reasonable parameter variation
   5. A validation report exists with explicit pass/fail assessment, methodology documentation, and honest disclosure of limitations
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
-- [ ] 05-03: TBD
+- [ ] 05-01-PLAN.md -- Episode backtesting (10 episodes), LOOCV on calibration anchors, CI width verification (Wave 1)
+- [ ] 05-02-PLAN.md -- Weight sensitivity analysis, inter-model correlation, spurious trend detection (Wave 2)
+- [ ] 05-03-PLAN.md -- Validation report generation (VALIDATION.md) with pass/fail verdict + human review (Wave 3)
 
 ## Progress
 
@@ -120,5 +118,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Prior Work Validation | 3/3 | Complete    | 2026-03-02 |
 | 2. Literature Mining | 6/6 | Complete    | 2026-03-04 |
 | 3. Data Sourcing | 3/3 | Complete    | 2026-03-04 |
-| 4. Model Building | 3/4 | Gap Closure | 2026-03-04 |
-| 5. Validation | 0/3 | Not started | - |
+| 4. Model Building | 4/4 | Complete    | 2026-03-04 |
+| 5. Validation | 0/3 | Planned     | - |
