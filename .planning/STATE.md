@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-last_updated: "2026-03-04T10:43:00Z"
+last_updated: "2026-03-05T01:59:00Z"
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
-  total_plans: 16
-  completed_plans: 16
+  total_plans: 19
+  completed_plans: 17
 ---
 
 # Project State
@@ -18,23 +18,23 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 4 COMPLETE (all 4 plans including gap closure). Pipeline infrastructure, 5 model implementations, ensemble scoring + JSON output, and gap closure (bootstrap n=1000, history zero-score fix) all done. Next: Phase 5 (Model Validation).
+**Current focus:** Phase 5 IN PROGRESS (1/3 plans complete). Core validation script built and tested. Episode backtesting against 10 historical episodes works in history-only mode. Next: Plan 05-02 (weight sensitivity analysis).
 
 ## Current Position
 
-Phase: 4 of 5 (Model Building) -- COMPLETE
-Plan: 4 of 4 in current phase (Gap Closure complete)
-Status: Phase 04 COMPLETE -- all models, ensemble, calibration, bootstrap CIs, JSON output, and gap closure all done. Pipeline executable via `python models/run.py`.
-Last activity: 2026-03-04 -- Gap closure: MIN_DOMAINS_REQUIRED=2 in _build_raw_history(), bootstrap CI n=1000, history leading zeros removed.
+Phase: 5 of 5 (Model Validation) -- IN PROGRESS
+Plan: 1 of 3 in current phase (Core Validation complete)
+Status: Plan 05-01 COMPLETE. validate.py built with episode backtesting (10 episodes), LOOCV, CI width check. History-only mode works. Next: 05-02 weight sensitivity.
+Last activity: 2026-03-04 -- Core validation: episode backtesting, LOOCV, CI width check, 3-criterion verdict.
 
-Progress: [██████████] 100%
+Progress: [████████░░] 89%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
+- Total plans completed: 17
 - Average duration: 12min
-- Total execution time: 2.94 hours
+- Total execution time: 3.01 hours
 
 **By Phase:**
 
@@ -44,10 +44,11 @@ Progress: [██████████] 100%
 | 2 - Literature Mining | 6 | 51min | 9min |
 | 3 - Data Sourcing | 3 | 24min | 8min |
 | 4 - Model Building | 4/4 | 64min | 16min |
+| 5 - Validation | 1/3 | 4min | 4min |
 
 **Recent Trend:**
-- Last 5 plans: 04-04 (2min), 04-03 (9min), 04-02 (8min), 04-01 (45min), 03-03 (11min)
-- Trend: Phase 4 Plan 04 (gap closure) very fast -- targeted fixes to 3 files, no new infrastructure
+- Last 5 plans: 05-01 (4min), 04-04 (2min), 04-03 (9min), 04-02 (8min), 04-01 (45min)
+- Trend: Phase 5 Plan 01 (core validation) fast -- standalone script importing from existing modules
 
 *Updated after each plan completion*
 | Phase 03 P01 | 1 | 1 tasks | 1 files |
@@ -57,6 +58,7 @@ Progress: [██████████] 100%
 | Phase 04 P02 | 1 | 2 tasks | 6 files |
 | Phase 04 P03 | 1 | 2 tasks | 8 files |
 | Phase 04 P04 | 1 | 1 tasks | 3 files |
+| Phase 05 P01 | 1 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -157,6 +159,10 @@ Recent decisions affecting current work:
 - [04-04]: Leading zeros (1960-1978) removed from history.json; interior zeros left as-is for next real pipeline run
 - [04-04]: Bootstrap CI n updated from 100 to 1000 in committed JSON -- data artifact from test run, not code bug
 - [Phase 04]: Model building complete -- 5 models, ensemble scoring, calibration, bootstrap CIs, JSON output all automated via `python models/run.py`. Gap closure (04-04) fixed bootstrap n and history zeros.
+- [05-01]: History-only validation mode reads history.json directly (no pipeline run needed), enabling validation without FRED API keys
+- [05-01]: Strict vs lenient zone accuracy: 50% strict (4/8 correct zone), 87.5% lenient (7/8 within 3 points of correct boundary)
+- [05-01]: All zone misses are near-boundary (within 3-4 points), suggesting calibration refinement rather than fundamental model issues
+- [05-01]: 2016 election scores 54 (Crisis Territory, expected Elevated Tension): genuine model finding, not a bug
 
 ### Pending Todos
 
@@ -170,5 +176,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-04
-Stopped at: Completed 04-04-PLAN.md (Gap Closure). Phase 4 fully COMPLETE (4/4 plans). Next: Phase 5 (Model Validation).
+Stopped at: Completed 05-01-PLAN.md (Core Validation). Phase 5 in progress (1/3 plans). Next: 05-02 (Weight Sensitivity Analysis).
 Resume file: None
