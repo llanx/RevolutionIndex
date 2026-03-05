@@ -44,6 +44,7 @@ from models.calibrate import (
     compute_bootstrap_ci,
     score_to_zone,
 )
+from models.config import MODEL_WEIGHTS
 
 # Zone boundaries used for margin calculations
 ZONE_BOUNDARIES = [25, 50, 75]
@@ -517,6 +518,331 @@ def compute_overall_verdict(
 
 
 # ---------------------------------------------------------------------------
+# Weight sensitivity analysis
+# ---------------------------------------------------------------------------
+
+# Data boundary years for spurious trend detection (from Phase 5 RESEARCH.md)
+DATA_BOUNDARY_YEARS = {
+    1989: "WFRBSTP1300 (Fed DFA wealth data starts)",
+    1993: "STLFSI4 (Financial Stress Index starts)",
+    2000: "Grumbach SDI (State Democracy Index starts)",
+    2005: "Education-job mismatch proxy starts",
+    2017: "Bright Line Watch starts",
+    2020: "ACLED US protest data starts",
+}
+
+
+def run_weight_sensitivity(
+    calibrated_history: pd.Series,
+    unified_df: Optional[pd.DataFrame] = None,
+    raw_df: Optional[pd.DataFrame] = None,
+) -> list[dict]:
+    """
+    Weight sensitivity analysis: perturb each model weight by +/-20% and
+    measure the effect on the composite score.
+
+    In history-only mode, computes theoretical maximum shift bounds since
+    per-model scores are not available from history.json alone.
+
+    In --full mode (when unified_df is provided), actually re-runs the
+    ensemble with patched weights to compute real score shifts.
+
+    Returns list of dicts with: model, direction, baseline, shift, fragile.
+    """
+    results = []
+    latest_score = float(calibrated_history.iloc[-1])
+    full_mode = unified_df is not None
+
+    if full_mode:
+        # Full mode: actually re-run models with perturbed weights
+        from models.ensemble import _run_models_on_slice, _rename_columns_for_models, _ensure_models_registered
+        import models.config as config_module
+
+        _ensure_models_registered()
+        model_df = _rename_columns_for_models(unified_df)
+        raw_model_df = _rename_columns_for_models(raw_df) if raw_df is not None else None
+
+        # Get baseline score using current weights
+        baseline = _run_models_on_slice(model_df, raw_df_slice=raw_model_df)
+        if baseline is None:
+            return results
+
+        original_weights = dict(config_module.MODEL_WEIGHTS)
+
+        for model_id, original_w in original_weights.items():
+            for direction, factor in [("up", 1.20), ("down", 0.80)]:
+                # Perturb this model's weight
+                patched = dict(original_weights)
+                patched[model_id] = original_w * factor
+                # Renormalize to sum to 1.0
+                total = sum(patched.values())
+                patched = {k: v / total for k, v in patched.items()}
+
+                # Temporarily patch MODEL_WEIGHTS
+                try:
+                    config_module.MODEL_WEIGHTS = patched
+                    perturbed = _run_models_on_slice(
+                        model_df, raw_df_slice=raw_model_df
+                    )
+                finally:
+                    config_module.MODEL_WEIGHTS = original_weights
+
+                if perturbed is None:
+                    continue
+
+                shift = abs(perturbed - baseline)
+                results.append({
+                    "model": model_id,
+                    "direction": direction,
+                    "weight": original_w,
+                    "baseline": round(baseline, 2),
+                    "perturbed_score": round(perturbed, 2),
+                    "shift": round(shift, 2),
+                    "fragile": shift > 25,
+                    "mode": "full",
+                })
+    else:
+        # History-only mode: compute theoretical maximum shift bounds.
+        # With a +/-20% perturbation on weight w_M (factor f = 1.2 or 0.8),
+        # the maximum possible shift is bounded by:
+        #   |S * (f-1) * w_M / (1 + (f-1) * w_M)|
+        # This assumes the perturbed model's score is at the extreme (0 or 100).
+        for model_id, w in MODEL_WEIGHTS.items():
+            for direction, factor in [("up", 1.20), ("down", 0.80)]:
+                delta = factor - 1.0
+                max_shift = abs(latest_score * delta * w / (1 + delta * w))
+                results.append({
+                    "model": model_id,
+                    "direction": direction,
+                    "weight": w,
+                    "baseline": round(latest_score, 2),
+                    "perturbed_score": None,
+                    "shift": round(max_shift, 2),
+                    "fragile": False,  # Theoretical bounds too low to be meaningful
+                    "mode": "history-only (theoretical max)",
+                })
+
+    return results
+
+
+def check_inter_model_correlation(
+    unified_df: Optional[pd.DataFrame] = None,
+    raw_df: Optional[pd.DataFrame] = None,
+) -> list[dict]:
+    """
+    Inter-model correlation check: compare all 5 model scores pairwise.
+
+    Requires --full mode since per-model scores are not available from
+    history.json alone. In full mode, runs each model individually on the
+    latest data slice and compares pairwise score differences.
+
+    Note: with a single time point we cannot compute Pearson correlation.
+    Instead we flag pairs where both scores are within 5 points as "similar".
+
+    Returns list of dicts with: model_a, model_b, score_a, score_b, diff, similar.
+    """
+    results = []
+
+    if unified_df is None:
+        return results
+
+    from models.models import MODEL_REGISTRY
+    from models.ensemble import _rename_columns_for_models, _ensure_models_registered
+
+    _ensure_models_registered()
+    model_df = _rename_columns_for_models(unified_df)
+    raw_model_df = _rename_columns_for_models(raw_df) if raw_df is not None else None
+
+    # Run each model individually on the full data
+    model_scores: dict[str, float] = {}
+    for model_id, model_fn in MODEL_REGISTRY.items():
+        try:
+            output = model_fn(model_df, raw_df=raw_model_df)
+            model_scores[model_id] = output.score
+        except TypeError:
+            try:
+                output = model_fn(model_df)
+                model_scores[model_id] = output.score
+            except Exception:
+                continue
+        except Exception:
+            continue
+
+    # Compare all pairwise combinations
+    model_ids = sorted(model_scores.keys())
+    for i, m_a in enumerate(model_ids):
+        for m_b in model_ids[i + 1:]:
+            score_a = model_scores[m_a]
+            score_b = model_scores[m_b]
+            diff = abs(score_a - score_b)
+            similar = diff <= 5.0
+
+            results.append({
+                "model_a": m_a,
+                "model_b": m_b,
+                "score_a": round(score_a, 1),
+                "score_b": round(score_b, 1),
+                "diff": round(diff, 1),
+                "similar": similar,
+                "note": "Scores within 5 pts (potentially redundant)" if similar else "",
+            })
+
+    return results
+
+
+def check_spurious_trends(calibrated_history: pd.Series) -> dict:
+    """
+    Spurious trend detection on the calibrated history time series.
+
+    Performs four automated checks:
+    a) Monotonic increase check across all decades
+    b) Data boundary jump detection at known boundary years
+    c) Score saturation check (stuck at 0 or 100)
+    d) Decade-level summary (mean and range per decade)
+
+    Returns dict with: monotonic_flag, boundary_jumps, saturation_periods,
+    decade_summary, overall_concern.
+    """
+    # --- a) Monotonic increase check ---
+    # Check if average score increases across ALL decades.
+    # A genuine stress indicator should have some decades with declines.
+    decades = {}
+    for date_idx, score in calibrated_history.items():
+        decade = (date_idx.year // 10) * 10
+        if decade not in decades:
+            decades[decade] = []
+        decades[decade].append(float(score))
+
+    decade_means = {d: np.mean(scores) for d, scores in sorted(decades.items())}
+    sorted_decades = sorted(decade_means.keys())
+
+    all_increasing = True
+    if len(sorted_decades) >= 2:
+        for i in range(1, len(sorted_decades)):
+            if decade_means[sorted_decades[i]] < decade_means[sorted_decades[i - 1]]:
+                all_increasing = False
+                break
+    else:
+        all_increasing = False  # Not enough data to judge
+
+    monotonic_flag = all_increasing
+
+    # --- b) Data boundary jump detection ---
+    boundary_jumps = []
+    for boundary_year, description in DATA_BOUNDARY_YEARS.items():
+        # Check if score jumps by > 10 points within 2 years of boundary
+        nearby_before = []
+        nearby_after = []
+        for date_idx, score in calibrated_history.items():
+            year = date_idx.year
+            if boundary_year - 2 <= year < boundary_year:
+                nearby_before.append(float(score))
+            elif boundary_year <= year <= boundary_year + 2:
+                nearby_after.append(float(score))
+
+        if nearby_before and nearby_after:
+            mean_before = np.mean(nearby_before)
+            mean_after = np.mean(nearby_after)
+            jump = mean_after - mean_before
+            if abs(jump) > 10:
+                boundary_jumps.append({
+                    "year": boundary_year,
+                    "description": description,
+                    "mean_before": round(mean_before, 1),
+                    "mean_after": round(mean_after, 1),
+                    "jump": round(jump, 1),
+                })
+
+    # --- c) Score saturation check ---
+    saturation_periods = []
+    sorted_history = calibrated_history.sort_index()
+    consecutive_at_zero = 0
+    consecutive_at_100 = 0
+    zero_start = None
+    hundred_start = None
+
+    for date_idx, score in sorted_history.items():
+        s = float(score)
+        # Check saturation at 0
+        if s <= 1.0:
+            if consecutive_at_zero == 0:
+                zero_start = date_idx
+            consecutive_at_zero += 1
+        else:
+            if consecutive_at_zero > 3:
+                saturation_periods.append({
+                    "value": 0,
+                    "start": zero_start.strftime("%Y-%m"),
+                    "count": consecutive_at_zero,
+                })
+            consecutive_at_zero = 0
+            zero_start = None
+
+        # Check saturation at 100
+        if s >= 99.0:
+            if consecutive_at_100 == 0:
+                hundred_start = date_idx
+            consecutive_at_100 += 1
+        else:
+            if consecutive_at_100 > 3:
+                saturation_periods.append({
+                    "value": 100,
+                    "start": hundred_start.strftime("%Y-%m"),
+                    "count": consecutive_at_100,
+                })
+            consecutive_at_100 = 0
+            hundred_start = None
+
+    # Check end-of-series saturation
+    if consecutive_at_zero > 3:
+        saturation_periods.append({
+            "value": 0,
+            "start": zero_start.strftime("%Y-%m"),
+            "count": consecutive_at_zero,
+        })
+    if consecutive_at_100 > 3:
+        saturation_periods.append({
+            "value": 100,
+            "start": hundred_start.strftime("%Y-%m"),
+            "count": consecutive_at_100,
+        })
+
+    # --- d) Decade-level summary ---
+    decade_summary = {}
+    for decade, scores in sorted(decades.items()):
+        decade_summary[str(decade)] = {
+            "mean": round(np.mean(scores), 1),
+            "min": round(np.min(scores), 1),
+            "max": round(np.max(scores), 1),
+            "range": round(np.max(scores) - np.min(scores), 1),
+            "count": len(scores),
+        }
+
+    # --- Overall concern level ---
+    concern_count = 0
+    if monotonic_flag:
+        concern_count += 2  # Major concern
+    concern_count += len(boundary_jumps)
+    concern_count += len(saturation_periods)
+
+    if concern_count >= 3:
+        overall_concern = "major"
+    elif concern_count >= 1:
+        overall_concern = "minor"
+    else:
+        overall_concern = "none"
+
+    return {
+        "monotonic_flag": monotonic_flag,
+        "boundary_jumps": boundary_jumps,
+        "saturation_periods": saturation_periods,
+        "decade_summary": decade_summary,
+        "overall_concern": overall_concern,
+        "decade_means": {str(k): round(v, 1) for k, v in decade_means.items()},
+    }
+
+
+# ---------------------------------------------------------------------------
 # Console output formatting
 # ---------------------------------------------------------------------------
 
@@ -686,6 +1012,187 @@ def _print_verdict(verdict: dict) -> None:
     print()
 
 
+def _print_weight_sensitivity(sensitivity_results: list[dict], is_full: bool) -> None:
+    """Print weight sensitivity analysis results."""
+    print()
+    _print_separator()
+    print("WEIGHT SENSITIVITY ANALYSIS")
+    _print_separator()
+    print()
+
+    if not sensitivity_results:
+        print("  No results available.")
+        print()
+        return
+
+    if not is_full:
+        print("  SKIPPED: Weight sensitivity requires --full mode with per-model scores.")
+        print("  Theoretical maximum shift bounds shown below for reference only.")
+        print("  These bounds are too conservative to trigger the 25-point fragility threshold.")
+        print()
+
+    header = (
+        f"  {'Model':<18} {'Dir':>5} {'Weight':>7} {'Baseline':>9} "
+        f"{'Shift':>7} {'Fragile?':>9}"
+    )
+    print(header)
+    print("  " + "-" * (len(header) - 2))
+
+    for r in sensitivity_results:
+        fragile_str = "YES" if r["fragile"] else "no"
+        shift_str = f"{r['shift']:.1f}"
+        print(
+            f"  {r['model']:<18} {r['direction']:>5} {r['weight']:>7.2f} "
+            f"{r['baseline']:>9.1f} {shift_str:>7} {fragile_str:>9}"
+        )
+
+    if not is_full:
+        print()
+        print("  Note: In history-only mode, shifts are theoretical maximums.")
+        print("  Actual sensitivity requires per-model scores (--full mode).")
+
+    fragile_count = sum(1 for r in sensitivity_results if r["fragile"])
+    if fragile_count > 0:
+        print()
+        print(f"  WARNING: {fragile_count} perturbation(s) exceed 25-point threshold (1 zone).")
+        print("  Model composition may be fragile to weight changes.")
+    elif is_full:
+        print()
+        print("  All perturbations within 25-point threshold. Weight composition is stable.")
+
+    print()
+
+
+def _print_inter_model_correlation(correlation_results: list[dict], is_full: bool) -> None:
+    """Print inter-model correlation check results."""
+    print()
+    _print_separator()
+    print("INTER-MODEL CORRELATION CHECK")
+    _print_separator()
+    print()
+
+    if not is_full:
+        print("  Inter-model correlation requires --full mode (per-model scores needed).")
+        print("  Skipping this analysis. Use --full to enable.")
+        print()
+        return
+
+    if not correlation_results:
+        print("  No pairwise comparisons available.")
+        print()
+        return
+
+    print("  Note: Single-point comparison only. True correlation analysis")
+    print("  would require running each model across all historical slices.")
+    print()
+
+    header = (
+        f"  {'Model A':<18} {'Model B':<18} {'Score A':>8} "
+        f"{'Score B':>8} {'Diff':>6} {'Note'}"
+    )
+    print(header)
+    print("  " + "-" * (len(header) - 2))
+
+    for r in correlation_results:
+        note = r.get("note", "")
+        print(
+            f"  {r['model_a']:<18} {r['model_b']:<18} {r['score_a']:>8.1f} "
+            f"{r['score_b']:>8.1f} {r['diff']:>6.1f} {note}"
+        )
+
+    similar_count = sum(1 for r in correlation_results if r["similar"])
+    if similar_count > 0:
+        print()
+        print(
+            f"  WARNING: {similar_count} pair(s) have scores within 5 points."
+        )
+        print("  These models may be partially redundant at the current time point.")
+    else:
+        print()
+        print("  All model pairs have > 5 point separation. No redundancy signals.")
+
+    print()
+
+
+def _print_spurious_trends(trend_results: dict) -> None:
+    """Print spurious trend detection results."""
+    print()
+    _print_separator()
+    print("SPURIOUS TREND DETECTION")
+    _print_separator()
+    print()
+
+    # a) Monotonic increase check
+    mono_status = "FLAG" if trend_results["monotonic_flag"] else "PASS"
+    print(f"  a) Monotonic Increase Check:  [{mono_status}]")
+    if trend_results["monotonic_flag"]:
+        print("     All decades show increasing mean scores.")
+        print("     This may indicate a measurement artifact rather than genuine trend.")
+    else:
+        print("     Score trajectory shows non-monotonic pattern across decades (expected).")
+
+    # Show decade means
+    decade_means = trend_results.get("decade_means", {})
+    if decade_means:
+        decades_str = "     Decade means: "
+        parts = [f"{d}s={v}" for d, v in sorted(decade_means.items())]
+        decades_str += ", ".join(parts)
+        print(decades_str)
+    print()
+
+    # b) Data boundary jump detection
+    jumps = trend_results["boundary_jumps"]
+    if jumps:
+        print(f"  b) Data Boundary Jumps:       [FLAG] {len(jumps)} jump(s) detected")
+        for j in jumps:
+            print(
+                f"     {j['year']}: {j['description']}"
+            )
+            print(
+                f"       Score shift: {j['mean_before']:.1f} -> {j['mean_after']:.1f} "
+                f"(jump: {j['jump']:+.1f} points)"
+            )
+    else:
+        print("  b) Data Boundary Jumps:       [PASS] No jumps > 10 points near boundary years")
+    print()
+
+    # c) Score saturation check
+    sat = trend_results["saturation_periods"]
+    if sat:
+        print(f"  c) Score Saturation:          [FLAG] {len(sat)} period(s) of saturation")
+        for s in sat:
+            print(
+                f"     Stuck at {s['value']} for {s['count']} consecutive entries "
+                f"starting {s['start']}"
+            )
+    else:
+        print("  c) Score Saturation:          [PASS] No extended periods at 0 or 100")
+    print()
+
+    # d) Decade-level summary
+    print("  d) Decade Summary:")
+    print(f"     {'Decade':<10} {'Mean':>6} {'Min':>6} {'Max':>6} {'Range':>7} {'Count':>6}")
+    print("     " + "-" * 45)
+    for decade, stats in sorted(trend_results["decade_summary"].items()):
+        print(
+            f"     {decade}s    {stats['mean']:>6.1f} {stats['min']:>6.1f} "
+            f"{stats['max']:>6.1f} {stats['range']:>7.1f} {stats['count']:>6}"
+        )
+    print()
+
+    # Overall concern
+    concern = trend_results["overall_concern"]
+    concern_upper = concern.upper()
+    print(f"  Overall Concern Level: {concern_upper}")
+    if concern == "major":
+        print("  Multiple spurious trend indicators detected. Review calibration and data inputs.")
+    elif concern == "minor":
+        print("  Some indicators flagged. Review flagged items but likely not critical.")
+    else:
+        print("  No spurious trend indicators detected.")
+    print()
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -837,7 +1344,32 @@ def main():
     all_results["ci_width"] = ci_result
     _print_ci_width(ci_result)
 
-    # --- 4. Overall verdict ---
+    # --- 4. Weight sensitivity analysis ---
+    print("Running weight sensitivity analysis...")
+    sensitivity_results = run_weight_sensitivity(
+        calibrated_history,
+        unified_df=unified_df,
+        raw_df=raw_df,
+    )
+    all_results["sensitivity_results"] = sensitivity_results
+    _print_weight_sensitivity(sensitivity_results, is_full=args.full)
+
+    # --- 5. Inter-model correlation check ---
+    print("Running inter-model correlation check...")
+    correlation_results = check_inter_model_correlation(
+        unified_df=unified_df,
+        raw_df=raw_df,
+    )
+    all_results["correlation_results"] = correlation_results
+    _print_inter_model_correlation(correlation_results, is_full=args.full)
+
+    # --- 6. Spurious trend detection ---
+    print("Running spurious trend detection...")
+    trend_results = check_spurious_trends(calibrated_history)
+    all_results["trend_results"] = trend_results
+    _print_spurious_trends(trend_results)
+
+    # --- 7. Overall verdict ---
     verdict = compute_overall_verdict(
         episode_results,
         loocv_results=loocv_results,
