@@ -1,5 +1,6 @@
 ---
 import type { Faction } from '../lib/data';
+import { factionIdToSlug } from '../lib/data';
 
 export interface Props {
   faction: Faction;
@@ -8,6 +9,7 @@ export interface Props {
 }
 
 const { faction, factionNames } = Astro.props;
+const slug = factionIdToSlug(faction.id);
 
 const stanceClasses: Record<string, string> = {
   'pro-revolution': 'stance-pro',
@@ -24,7 +26,7 @@ const stanceClass = stanceClasses[faction.stance] || 'stance-pro';
   <div class="faction-header">
     <div class="faction-color-bar"></div>
     <div class="faction-title-group">
-      <h2 class="faction-name">{faction.name}</h2>
+      <h2 class="faction-name"><a href={`/factions/${slug}`} class="faction-name-link">{faction.name}</a></h2>
       <p class="faction-tagline">{faction.tagline}</p>
     </div>
     <span class={`faction-stance ${stanceClass}`}>{faction.stanceLabel}</span>
@@ -87,6 +89,10 @@ const stanceClass = stanceClasses[faction.stance] || 'stance-pro';
     <div class="faction-wildcard">
       <span class="wildcard-label">Wildcard</span>
       <p class="wildcard-text">{faction.wildcard}</p>
+    </div>
+
+    <div class="faction-dossier-link">
+      <a href={`/factions/${slug}`} class="dossier-cta">View Full Dossier</a>
     </div>
   </div>
 </article>

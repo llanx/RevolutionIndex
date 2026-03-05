@@ -1,0 +1,606 @@
+{
+  "_schema": "src/lib/data.ts#FactionProfilesData",
+  "_note": "Deep-dive dossier content for each faction archetype. Placeholder content to be replaced with researched analysis.",
+  "profiles": {
+    "right_populists": {
+      "factionId": "right_populists",
+      "sections": [
+        {
+          "heading": "Executive Summary",
+          "paragraphs": [
+            "The Right Populist faction represents the largest anti-establishment force on the American right, drawing from deep wells of cultural grievance and economic anxiety in communities that feel left behind by globalization, deindustrialization, and demographic change.",
+            "This section will provide a comprehensive overview of the faction's current trajectory, mobilization capacity, and potential role in a future instability scenario."
+          ]
+        },
+        {
+          "heading": "Historical Roots",
+          "paragraphs": [
+            "American right-wing populism traces a through-line from the Know-Nothings of the 1850s through the Dixiecrats, the Wallace movement, the Buchanan insurgency, the Tea Party, and the MAGA realignment. Each wave built on the institutional wreckage of the last.",
+            "This section will map the genealogy of the movement and identify the structural conditions that recurrently produce right-populist mobilization in American politics."
+          ]
+        },
+        {
+          "heading": "Key Figures & Organizations",
+          "paragraphs": [
+            "This section will profile the leadership ecosystem: elected officials, media figures, militia network organizers, and the institutional infrastructure (from state legislatures to church networks) that provides organizational capacity.",
+            "Particular attention will be paid to the tension between establishment-adjacent figures who channel populist energy and true-believer movement leaders who reject institutional compromise."
+          ]
+        },
+        {
+          "heading": "Ideological Framework",
+          "paragraphs": [
+            "Right populism synthesizes economic nationalism, cultural conservatism, anti-elite rhetoric, and a productivist identity politics that frames the conflict as 'makers vs. takers' or 'real Americans vs. the establishment.'",
+            "This section will analyze the ideological architecture, its internal contradictions, and how it compares to historical populist movements in other countries."
+          ]
+        },
+        {
+          "heading": "Tactics & Methods",
+          "paragraphs": [
+            "From electoral insurgency to direct action, right populists employ a spectrum of tactics including primary challenges, media ecosystem amplification, state-level legislative capture, and extra-institutional pressure through rallies and militia organizing.",
+            "This section will catalog the tactical repertoire and assess which methods have proven most effective at shifting the political landscape."
+          ]
+        },
+        {
+          "heading": "Funding & Power Networks",
+          "paragraphs": [
+            "This section will trace the money flows: small-dollar grassroots fundraising, dark money networks, media monetization models, and the complex relationship between populist movements and the wealthy donors who sometimes fund them.",
+            "The tension between authentic grassroots energy and astroturfed mobilization will be a central analytical question."
+          ]
+        },
+        {
+          "heading": "Real-World Case Studies",
+          "paragraphs": [
+            "Contemporary case studies will include the January 6th mobilization, the convoy movement, state-level election administration conflicts, and local school board takeovers as examples of right-populist factional dynamics in action.",
+            "International parallels (Bolsonaro's Brazil, Orban's Hungary, Le Pen's France) will provide comparative context."
+          ]
+        },
+        {
+          "heading": "Historical Parallels",
+          "paragraphs": [
+            "Historical analysis will draw parallels to the Freikorps in Weimar Germany, the Poujadist movement in 1950s France, and Peronist Argentina, examining how right-populist movements have historically interacted with institutional breakdown.",
+            "The key question: under what conditions do these movements become revolutionary rather than merely disruptive?"
+          ]
+        },
+        {
+          "heading": "Strengths & Vulnerabilities",
+          "paragraphs": [
+            "Strengths include geographic concentration enabling state-level power, high emotional mobilization capacity, and a media ecosystem that maintains constant engagement. The faction's rural and veteran base also provides practical skills relevant to instability scenarios.",
+            "Vulnerabilities include ideological incoherence (libertarian and authoritarian wings), dependence on charismatic leadership, demographic headwinds, and a tendency toward premature action that alienates potential allies."
+          ]
+        },
+        {
+          "heading": "Current Assessment",
+          "paragraphs": [
+            "This section will provide the current threat/opportunity assessment based on Revolution Index factor data, recent mobilization events, and structural indicators.",
+            "Assessment will include probability estimates for various escalation scenarios and identification of key trigger events that could accelerate or decelerate the faction's trajectory."
+          ]
+        }
+      ]
+    },
+    "progressive_left": {
+      "factionId": "progressive_left",
+      "sections": [
+        {
+          "heading": "Executive Summary",
+          "paragraphs": [
+            "The Progressive Left represents the primary anti-corporate, pro-systemic-reform faction, drawing energy from younger demographics, urban professionals, and communities most affected by economic inequality and institutional failure.",
+            "This section will assess the faction's capacity to translate protest energy into sustained political power and its potential role in an instability scenario."
+          ]
+        },
+        {
+          "heading": "Historical Roots",
+          "paragraphs": [
+            "Progressive left movements in the US trace from the abolitionist movement through the Populist Party of the 1890s, the labor movement of the 1930s, the New Left of the 1960s, Occupy Wall Street, and the Sanders/DSA resurgence.",
+            "This section will examine the cyclical pattern of left-populist energy in American politics and why it has historically struggled to consolidate institutional power."
+          ]
+        },
+        {
+          "heading": "Key Figures & Organizations",
+          "paragraphs": [
+            "This section will profile the organizational ecosystem: from DSA chapters and progressive PACs to labor-aligned media outlets and academic networks that provide intellectual infrastructure.",
+            "The generational divide between established progressive institutions and newer, more radical organizing formations will be a central theme."
+          ]
+        },
+        {
+          "heading": "Ideological Framework",
+          "paragraphs": [
+            "The progressive left's ideology synthesizes democratic socialism, intersectional justice frameworks, climate urgency, and anti-monopoly economics into a critique of capitalism as structurally incapable of delivering shared prosperity.",
+            "This section will analyze how this framework both energizes the base and creates coalition challenges with potential allies."
+          ]
+        },
+        {
+          "heading": "Tactics & Methods",
+          "paragraphs": [
+            "The progressive left's tactical repertoire includes electoral insurgency (primary challenges), mass protest, mutual aid networks, digital organizing, cultural production, and increasingly, labor organizing as the connective tissue between workplace and political action.",
+            "This section will assess which tactics have produced durable power shifts versus those that generate visibility without structural change."
+          ]
+        },
+        {
+          "heading": "Funding & Power Networks",
+          "paragraphs": [
+            "This section will trace the progressive left's financial infrastructure: small-dollar fundraising, foundation support, union dues, and the tension between movement authenticity and institutional funding dependence.",
+            "The role of progressive media monetization and the economic sustainability of activist organizations will be examined."
+          ]
+        },
+        {
+          "heading": "Real-World Case Studies",
+          "paragraphs": [
+            "Case studies will include the 2020 George Floyd protests, the Amazon/Starbucks unionization wave, progressive primary victories, mutual aid networks during COVID, and climate direct action campaigns.",
+            "International parallels (Podemos in Spain, Syriza in Greece, Corbyn's Labour) will provide comparative lessons about what happens when progressive movements approach power."
+          ]
+        },
+        {
+          "heading": "Historical Parallels",
+          "paragraphs": [
+            "Historical analysis will draw parallels to the Girondins of the French Revolution, the Mensheviks in Russia, and the Social Democrats of Weimar Germany, all of which represent left factions that sought systemic reform but were outflanked by more radical movements.",
+            "The recurring pattern of left coalitions fracturing after initial success is the central historical lesson."
+          ]
+        },
+        {
+          "heading": "Strengths & Vulnerabilities",
+          "paragraphs": [
+            "Strengths include demographic tailwinds (young and diverse base), high cultural influence, strong digital organizing infrastructure, and alignment with global progressive movements.",
+            "Vulnerabilities include internal fragmentation (reform vs. revolution), geographic concentration in already-blue areas, purity-testing that shrinks coalitions, and a tendency toward symbolic action over institutional power-building."
+          ]
+        },
+        {
+          "heading": "Current Assessment",
+          "paragraphs": [
+            "This section will assess the progressive left's current mobilization state using Revolution Index economic stress and media factors, recent organizing victories and defeats, and structural positioning.",
+            "Key questions: Can the faction bridge the gap between protest and governance? What economic trigger would shift its demands from reform to revolution?"
+          ]
+        }
+      ]
+    },
+    "establishment_center": {
+      "factionId": "establishment_center",
+      "sections": [
+        {
+          "heading": "Executive Summary",
+          "paragraphs": [
+            "The Establishment Center is the primary anti-revolution faction, comprising the professional-managerial class and institutional loyalists from both parties who have the most to lose from systemic upheaval.",
+            "This section will assess the faction's capacity to maintain institutional stability under increasing pressure from both populist flanks."
+          ]
+        },
+        {
+          "heading": "Historical Roots",
+          "paragraphs": [
+            "The bipartisan establishment consensus traces from the post-WWII liberal order through the Cold War national security state, the neoliberal turn of the 1990s, and the post-9/11 security consensus.",
+            "This section will examine how the establishment center formed, what held it together, and why it is now fragmenting under populist pressure from both left and right."
+          ]
+        },
+        {
+          "heading": "Key Figures & Organizations",
+          "paragraphs": [
+            "This section will profile the institutional ecosystem: think tanks (Brookings, AEI, CFR), mainstream media organizations, the federal bureaucracy, corporate boards, and the bipartisan political consultant class.",
+            "The diminishing bench of figures who can credibly speak for 'the center' will be a key theme."
+          ]
+        },
+        {
+          "heading": "Ideological Framework",
+          "paragraphs": [
+            "The establishment center's ideology is procedural liberalism: belief in institutional process, incremental reform, meritocratic advancement, and international engagement. It is less an ideology than a set of operating assumptions about how governance should work.",
+            "This section will analyze why this framework, once dominant, now fails to inspire loyalty in a polarized environment."
+          ]
+        },
+        {
+          "heading": "Tactics & Methods",
+          "paragraphs": [
+            "The establishment center's primary tactics are institutional: legislative negotiation, judicial strategy, regulatory process, credentialed expertise, and media access. These are powerful in normal times but brittle under crisis conditions.",
+            "This section will assess the faction's capacity to adapt its tactics when institutional channels lose legitimacy."
+          ]
+        },
+        {
+          "heading": "Funding & Power Networks",
+          "paragraphs": [
+            "This section will map the establishment's financial infrastructure: corporate PACs, major donor networks, foundation support for centrist institutions, and the revolving door between government, lobbying, and corporate boards.",
+            "The faction's financial advantage and why it has not translated into popular legitimacy will be examined."
+          ]
+        },
+        {
+          "heading": "Real-World Case Studies",
+          "paragraphs": [
+            "Case studies will include the bipartisan infrastructure bill, centrist primary strategies, the Lincoln Project phenomenon, and corporate responses to political polarization.",
+            "International parallels (Macron's centrist project in France, the collapse of Italy's center) will illustrate both possibilities and risks."
+          ]
+        },
+        {
+          "heading": "Historical Parallels",
+          "paragraphs": [
+            "Historical analysis will draw parallels to the moderate Girondins overwhelmed by Jacobin radicalism, the Provisional Government in Russia 1917, and the Weimar coalition parties that could not hold the center against extremist flanks.",
+            "The recurring pattern: centrist factions in revolutionary situations lose to more mobilized extremes because they cannot match emotional intensity with procedural competence."
+          ]
+        },
+        {
+          "heading": "Strengths & Vulnerabilities",
+          "paragraphs": [
+            "Strengths include institutional control (bureaucracy, courts, major corporations), financial resources, credentialed expertise, and international relationships.",
+            "Vulnerabilities include declining popular trust, perception of corruption and self-dealing, inability to address root causes of instability, and a shrinking demographic base as younger voters reject centrist politics."
+          ]
+        },
+        {
+          "heading": "Current Assessment",
+          "paragraphs": [
+            "This section will assess institutional health using Revolution Index institutional quality factors, public trust surveys, and measures of bureaucratic effectiveness.",
+            "Key question: Is the center holding, or is the establishment's institutional control masking a legitimacy crisis that will collapse suddenly under sufficient stress?"
+          ]
+        }
+      ]
+    },
+    "libertarian_decentralists": {
+      "factionId": "libertarian_decentralists",
+      "sections": [
+        {
+          "heading": "Executive Summary",
+          "paragraphs": [
+            "The Libertarian Decentralists represent a tech-aligned, ideologically distinctive faction that views institutional collapse not as a crisis but as an opportunity to build alternative governance systems from the ground up.",
+            "This section will assess the faction's growing influence through technological infrastructure and its potential to reshape power dynamics during instability."
+          ]
+        },
+        {
+          "heading": "Historical Roots",
+          "paragraphs": [
+            "This faction's lineage runs from the cypherpunks and early internet libertarians through the Ron Paul movement, Bitcoin's creation, the seasteading concept, and the more recent network state philosophy articulated by Balaji Srinivasan and others.",
+            "This section will trace how technological capability transformed libertarian ideology from political theory into practical infrastructure-building."
+          ]
+        },
+        {
+          "heading": "Key Figures & Organizations",
+          "paragraphs": [
+            "This section will profile the faction's leadership ecosystem: tech executives, crypto founders, network state theorists, and the organizational infrastructure of DAOs, crypto exchanges, and libertarian think tanks.",
+            "The Praxis network state project, as a concrete example of this faction's vision in action, will receive particular attention."
+          ]
+        },
+        {
+          "heading": "Ideological Framework",
+          "paragraphs": [
+            "The faction synthesizes Austrian economics, crypto-anarchism, techno-optimism, and network state theory into a vision of governance through voluntary association and technological infrastructure rather than territorial monopoly.",
+            "This section will analyze the ideology's internal tensions: individual liberty vs. corporate power, decentralization vs. platform monopoly, and exit vs. voice as political strategies."
+          ]
+        },
+        {
+          "heading": "Tactics & Methods",
+          "paragraphs": [
+            "Unlike traditional political factions, libertarian decentralists primarily operate through building: creating alternative financial systems, communication platforms, governance tools, and even physical communities that exist parallel to state institutions.",
+            "This section will assess the 'build, don't protest' tactical philosophy and its effectiveness as a form of political action."
+          ]
+        },
+        {
+          "heading": "Funding & Power Networks",
+          "paragraphs": [
+            "This section will trace the faction's financial ecosystem: venture capital networks, crypto treasuries, DAO governance tokens, and the concentration of wealth among tech founders who fund libertarian causes.",
+            "The paradox of a decentralization movement funded by some of the world's most concentrated wealth will be examined."
+          ]
+        },
+        {
+          "heading": "Real-World Case Studies",
+          "paragraphs": [
+            "Case studies will include Bitcoin/Ethereum ecosystem development, the Praxis network state project, charter city experiments in Honduras, crypto adoption in unstable economies, and the Twitter/X acquisition as a case study in platform control.",
+            "Each case study will assess whether decentralist projects actually deliver on their promises of distributed power."
+          ]
+        },
+        {
+          "heading": "Historical Parallels",
+          "paragraphs": [
+            "Historical analysis will draw parallels to the merchant republics (Venice, Hanseatic League) that operated outside feudal power structures, utopian community experiments in 19th-century America, and the role of financial innovators during periods of state weakness.",
+            "The question of whether technological exit from state systems is historically novel or a modern version of a recurring pattern."
+          ]
+        },
+        {
+          "heading": "Strengths & Vulnerabilities",
+          "paragraphs": [
+            "Strengths include technological capability, financial resources, global network effects, and the ability to build functional alternatives rather than just critique existing systems.",
+            "Vulnerabilities include tiny demographic base, dependence on infrastructure (electricity, internet) controlled by states, ideological blindness to collective action problems, and the gap between decentralist rhetoric and concentrated tech power."
+          ]
+        },
+        {
+          "heading": "Current Assessment",
+          "paragraphs": [
+            "This section will assess the faction's growing influence using metrics around crypto adoption, alternative platform growth, network state project progress, and tech sector political engagement.",
+            "Key question: In a genuine crisis, would decentralist infrastructure serve as a lifeboat for elites or a genuine alternative governance model accessible to broader populations?"
+          ]
+        }
+      ]
+    },
+    "security_apparatus": {
+      "factionId": "security_apparatus",
+      "sections": [
+        {
+          "heading": "Executive Summary",
+          "paragraphs": [
+            "The Security Apparatus is the kingmaker faction: the military, law enforcement, and intelligence community whose response to instability historically determines whether revolutions succeed or fail.",
+            "This section will assess the current state of civil-military relations and the probability of various security force responses to a legitimacy crisis."
+          ]
+        },
+        {
+          "heading": "Historical Roots",
+          "paragraphs": [
+            "American civil-military relations have been shaped by the Founders' deep suspicion of standing armies, the post-Civil War military's institutional memory, the Cold War national security state's expansion, and the post-9/11 militarization of domestic policing.",
+            "This section will trace the evolution of the security apparatus from servant of civilian authority to an autonomous institutional actor with its own interests and culture."
+          ]
+        },
+        {
+          "heading": "Key Figures & Organizations",
+          "paragraphs": [
+            "This section will profile the institutional landscape: the Joint Chiefs, combatant commands, the National Guard's dual federal/state role, major police unions, the FBI/DHS domestic security apparatus, and veteran organizations as political actors.",
+            "The officer/enlisted cultural divide and the federal/state jurisdiction divide will be central themes."
+          ]
+        },
+        {
+          "heading": "Ideological Framework",
+          "paragraphs": [
+            "The security apparatus does not have a single ideology but a professional culture centered on oath to the Constitution, chain of command, institutional loyalty, and mission completion. This culture creates both stability and potential fracture lines.",
+            "This section will analyze how competing interpretations of 'defending the Constitution' could lead to very different responses to a legitimacy crisis."
+          ]
+        },
+        {
+          "heading": "Tactics & Methods",
+          "paragraphs": [
+            "The security apparatus possesses the full spectrum of coercive capability: from riot control and surveillance to martial law and military operations. But capability is not the same as willingness to deploy.",
+            "This section will analyze the decision calculus: under what conditions do security forces suppress, stand down, fracture, or intervene independently?"
+          ]
+        },
+        {
+          "heading": "Funding & Power Networks",
+          "paragraphs": [
+            "This section will trace the military-industrial complex's financial flows: defense budgets, procurement networks, the revolving door between Pentagon and defense contractors, and how economic dependence on military spending shapes political behavior.",
+            "The geographic concentration of military bases and defense industry jobs creates powerful political incentives for maintaining the security state."
+          ]
+        },
+        {
+          "heading": "Real-World Case Studies",
+          "paragraphs": [
+            "Case studies will include the military's response to January 6th, National Guard deployments during 2020 protests, the Milley phone calls during the 2020 transition, and the Pentagon's institutional resistance to politicization.",
+            "International comparisons (Egyptian military in 2011, Turkish military coup attempts, Myanmar 2021) will provide frameworks for understanding security force behavior during crises."
+          ]
+        },
+        {
+          "heading": "Historical Parallels",
+          "paragraphs": [
+            "Historical analysis will examine the role of security forces in every Revolution Index benchmark case: the Petrograd garrison's defection in 1917, the Shah's military collapse in 1979, the PLA's loyalty in 1989, and the role of security force fracture in the Arab Spring.",
+            "The single strongest predictor of revolution vs. failed revolution is whether the security apparatus holds or splits."
+          ]
+        },
+        {
+          "heading": "Strengths & Vulnerabilities",
+          "paragraphs": [
+            "Strengths include overwhelming coercive capability, institutional cohesion, professional culture, logistical infrastructure, and public respect (military consistently polls as most trusted institution).",
+            "Vulnerabilities include the officer/enlisted political divide, National Guard dual-loyalty structure, recruitment challenges, politicization pressures, and the fundamental question of whether troops would follow orders to suppress domestic civilian populations."
+          ]
+        },
+        {
+          "heading": "Current Assessment",
+          "paragraphs": [
+            "This section will assess civil-military relations using indicators of politicization, recruitment trends, institutional trust metrics, and the current posture of security force leadership toward political actors.",
+            "Key question: What specific scenario would force the security apparatus to choose sides, and which way would each component (active military, Guard, federal law enforcement, local police) break?"
+          ]
+        }
+      ]
+    },
+    "corporate_oligarchy": {
+      "factionId": "corporate_oligarchy",
+      "sections": [
+        {
+          "heading": "Executive Summary",
+          "paragraphs": [
+            "The Corporate Oligarchy faction represents the ultra-wealthy class whose concentrated economic power gives them disproportionate influence over all other factions, and whose historical pattern is to survive revolutions by switching allegiance to the winning side.",
+            "This section will assess the faction's current positioning, hedging strategies, and the conditions under which oligarchic power becomes either a stabilizing or destabilizing force."
+          ]
+        },
+        {
+          "heading": "Historical Roots",
+          "paragraphs": [
+            "American oligarchic power traces from the plantation aristocracy through the Gilded Age robber barons, the mid-century corporate consensus, the financialization era of the 1980s-2000s, and the current tech billionaire ascendancy.",
+            "This section will examine how each era's oligarchic class shaped instability and survived (or didn't survive) the resulting political realignments."
+          ]
+        },
+        {
+          "heading": "Key Figures & Organizations",
+          "paragraphs": [
+            "This section will map the oligarchic ecosystem: tech founders, hedge fund managers, media owners, Fortune 500 boards, and the institutional infrastructure (lobbying firms, donor networks, private equity) that translates wealth into political power.",
+            "The emerging split between 'establishment' oligarchs (aligned with institutional stability) and 'insurgent' oligarchs (funding populist disruption) will be a central theme."
+          ]
+        },
+        {
+          "heading": "Ideological Framework",
+          "paragraphs": [
+            "The oligarchic faction's ideology is instrumentalist rather than principled: they fund the ideas that protect their interests and switch frameworks when the political winds change.",
+            "This section will analyze how oligarchic interests are laundered through think tanks, media ownership, and campaign finance into apparently principled political positions."
+          ]
+        },
+        {
+          "heading": "Tactics & Methods",
+          "paragraphs": [
+            "Oligarchic tactics operate primarily through financial leverage: campaign contributions, media ownership, lobbying, regulatory capture, and the credible threat of capital flight.",
+            "This section will assess how these tactics function during stability versus during crisis, and the historical pattern of oligarchs hedging by funding multiple sides."
+          ]
+        },
+        {
+          "heading": "Funding & Power Networks",
+          "paragraphs": [
+            "This section will trace the financial architecture of oligarchic power: dark money networks, super PACs, foundation-laundered political spending, media ownership as political infrastructure, and the revolving door between Wall Street and government.",
+            "The concentration of wealth (top 0.1% owning more than the bottom 50%) will be contextualized as both a driver of instability and a resource for oligarchic survival."
+          ]
+        },
+        {
+          "heading": "Real-World Case Studies",
+          "paragraphs": [
+            "Case studies will include the tech billionaire political realignment, media consolidation and its political effects, corporate responses to social movements (from BLM to ESG backlash), and the Twitter/X acquisition as a case study in oligarchic information control.",
+            "International parallels (Russian oligarchs post-USSR, Chinese billionaires under Xi) will illustrate different oligarchic survival strategies."
+          ]
+        },
+        {
+          "heading": "Historical Parallels",
+          "paragraphs": [
+            "Historical analysis will examine oligarchic behavior during the French Revolution (nobility's failed adaptation), the Russian Revolution (industrialists who funded both sides), and the New Deal era (how FDR's reforms preserved capitalism by constraining oligarchic excess).",
+            "The central historical question: do oligarchs prevent revolution by conceding reform, or do they accelerate it by resisting all change?"
+          ]
+        },
+        {
+          "heading": "Strengths & Vulnerabilities",
+          "paragraphs": [
+            "Strengths include financial resources that dwarf all other factions combined, institutional capture of regulatory and political systems, media control, global mobility (ability to exit), and historical pattern of surviving regime changes.",
+            "Vulnerabilities include dependence on a functioning legal system to enforce property rights, public visibility that makes them targets for populist anger, internal coordination problems (oligarchs are competitors), and the historical pattern of oligarchic overreach triggering precisely the revolution they seek to prevent."
+          ]
+        },
+        {
+          "heading": "Current Assessment",
+          "paragraphs": [
+            "This section will assess oligarchic positioning using wealth concentration data, political spending patterns, media ownership concentration, and indicators of capital flight preparation.",
+            "Key question: Are current oligarchic actions (funding populism, acquiring media platforms, building bunkers) signs of confidence or signs that the smart money sees instability coming?"
+          ]
+        }
+      ]
+    },
+    "labor_movement": {
+      "factionId": "labor_movement",
+      "sections": [
+        {
+          "heading": "Executive Summary",
+          "paragraphs": [
+            "The Labor Movement faction represents working-class economic populism channeled through union organizing, with a resurgence driven by post-pandemic labor market tightness and a generational shift in attitudes toward collective action.",
+            "This section will assess the faction's growing organizational capacity and its potential to become the decisive swing force in an instability scenario."
+          ]
+        },
+        {
+          "heading": "Historical Roots",
+          "paragraphs": [
+            "American labor history runs from the Knights of Labor through the IWW, the CIO's industrial unionism breakthrough of the 1930s, the post-war labor-management accord, the Reagan-era decline, and the current wave of new organizing.",
+            "This section will examine why labor movements historically correlate with revolutionary potential: they are the only faction that can paralyze economic activity through coordinated withdrawal of labor."
+          ]
+        },
+        {
+          "heading": "Key Figures & Organizations",
+          "paragraphs": [
+            "This section will profile the labor ecosystem: established unions (AFL-CIO, SEIU, Teamsters), new-wave independent unions (Amazon Labor Union, Starbucks Workers United), and the emerging infrastructure of worker centers and solidarity networks.",
+            "The tension between established labor leadership and rank-and-file insurgency will be a central theme."
+          ]
+        },
+        {
+          "heading": "Ideological Framework",
+          "paragraphs": [
+            "The labor movement's ideology centers on economic democracy: the idea that workers should have power proportional to their contribution, that wealth should be shared more equitably, and that collective bargaining is both a right and a method of social stabilization.",
+            "This section will analyze the spectrum from business unionism (negotiate within the system) to social movement unionism (transform the system through labor power)."
+          ]
+        },
+        {
+          "heading": "Tactics & Methods",
+          "paragraphs": [
+            "Labor's unique tactical advantage is the strike: the ability to impose economic costs through coordinated withdrawal of labor. From workplace actions to general strikes, labor's power is fundamentally economic rather than political or military.",
+            "This section will assess current strike activity, organizing wins and losses, and the tactical evolution from traditional NLRB elections to more creative organizing models."
+          ]
+        },
+        {
+          "heading": "Funding & Power Networks",
+          "paragraphs": [
+            "This section will trace labor's financial infrastructure: union dues (declining but still substantial), strike funds, political action committees, and the economic multiplier effects of union wages on communities.",
+            "The asymmetry between labor's financial resources and corporate anti-union spending will be examined."
+          ]
+        },
+        {
+          "heading": "Real-World Case Studies",
+          "paragraphs": [
+            "Case studies will include the Amazon and Starbucks organizing waves, the 2023 UPS contract victory, the UAW's 'Stand Up' strike strategy, healthcare worker organizing during COVID, and the growing gig economy labor movement.",
+            "International parallels (French general strikes, South Korean labor militancy, British winter of discontent) will illustrate the range of outcomes when labor mobilizes at scale."
+          ]
+        },
+        {
+          "heading": "Historical Parallels",
+          "paragraphs": [
+            "Historical analysis will examine labor's role in revolutionary situations: the Petrograd Soviet in 1917, the Solidarity movement in Poland, the Argentinian piqueteros, and the role of general strikes in triggering regime change.",
+            "The central lesson: labor movements rarely start revolutions, but they often determine whether revolutions succeed through their ability to paralyze or sustain economic activity."
+          ]
+        },
+        {
+          "heading": "Strengths & Vulnerabilities",
+          "paragraphs": [
+            "Strengths include structural economic leverage (especially in logistics, healthcare, and transportation), cross-racial and cross-ideological appeal of economic populism, growing public approval of unions, and the irreplaceable nature of certain labor.",
+            "Vulnerabilities include declining union density (still under 11%), hostile legal frameworks, automation threats, internal divisions between trade and industrial unions, and historical pattern of labor being co-opted by establishment factions after achieving initial gains."
+          ]
+        },
+        {
+          "heading": "Current Assessment",
+          "paragraphs": [
+            "This section will assess labor mobilization using union election filings, strike activity data, public approval ratings, and the Revolution Index economic stress factor that drives labor activism.",
+            "Key question: Could a coordinated strike in logistics, healthcare, or transportation create enough economic disruption to force systemic concessions, and would that reduce or increase overall instability?"
+          ]
+        }
+      ]
+    },
+    "religious_traditionalists": {
+      "factionId": "religious_traditionalists",
+      "sections": [
+        {
+          "heading": "Executive Summary",
+          "paragraphs": [
+            "Religious Traditionalists represent the faith-based conservative movement whose revolutionary potential is conditional: activated when secular institutional changes are perceived as existential threats to religious identity and moral authority.",
+            "This section will assess the faction's current mobilization state and the trigger conditions that could transform passive cultural conservatism into active revolutionary participation."
+          ]
+        },
+        {
+          "heading": "Historical Roots",
+          "paragraphs": [
+            "American religious nationalism traces from the Puritan 'city on a hill' through the Great Awakenings, the Scopes-era fundamentalist retreat, the Moral Majority's political reemergence in the 1980s, and the current Christian nationalist movement.",
+            "This section will examine how religious movements have historically provided moral legitimacy for both revolutionary and counter-revolutionary action in American politics."
+          ]
+        },
+        {
+          "heading": "Key Figures & Organizations",
+          "paragraphs": [
+            "This section will profile the institutional ecosystem: megachurch networks, Christian media empires, judicial advocacy organizations (Alliance Defending Freedom, Family Research Council), faith-based schools, and the emerging Christian nationalist political infrastructure.",
+            "The relationship between mainstream evangelical leadership and more radical Christian nationalist movements will be a central theme."
+          ]
+        },
+        {
+          "heading": "Ideological Framework",
+          "paragraphs": [
+            "The faction's ideology synthesizes biblical literalism, cultural conservatism, providential nationalism (America as chosen nation), and an apocalyptic framework that interprets political conflict as spiritual warfare.",
+            "This section will analyze how this framework creates both powerful mobilization capacity and vulnerability to manipulation by secular political actors."
+          ]
+        },
+        {
+          "heading": "Tactics & Methods",
+          "paragraphs": [
+            "Religious traditionalist tactics include judicial strategy (decades-long project to reshape the courts), educational institution-building (Christian schools, homeschool networks), media ecosystem development, and local political engagement from school boards to state legislatures.",
+            "This section will assess the faction's shift from defensive (protecting religious liberty) to offensive (imposing religious values through law) posture."
+          ]
+        },
+        {
+          "heading": "Funding & Power Networks",
+          "paragraphs": [
+            "This section will trace the financial infrastructure: megachurch tithes, Christian broadcasting revenue, legal advocacy donations, and the dark money networks that fund judicial nomination campaigns.",
+            "The economic scale of American evangelicalism (estimated $1.2 trillion annual economic impact) makes this faction's financial resources often underestimated."
+          ]
+        },
+        {
+          "heading": "Real-World Case Studies",
+          "paragraphs": [
+            "Case studies will include the Dobbs decision and its aftermath, state-level religious liberty legislation, the homeschool movement's political maturation, Christian nationalist involvement in election administration, and the NAR (New Apostolic Reformation) political theology.",
+            "International parallels (Iranian Revolution's clerical faction, Polish Catholic solidarity, Hindu nationalism in India) will illustrate the range of outcomes when religious movements engage in revolutionary politics."
+          ]
+        },
+        {
+          "heading": "Historical Parallels",
+          "paragraphs": [
+            "Historical analysis will examine the role of religious movements in revolutions: the Catholic Church during the French Revolution, Shi'a clergy in Iran 1979, Liberation Theology in Latin America, and the role of Protestant churches in the American Revolution itself.",
+            "The central question: does religious mobilization accelerate or moderate revolutionary violence?"
+          ]
+        },
+        {
+          "heading": "Strengths & Vulnerabilities",
+          "paragraphs": [
+            "Strengths include pre-existing organizational infrastructure (churches as meeting places and communication networks), moral certainty that enables sustained commitment, cross-class appeal within the faith community, and the ability to frame political action as divine mandate.",
+            "Vulnerabilities include generational attrition (younger evangelicals are less politically conservative), internal theological divisions, reputational damage from association with extremism, and dependence on the right populist faction for political power."
+          ]
+        },
+        {
+          "heading": "Current Assessment",
+          "paragraphs": [
+            "This section will assess the faction's activation level using church attendance trends, Christian nationalist organizational growth, judicial strategy outcomes, and the Revolution Index polarization factors that drive religious political engagement.",
+            "Key question: What specific trigger (government action against churches, cultural change perceived as persecution) would shift the majority of this faction from conditional to active revolutionary posture?"
+          ]
+        }
+      ]
+    }
+  }
+}

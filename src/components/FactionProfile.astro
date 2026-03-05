@@ -1,0 +1,121 @@
+---
+import type { Faction, FactionProfile as FactionProfileType } from '../lib/data';
+import { factionIdToSlug } from '../lib/data';
+
+export interface Props {
+  faction: Faction;
+  profile: FactionProfileType;
+  /** All factions for related faction links */
+  allFactions: Faction[];
+}
+
+const { faction, profile, allFactions } = Astro.props;
+
+const stanceClasses: Record<string, string> = {
+  'pro-revolution': 'stance-pro',
+  'anti-revolution': 'stance-anti',
+  'opportunistic': 'stance-opportunistic',
+  'conditional': 'stance-conditional',
+  'kingmaker': 'stance-kingmaker',
+};
+
+const stanceClass = stanceClasses[faction.stance] || 'stance-pro';
+
+// Build related factions from alliances + conflicts
+const allianceFactions = faction.alliances
+  .map(id => allFactions.find(f => f.id === id))
+  .filter((f): f is Faction => !!f);
+
+const conflictFactions = faction.conflicts
+  .map(id => allFactions.find(f => f.id === id))
+  .filter((f): f is Faction => !!f);
+---
+
+<article class="faction-profile" style={`--faction-color: ${faction.color}`}>
+  <!-- Hero -->
+  <header class="profile-hero">
+    <div class="profile-color-bar"></div>
+    <nav class="profile-breadcrumb">
+      <a href="/factions">All Factions</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>{faction.name}</span>
+    </nav>
+    <h1 class="profile-name">{faction.name}</h1>
+    <p class="profile-tagline">{faction.tagline}</p>
+    <span class={`profile-stance ${stanceClass}`}>{faction.stanceLabel}</span>
+  </header>
+
+  <!-- Quick Facts -->
+  <aside class="profile-quickfacts">
+    <h2 class="quickfacts-heading">Quick Facts</h2>
+    <div class="quickfacts-grid">
+      <div class="quickfact">
+        <span class="quickfact-label">Base</span>
+        <span class="quickfact-value">{faction.base.demographics}</span>
+      </div>
+      <div class="quickfact">
+        <span class="quickfact-label">Geography</span>
+        <span class="quickfact-value">{faction.base.geography}</span>
+      </div>
+      <div class="quickfact">
+        <span class="quickfact-label">Institutions</span>
+        <span class="quickfact-value">{faction.base.institutions}</span>
+      </div>
+      <div class="quickfact">
+        <span class="quickfact-label">Factor Alignment</span>
+        <div class="quickfact-badges">
+          <span class="badge badge-primary">{faction.factorAlignment.primary.replace(/_/g, ' ')}</span>
+          <span class="badge badge-secondary">{faction.factorAlignment.secondary.replace(/_/g, ' ')}</span>
+        </div>
+      </div>
+    </div>
+    <div class="quickfact-wildcard">
+      <span class="quickfact-label">Wildcard</span>
+      <p class="quickfact-wildcard-text">{faction.wildcard}</p>
+    </div>
+  </aside>
+
+  <!-- Dossier Sections -->
+  <div class="profile-dossier">
+    {profile.sections.map((section) => (
+      <section class="dossier-section">
+        <h2 class="dossier-section-heading">{section.heading}</h2>
+        {section.paragraphs.map((p) => (
+          <p>{p}</p>
+        ))}
+      </section>
+    ))}
+  </div>
+
+  <!-- Related Factions -->
+  {(allianceFactions.length > 0 || conflictFactions.length > 0) && (
+    <section class="profile-related">
+      <h2 class="related-heading">Related Factions</h2>
+      <div class="related-grid">
+        {allianceFactions.map((f) => (
+          <a href={`/factions/${factionIdToSlug(f.id)}`} class="related-card related-alliance" style={`--related-color: ${f.color}`}>
+            <div class="related-color-pip"></div>
+            <div class="related-info">
+              <span class="related-name">{f.name}</span>
+              <span class="related-relation">Alliance</span>
+            </div>
+          </a>
+        ))}
+        {conflictFactions.map((f) => (
+          <a href={`/factions/${factionIdToSlug(f.id)}`} class="related-card related-conflict" style={`--related-color: ${f.color}`}>
+            <div class="related-color-pip"></div>
+            <div class="related-info">
+              <span class="related-name">{f.name}</span>
+              <span class="related-relation">Conflict</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Bottom Nav -->
+  <nav class="profile-bottom-nav">
+    <a href="/factions" class="back-link">Back to All Factions</a>
+  </nav>
+</article>

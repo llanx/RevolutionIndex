@@ -1,10 +1,10 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import FactionCard from '../components/FactionCard.astro';
-import '../styles/factions.css';
-import type { FactionsData } from '../lib/data';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FactionCard from '../../components/FactionCard.astro';
+import '../../styles/factions.css';
+import type { FactionsData } from '../../lib/data';
 
-import factionsRaw from '../../public/data/factions.json';
+import factionsRaw from '../../../public/data/factions.json';
 
 const factions = (factionsRaw as unknown as FactionsData).factions;
 

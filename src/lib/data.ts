@@ -361,3 +361,36 @@ export interface PoliciesData {
   _note: string;
   factors: FactorPolicies[];
 }
+
+// ---------------------------------------------------------------------------
+// faction-profiles.json — FactionProfilesData
+// ---------------------------------------------------------------------------
+
+/** Convert faction ID (right_populists) to URL slug (right-populists). */
+export function factionIdToSlug(id: string): string {
+  return id.replace(/_/g, '-');
+}
+
+/** Convert URL slug (right-populists) back to faction ID (right_populists). */
+export function factionSlugToId(slug: string): string {
+  return slug.replace(/-/g, '_');
+}
+
+/** A single section in a faction's dossier profile. */
+export interface FactionProfileSection {
+  heading: string;
+  paragraphs: string[];
+}
+
+/** Full dossier profile for a single faction. */
+export interface FactionProfile {
+  factionId: string;
+  sections: FactionProfileSection[];
+}
+
+/** faction-profiles.json — deep-dive dossier content for all factions. */
+export interface FactionProfilesData {
+  _schema: string;
+  _note: string;
+  profiles: Record<string, FactionProfile>;
+}

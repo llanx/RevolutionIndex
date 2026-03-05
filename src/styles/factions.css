@@ -340,6 +340,42 @@
   margin: 0.3rem 0 0;
 }
 
+/* Faction Name Link */
+
+.faction-name-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.faction-name-link:hover {
+  color: var(--accent);
+}
+
+/* Dossier CTA */
+
+.faction-dossier-link {
+  margin-top: 1.25rem;
+  text-align: center;
+}
+
+.dossier-cta {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.dossier-cta:hover {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
 /* Dynamics Section */
 
 .factions-dynamics {

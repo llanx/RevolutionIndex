@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FactionProfileComponent from '../../components/FactionProfile.astro';
+import '../../styles/faction-profile.css';
+import type { FactionsData, FactionProfilesData } from '../../lib/data';
+import { factionIdToSlug } from '../../lib/data';
+
+import factionsRaw from '../../../public/data/factions.json';
+import profilesRaw from '../../../public/data/faction-profiles.json';
+
+const factionsData = factionsRaw as unknown as FactionsData;
+const profilesData = profilesRaw as unknown as FactionProfilesData;
+
+export function getStaticPaths() {
+  const data = factionsRaw as unknown as FactionsData;
+  return data.factions.map((f) => ({
+    params: { id: f.id.replace(/_/g, '-') },
+    props: { factionId: f.id },
+  }));
+}
+
+const { factionId } = Astro.props;
+const faction = factionsData.factions.find((f) => f.id === factionId)!;
+const profile = profilesData.profiles[factionId];
+---
+
+<BaseLayout
+  title={`${faction.name} | Faction Dossier | Revolution Index`}
+  description={faction.tagline}
+>
+  <main>
+    <FactionProfileComponent
+      faction={faction}
+      profile={profile}
+      allFactions={factionsData.factions}
+    />
+  </main>
+</BaseLayout>

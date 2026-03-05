@@ -58,7 +58,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
         <div class="nav-links">
           <a href="/" class={currentPath === '/' ? 'active' : ''}>Dashboard</a>
           <a href="/history" class={currentPath === '/history' ? 'active' : ''}>History</a>
-          <a href="/factions" class={currentPath === '/factions' ? 'active' : ''}>Factions</a>
+          <a href="/factions" class={currentPath.startsWith('/factions') ? 'active' : ''}>Factions</a>
           <a href="/think-tank" class={currentPath === '/think-tank' ? 'active' : ''}>Think Tank</a>
           <a href="/methodology" class={currentPath === '/methodology' ? 'active' : ''}>Methodology</a>
         </div>

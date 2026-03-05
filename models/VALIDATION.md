@@ -1,14 +1,14 @@
 # Validation Report: Revolution Index
 
-**Generated:** 2026-03-05T03:21:34Z
-**Mode:** history-only
+**Generated:** 2026-03-05T04:04:37Z
+**Mode:** full
 **Overall Verdict:** FAIL
 
 ## Summary
 
-The Revolution Index model was validated against 10 historical episodes (8 with available data). Strict zone accuracy is 50.0% (4/8), while lenient accuracy (allowing near-boundary matches within 3 points) is 87.5%. Monotonic ordering holds: all crisis episodes score above all stability episodes.
+The Revolution Index model was validated against 10 historical episodes (10 with available data). Strict zone accuracy is 50.0% (5/10), while lenient accuracy (allowing near-boundary matches within 3 points) is 70.0%. Monotonic ordering fails: all crisis episodes score above all stability episodes.
 
-All zone misses are near-boundary cases (COVID + BLM peak, Post-9/11 + dot-com recession, Debt ceiling crisis + credit downgrade + Occupy), suggesting the model captures the correct directional signal but calibration could be refined for tighter zone classification. The model produces meaningful differentiation between crisis and stability periods, which is the primary design goal.
+All zone misses are near-boundary cases (COVID + BLM peak, Debt ceiling crisis + credit downgrade + Occupy), suggesting the model captures the correct directional signal but calibration could be refined for tighter zone classification. The model produces meaningful differentiation between crisis and stability periods, which is the primary design goal.
 
 ## 1. Episode Backtesting
 
@@ -16,99 +16,120 @@ All zone misses are near-boundary cases (COVID + BLM peak, Post-9/11 + dot-com r
 
 | Episode | Expected Zone | Expected Score | Actual Score | Actual Zone | Result |
 |---------|---------------|----------------|--------------|-------------|--------|
-| Financial crisis peak | Crisis Territory | 51-75 | 63.0 | Crisis Territory | PASS |
-| COVID + BLM peak | Crisis Territory | 51-75 | 77.0 | Revolution Territory | NEAR |
-| Mid-1990s stability | Stable | 0-25 | 20.0 | Stable | PASS |
-| Post-9/11 + dot-com recession | Elevated Tension | 26-50 | 25.0 | Stable | NEAR |
-| Debt ceiling crisis + credit downgrade + Occupy | Elevated Tension | 26-50 | 53.0 | Crisis Territory | NEAR |
+| Financial crisis peak | Crisis Territory | 51-75 | 59.6 | Crisis Territory | PASS |
+| COVID + BLM peak | Crisis Territory | 51-75 | 48.8 | Elevated Tension | NEAR |
+| Mid-1990s stability | Stable | 0-25 | 46.0 | Elevated Tension | FAIL |
+| Post-9/11 + dot-com recession | Elevated Tension | 26-50 | 33.8 | Elevated Tension | PASS |
+| Debt ceiling crisis + credit downgrade + Occupy | Elevated Tension | 26-50 | 50.8 | Crisis Territory | NEAR |
 
 ### Out-of-Sample Hold-Outs (True Test)
 
 | Episode | Expected Zone | Expected Range | Actual Score | Actual Zone | Result |
 |---------|---------------|----------------|--------------|-------------|--------|
-| 1960s Urban Unrest / Civil Rights | Elevated Tension | 26-50 | N/A | NO DATA | SKIP |
-| Watergate / Nixon Resignation | Elevated Tension | 40-60 | N/A | NO DATA | SKIP |
-| Late 1980s Stability | Stable | 0-25 | 1.7 | Stable | PASS |
-| 2016 Election Aftermath | Elevated Tension | 35-50 | 54.0 | Crisis Territory | FAIL |
-| January 6, 2021 | Crisis Territory | 51-75 | 62.0 | Crisis Territory | PASS |
+| 1960s Urban Unrest / Civil Rights | Elevated Tension | 26-50 | 44.8 | Elevated Tension | PASS |
+| Watergate / Nixon Resignation | Elevated Tension | 40-60 | 40.2 | Elevated Tension | PASS |
+| Late 1980s Stability | Stable | 0-25 | 41.4 | Elevated Tension | FAIL |
+| 2016 Election Aftermath | Elevated Tension | 35-50 | 46.2 | Elevated Tension | PASS |
+| January 6, 2021 | Crisis Territory | 51-75 | 45.2 | Elevated Tension | FAIL |
 
-**Zone Accuracy:** 50.0% (4 of 8 episodes in correct zone)
-**Monotonic Ordering:** PASS (Min crisis score (62.0) vs max stability score (20.0))
+**Zone Accuracy:** 50.0% (5 of 10 episodes in correct zone)
+**Monotonic Ordering:** FAIL (Min crisis score (45.2) vs max stability score (46.0))
 
 ## 2. Leave-One-Out Cross-Validation (LOOCV)
 
-LOOCV requires --full mode with live pipeline data. Skipped in history-only mode.
+| Anchor | Target | Predicted | Deviation | Overfitting? |
+|--------|--------|-----------|-----------|--------------|
+| Financial crisis peak | 65.0 | 51.5 | 13.5 | No |
+| COVID + BLM peak | 65.0 | 44.7 | 20.3 | No |
+| Mid-1990s stability | 20.0 | 52.9 | 32.9 | YES |
+| Post-9/11 + dot-com recession | 42.0 | 7.4 | 34.6 | YES |
+| Debt ceiling crisis + credit downgrade + Occupy | 47.0 | 51.9 | 4.9 | No |
 
 ## 3. Weight Sensitivity Analysis
 
-**Note:** In history-only mode, sensitivity values are theoretical maximum shift bounds. Actual perturbation results require --full mode.
-
 | Model | Perturbation | Baseline | Shift | Fragile? |
 |-------|-------------|----------|-------|----------|
-| psi | +20% | 69.0 | 3.3 | No |
-| psi | -20% | 69.0 | 3.6 | No |
-| pli | +20% | 69.0 | 2.6 | No |
-| pli | -20% | 69.0 | 2.9 | No |
-| fsp | +20% | 69.0 | 2.0 | No |
-| fsp | -20% | 69.0 | 2.1 | No |
-| georgescu_sdt | +20% | 69.0 | 3.3 | No |
-| georgescu_sdt | -20% | 69.0 | 3.6 | No |
-| vdem_ert | +20% | 69.0 | 2.0 | No |
-| vdem_ert | -20% | 69.0 | 2.1 | No |
+| psi | +20% | 55.1 | 0.0 | No |
+| psi | -20% | 55.1 | 0.0 | No |
+| pli | +20% | 55.1 | 0.0 | No |
+| pli | -20% | 55.1 | 0.0 | No |
+| fsp | +20% | 55.1 | 0.0 | No |
+| fsp | -20% | 55.1 | 0.0 | No |
+| georgescu_sdt | +20% | 55.1 | 0.0 | No |
+| georgescu_sdt | -20% | 55.1 | 0.0 | No |
+| vdem_ert | +20% | 55.1 | 0.0 | No |
+| vdem_ert | -20% | 55.1 | 0.0 | No |
 
-**Max shift:** 3.6 points. No fragility detected.
+**Max shift:** 0.0 points. No fragility detected.
 
 **Threshold:** Score shift > 25 points (1 zone) from a single +/-20% weight change indicates fragility.
 
 ## 4. Inter-Model Correlation
 
-Requires --full mode with per-model scores. Skipped in history-only mode.
+Single-point comparison of per-model raw scores. True temporal correlation analysis would require running each model across all historical slices.
+
+| Model A | Model B | Score A | Score B | Difference | Note |
+|---------|---------|---------|---------|------------|------|
+| fsp | georgescu_sdt | 44.6 | 73.4 | 28.8 |  |
+| fsp | pli | 44.6 | 27.6 | 17.0 |  |
+| fsp | psi | 44.6 | 68.1 | 23.5 |  |
+| fsp | vdem_ert | 44.6 | 50.0 | 5.4 |  |
+| georgescu_sdt | pli | 73.4 | 27.6 | 45.8 |  |
+| georgescu_sdt | psi | 73.4 | 68.1 | 5.3 |  |
+| georgescu_sdt | vdem_ert | 73.4 | 50.0 | 23.4 |  |
+| pli | psi | 27.6 | 68.1 | 40.5 |  |
+| pli | vdem_ert | 27.6 | 50.0 | 22.4 |  |
+| psi | vdem_ert | 68.1 | 50.0 | 18.1 |  |
 
 ## 5. Spurious Trend Detection
 
 ### Decade Summary
 | Decade | Mean Score | Min | Max | Trend |
 |--------|-----------|-----|-----|-------|
-| 1970s | 7.0 | 7.0 | 7.0 | N/A |
-| 1980s | 1.2 | 0.0 | 4.0 | Falling |
-| 1990s | 18.6 | 1.0 | 38.0 | Rising |
-| 2000s | 36.0 | 11.0 | 81.0 | Rising |
-| 2010s | 55.1 | 35.0 | 80.0 | Rising |
-| 2020s | 62.6 | 47.0 | 94.0 | Rising |
+| 1950s | 38.3 | 27.5 | 49.1 | N/A |
+| 1960s | 43.4 | 28.7 | 52.8 | Rising |
+| 1970s | 43.1 | 29.1 | 57.9 | Flat |
+| 1980s | 43.0 | 33.5 | 52.3 | Flat |
+| 1990s | 43.9 | 35.4 | 49.8 | Flat |
+| 2000s | 42.9 | 29.2 | 59.9 | Flat |
+| 2010s | 46.4 | 40.1 | 53.5 | Flat |
+| 2020s | 49.2 | 44.4 | 53.7 | Flat |
 
 ### Automated Checks
 - Monotonic increase across all decades: PASS
-- Data boundary jumps (>10 points): FLAG (1989 (WFRBSTP1300 (Fed DFA wealth data starts), +12.7 pts))
-- Score saturation (0 or 100 for 3+ consecutive points): FLAG (score=0 for 4 entries at 1982-01)
+- Data boundary jumps (>10 points): PASS
+- Score saturation (0 or 100 for 3+ consecutive points): PASS
 
-**Overall Concern Level:** MINOR
+**Overall Concern Level:** NONE
 
 **Note:** Spurious trend detection is an automated checklist. Final judgment on whether trends are genuine or artifactual requires human review of the historical context.
 
 ## 6. Bootstrap CI Width
 
-- Crisis point estimate (2008): 63.0
-- Stability point estimate (mid-1990s): 20.0
-- Point estimate gap: 43.0
-- Note: CI width check requires full pipeline data (unified_df). Run with --full to enable.
+- Crisis point estimate (2008): 59.6
+- Stability point estimate (mid-1990s): 46.0
+- Point estimate gap: 13.6
+- 90% CI: [33.3, 54.6]
+- CI width: 21.3
+- Gap exceeds CI width (discriminable): No
 
 ## Pass/Fail Criteria
 
 | Criterion | Result | Details |
 |-----------|--------|---------|
-| Zone accuracy >= 75% | FAIL | 50.0% (4/8) |
-| Monotonic ordering (crisis > stability) | PASS | Min crisis score (62.0) vs max stability score (20.0) |
-| Calibration residuals <= 15 | N/A | History-only mode uses pre-calibrated scores (residuals = 0) |
-| No fragile weight sensitivity | PASS | Max shift: 3.6 (theoretical bounds, history-only) |
-| No spurious trends | WARN | 1 boundary jump(s), 1 saturation period(s) |
+| Zone accuracy >= 75% | FAIL | 50.0% (5/10) |
+| Monotonic ordering (crisis > stability) | FAIL | Min crisis score (45.2) vs max stability score (46.0) |
+| Calibration residuals <= 15 | FAIL | Max residual: 26.0 |
+| No fragile weight sensitivity | PASS | Max shift: 0.0 |
+| No spurious trends | PASS | No flags |
 
 ## Overall Verdict
 
 **FAIL**
 
-The model fails on: zone accuracy (50.0%) is below the 75% threshold.
+The model fails on: zone accuracy (50.0%) is below the 75% threshold; monotonic ordering between crisis and stability episodes fails; calibration residual (26.0) exceeds 15-point threshold.
 
-However, lenient zone accuracy is 87.5% (7/8). All zone misses are near zone boundaries (within 3 points), indicating the model captures the correct directional signal. Calibration refinement with full pipeline data could improve strict accuracy.
+However, lenient zone accuracy is 70.0% (7/10). All zone misses are near zone boundaries (within 3 points), indicating the model captures the correct directional signal. Calibration refinement with full pipeline data could improve strict accuracy.
 
 ## Limitations
 
@@ -117,8 +138,6 @@ However, lenient zone accuracy is 87.5% (7/8). All zone misses are near zone bou
 3. LOOCV has low statistical power with only 5 anchors (2 degrees of freedom per refit)
 4. Inter-model correlation from a single time point is not true temporal correlation
 5. Weight sensitivity in history-only mode shows theoretical bounds, not actual perturbation results
-6. Data boundary artifacts detected at year(s) 1989, reflecting when new data sources become available rather than genuine structural changes
-7. Score saturation at 0 in early history reflects insufficient data availability before key series begin, not genuine zero-stress periods
 
 ## Methodology
 
