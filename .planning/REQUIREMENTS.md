@@ -47,9 +47,9 @@ Requirements for initial release. V1 delivers validated research and working mod
 - [x] **TEST-01**: Backtest model(s) against historical episodes (1968, 1970, 1992, 2001, 2008, 2020) and verify detection
 - [x] **TEST-02**: Backtest model(s) against quiet periods (1990s stability) and verify low scores
 - [x] **TEST-03**: Compute bootstrap confidence intervals on all scores
-- [ ] **TEST-04**: Run sensitivity analysis across plausible parameter ranges
-- [ ] **TEST-05**: Check for spurious upward trends (detrended analysis, placebo tests)
-- [ ] **TEST-06**: If multi-model: check inter-model correlation (flag if >0.85)
+- [x] **TEST-04**: Run sensitivity analysis across plausible parameter ranges
+- [x] **TEST-05**: Check for spurious upward trends (detrended analysis, placebo tests)
+- [x] **TEST-06**: If multi-model: check inter-model correlation (flag if >0.85)
 - [ ] **TEST-07**: Produce a validation report with pass/fail assessment and methodology documentation
 
 ## v2 Requirements
@@ -128,9 +128,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TEST-01 | Phase 5 | Complete |
 | TEST-02 | Phase 5 | Complete |
 | TEST-03 | Phase 5 | Complete |
-| TEST-04 | Phase 5 | Pending |
-| TEST-05 | Phase 5 | Pending |
-| TEST-06 | Phase 5 | Pending |
+| TEST-04 | Phase 5 | Complete |
+| TEST-05 | Phase 5 | Complete |
+| TEST-06 | Phase 5 | Complete |
 | TEST-07 | Phase 5 | Pending |
 
 **Coverage:**

@@ -8,7 +8,7 @@ progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 19
-  completed_plans: 17
+  completed_plans: 18
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-01)
 
 **Core value:** Produce a defensible, data-backed revolution probability score from freely available data -- one number that synthesizes what academic research says matters.
-**Current focus:** Phase 5 IN PROGRESS (1/3 plans complete). Core validation script built and tested. Episode backtesting against 10 historical episodes works in history-only mode. Next: Plan 05-02 (weight sensitivity analysis).
+**Current focus:** Phase 5 IN PROGRESS (2/3 plans complete). Core validation and diagnostic analyses complete. Next: Plan 05-03 (validation report generation).
 
 ## Current Position
 
 Phase: 5 of 5 (Model Validation) -- IN PROGRESS
-Plan: 1 of 3 in current phase (Core Validation complete)
-Status: Plan 05-01 COMPLETE. validate.py built with episode backtesting (10 episodes), LOOCV, CI width check. History-only mode works. Next: 05-02 weight sensitivity.
-Last activity: 2026-03-04 -- Core validation: episode backtesting, LOOCV, CI width check, 3-criterion verdict.
+Plan: 2 of 3 in current phase (Diagnostic Analyses complete)
+Status: Plan 05-02 COMPLETE. Weight sensitivity, inter-model correlation, spurious trend detection added to validate.py. History-only mode works. Next: 05-03 report generation.
+Last activity: 2026-03-05 -- Diagnostic analyses: weight sensitivity, inter-model correlation, spurious trend detection.
 
-Progress: [████████░░] 89%
+Progress: [█████████░] 95%
 
 ## Performance Metrics
 
@@ -44,11 +44,11 @@ Progress: [████████░░] 89%
 | 2 - Literature Mining | 6 | 51min | 9min |
 | 3 - Data Sourcing | 3 | 24min | 8min |
 | 4 - Model Building | 4/4 | 64min | 16min |
-| 5 - Validation | 1/3 | 4min | 4min |
+| 5 - Validation | 2/3 | 8min | 4min |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (4min), 04-04 (2min), 04-03 (9min), 04-02 (8min), 04-01 (45min)
-- Trend: Phase 5 Plan 01 (core validation) fast -- standalone script importing from existing modules
+- Last 5 plans: 05-02 (4min), 05-01 (4min), 04-04 (2min), 04-03 (9min), 04-02 (8min)
+- Trend: Phase 5 plans fast -- extending standalone validation script
 
 *Updated after each plan completion*
 | Phase 03 P01 | 1 | 1 tasks | 1 files |
@@ -59,6 +59,7 @@ Progress: [████████░░] 89%
 | Phase 04 P03 | 1 | 2 tasks | 8 files |
 | Phase 04 P04 | 1 | 1 tasks | 3 files |
 | Phase 05 P01 | 1 | 2 tasks | 1 files |
+| Phase 05 P02 | 1 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -163,6 +164,9 @@ Recent decisions affecting current work:
 - [05-01]: Strict vs lenient zone accuracy: 50% strict (4/8 correct zone), 87.5% lenient (7/8 within 3 points of correct boundary)
 - [05-01]: All zone misses are near-boundary (within 3-4 points), suggesting calibration refinement rather than fundamental model issues
 - [05-01]: 2016 election scores 54 (Crisis Territory, expected Elevated Tension): genuine model finding, not a bug
+- [05-02]: Weight sensitivity in history-only mode reports theoretical max bounds (too conservative to trigger 25-point threshold), actual re-run requires --full mode
+- [05-02]: Spurious trend detection found 1989 data boundary jump (+12.7 points when WFRBSTP1300 starts) and 1982 score saturation at 0 (known data availability artifacts)
+- [05-02]: Inter-model correlation analysis skipped in history-only mode since per-model scores require the full pipeline
 
 ### Pending Todos
 
@@ -175,6 +179,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-04
-Stopped at: Completed 05-01-PLAN.md (Core Validation). Phase 5 in progress (1/3 plans). Next: 05-02 (Weight Sensitivity Analysis).
+Last session: 2026-03-05
+Stopped at: Completed 05-02-PLAN.md (Diagnostic Analyses). Phase 5 in progress (2/3 plans). Next: 05-03 (Validation Report).
 Resume file: None
