@@ -154,12 +154,28 @@ def compute_georgescu(unified_df: pd.DataFrame) -> ModelOutput:
 
     # Weighted average (NOT multiplicative like PSI)
     # Georgescu's empirical approach for developed economies uses
-    # correlation-based weighting rather than strict multiplicative interaction
-    composite = (
-        COMPONENT_WEIGHTS["elite_overproduction"] * elite_score
-        + COMPONENT_WEIGHTS["mass_immiseration"] * immis_score
-        + COMPONENT_WEIGHTS["state_fiscal_distress"] * fiscal_score
-    )
+    # correlation-based weighting rather than strict multiplicative interaction.
+    # Renormalize weights over available components only, so missing data
+    # (score=0.0 from _compute_component with no variables) does not drag
+    # the composite down. With CDF normalization, a component with actual
+    # data will never be exactly 0.0 (CDF(z)>0 for all finite z).
+    component_results = {
+        "elite_overproduction": (elite_score, elite_vars),
+        "mass_immiseration": (immis_score, immis_vars),
+        "state_fiscal_distress": (fiscal_score, fiscal_vars),
+    }
+    available_weight_sum = 0.0
+    weighted_composite = 0.0
+    for key, (score, vars_used) in component_results.items():
+        if vars_used:  # component has data
+            w = COMPONENT_WEIGHTS[key]
+            weighted_composite += w * score
+            available_weight_sum += w
+
+    if available_weight_sum > 0:
+        composite = weighted_composite / available_weight_sum
+    else:
+        composite = 0.0
 
     # Scale to 0-100 and clamp
     georgescu_score = max(0.0, min(100.0, composite * 100.0))

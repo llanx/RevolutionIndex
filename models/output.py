@@ -64,6 +64,7 @@ def write_current_json(
     domain_weights: dict,
     timestamp: str,
     bootstrap_ci: dict = None,
+    metadata: dict = None,
 ) -> None:
     """
     Write public/data/current.json matching CurrentData interface.
@@ -131,6 +132,11 @@ def write_current_json(
             "width": bootstrap_ci["ci_width"],
             "n": bootstrap_ci["n_bootstrap"],
         }
+
+    # Add model metadata if available
+    if metadata:
+        for key, value in metadata.items():
+            data[key] = value
 
     output_path = OUTPUT_DIR / "current.json"
     with open(output_path, "w") as f:

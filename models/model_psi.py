@@ -142,13 +142,24 @@ def compute_psi(unified_df: pd.DataFrame) -> ModelOutput:
     emp_score, emp_vars = _compute_component(unified_df, EMP_VARIABLES, var_lookup)
     sfd_score, sfd_vars = _compute_component(unified_df, SFD_VARIABLES, var_lookup)
 
-    # Geometric mean: preserves multiplicative interaction
-    # (instability requires all three pressures; any zero factor -> zero PSI)
-    components_arr = np.array([mmp_score, emp_score, sfd_score])
-    if np.any(components_arr <= 0.0):
+    # Geometric mean with adaptive dimensionality: only include components
+    # that have data. We distinguish "no data" (empty variables_used list)
+    # from "zero stress" (has data but score is 0.0). With CDF normalization
+    # a score of exactly 0.0 is practically impossible when data exists,
+    # but we use the variables_used list as the authoritative signal.
+    all_results = [
+        (mmp_score, mmp_vars),
+        (emp_score, emp_vars),
+        (sfd_score, sfd_vars),
+    ]
+    available = [s for s, v in all_results if v]  # v non-empty = has data
+
+    if len(available) == 0:
         psi_raw = 0.0
+    elif len(available) == 1:
+        psi_raw = available[0]
     else:
-        psi_raw = float(np.power(np.prod(components_arr), 1.0 / 3.0))
+        psi_raw = float(np.power(np.prod(available), 1.0 / len(available)))
 
     # Scale to 0-100 and clamp
     psi_score = max(0.0, min(100.0, psi_raw * 100.0))
@@ -189,6 +200,10 @@ def compute_psi(unified_df: pd.DataFrame) -> ModelOutput:
     if total_vars > 0:
         for k in domain_contributions:
             domain_contributions[k] /= total_vars
+
+    if len(available) < 3:
+        print(f"  PSI: {len(available)}/3 components available "
+              f"(MMP={mmp_score:.3f}, EMP={emp_score:.3f}, SFD={sfd_score:.3f})")
 
     return ModelOutput(
         model_id="psi",

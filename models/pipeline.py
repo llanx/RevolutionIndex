@@ -243,6 +243,29 @@ def construct_proxy(
         pressure.name = str(cat_num)
         return pressure
 
+    # #19: Intra-Elite Wealth Gap (ratio within top 1%)
+    if cat_num == 19:
+        top01 = raw_data.get("WFRBSTP1300")     # Top 0.1% net worth share
+        top1 = raw_data.get("WFRBST01134")       # Top 1% net worth share
+        if top01 is None or top1 is None:
+            return None
+        # Align to common quarterly index
+        top01_q = top01.resample("QE").last().dropna()
+        top1_q = top1.resample("QE").last().dropna()
+        common = top01_q.index.intersection(top1_q.index)
+        if len(common) == 0:
+            return None
+        top01_aligned = top01_q.loc[common]
+        top1_aligned = top1_q.loc[common]
+        # Ratio: top 0.1% share / (top 1% share - top 0.1% share)
+        # Denominator is the "rest of the top 1%" (0.1%-1%)
+        denominator = top1_aligned - top01_aligned
+        # Avoid division by zero or negative
+        denominator = denominator.clip(lower=0.01)
+        ratio = top01_aligned / denominator
+        ratio.name = str(cat_num)
+        return ratio
+
     # #8: Elite Overproduction (education-job mismatch)
     # This requires Census ACS and BLS JOLTS data that must be manually loaded
     if cat_num == 8:
@@ -396,16 +419,21 @@ def fetch_all(api_key: str, start_year: int = 1947) -> pd.DataFrame:
         except Exception as e:
             print(f"  [{var.catalog_number}] {var.series_id}: FAILED - {e}")
 
-    # Also fetch CPI component series needed for constructed variable #40
-    cpi_components = ["CUSR0000SAH1", "CPIFABSL", "CPIENGSL", "CPIMEDSL"]
-    for sid in cpi_components:
+    # Also fetch component series needed for constructed variables
+    component_series = [
+        # CPI components for constructed variable #40
+        "CUSR0000SAH1", "CPIFABSL", "CPIENGSL", "CPIMEDSL",
+        # Top 1% wealth share for constructed variable #19 (intra-elite ratio)
+        "WFRBST01134",
+    ]
+    for sid in component_series:
         if sid not in raw_data:
             try:
                 raw_data[sid] = fetch_fred_series(sid, api_key, start_date)
-                print(f"  [CPI component] {sid}: "
+                print(f"  [component] {sid}: "
                       f"{len(raw_data[sid])} observations")
             except Exception as e:
-                print(f"  [CPI component] {sid}: FAILED - {e}")
+                print(f"  [component] {sid}: FAILED - {e}")
 
     # Phase 2: Load manual download data
     manual_vars = [v for v in VARIABLES if v.source_type == SourceType.MANUAL_DOWNLOAD]
@@ -438,6 +466,7 @@ def fetch_all(api_key: str, start_year: int = 1947) -> pd.DataFrame:
     # Phase 4: Align all series to monthly and normalize
     print("\nAligning to monthly frequency and normalizing...")
     normalized: dict[str, pd.Series] = {}
+    raw_aligned: dict[str, pd.Series] = {}
     window = NORMALIZATION_CONFIG["rolling_window_months"]
 
     for var in VARIABLES:
@@ -456,6 +485,10 @@ def fetch_all(api_key: str, start_year: int = 1947) -> pd.DataFrame:
         # Align to monthly
         monthly = align_to_monthly(series, var.frequency)
 
+        # Store raw aligned series (pre-normalization) for models that
+        # need original values (e.g., V-Dem rate-of-change computation)
+        raw_aligned[str(var.catalog_number)] = monthly
+
         # Normalize to 0.0-1.0 stress intensity
         direction = var.norm_direction.value
         stress = normalize_variable(monthly, direction=direction, window=window)
@@ -468,16 +501,19 @@ def fetch_all(api_key: str, start_year: int = 1947) -> pd.DataFrame:
     # Phase 5: Combine into unified DataFrame
     if not normalized:
         print("\nWARNING: No variables were successfully processed.")
-        return pd.DataFrame()
+        return pd.DataFrame(), pd.DataFrame()
 
     unified = pd.DataFrame(normalized)
     unified = unified.sort_index()
+
+    raw_unified = pd.DataFrame(raw_aligned)
+    raw_unified = raw_unified.sort_index()
 
     print(f"\nUnified DataFrame: {unified.shape[0]} months x "
           f"{unified.shape[1]} variables")
     print(f"Date range: {unified.index.min()} to {unified.index.max()}")
 
-    return unified
+    return unified, raw_unified
 
 
 # ---------------------------------------------------------------------------
@@ -555,7 +591,7 @@ def main():
     print("=" * 70)
     print()
 
-    unified = fetch_all(api_key)
+    unified, _raw = fetch_all(api_key)
 
     if unified.empty:
         print("\nPipeline produced no data. Check errors above.")

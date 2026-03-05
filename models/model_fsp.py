@@ -153,25 +153,24 @@ def _compute_transmission_coefficient(
     unified_df: pd.DataFrame,
 ) -> float:
     """
-    Compute the transmission coefficient between FSSI and ETI.
+    Compute the transmission coefficient between FSSI and ETI using
+    lagged rolling correlation.
 
-    Uses the lagged relationship: how much does financial stress (Stage 1)
-    predict subsequent economic hardship (Stage 2)?
-
-    The coefficient is estimated by comparing current ETI to lagged FSSI.
-    A high coefficient means financial stress is actively transmitting
-    to economic hardship (the causal chain is active).
+    For each lag (12, 24, 36, 48, 60 months), computes the rolling
+    correlation between lagged FSSI and current ETI over a 5-year window.
+    Takes the best (highest absolute) correlation as the transmission
+    strength signal.
 
     Returns a multiplier in [0.5, 1.5]:
-      - 0.5 = financial stress is NOT transmitting (decoupled)
-      - 1.0 = normal transmission
-      - 1.5 = amplified transmission (economic pain exceeds financial trigger)
+      - 0.5 = no correlation (financial stress not transmitting)
+      - 1.0 = moderate correlation
+      - 1.5 = strong correlation (active transmission)
     """
     fssi_col = f"var_{FSSI_VARIABLE}"
     if fssi_col not in unified_df.columns:
         return 1.0
 
-    fssi_series = unified_df[fssi_col].dropna()
+    fssi_series = unified_df[fssi_col].ffill()
 
     # Compute aggregate ETI series for correlation
     eti_values = []
@@ -180,22 +179,27 @@ def _compute_transmission_coefficient(
         if col in unified_df.columns:
             eti_values.append(unified_df[col].ffill() * weight)
 
-    if not eti_values or len(fssi_series) < TRANSMISSION_LAG_MONTHS:
+    if not eti_values or len(fssi_series.dropna()) < TRANSMISSION_LAG_MONTHS:
         return 1.0
 
     eti_series = sum(eti_values)
 
-    # Compare current ETI to lagged FSSI
-    if len(fssi_series) > TRANSMISSION_LAG_MONTHS:
-        lagged_fssi = float(fssi_series.iloc[-TRANSMISSION_LAG_MONTHS - 1])
-        current_eti = float(eti_series.dropna().iloc[-1]) if not eti_series.dropna().empty else 0.0
+    # Find the best lagged correlation across multiple lag windows
+    best_corr = 0.0
+    corr_window = 60  # 5-year rolling correlation window
 
-        if lagged_fssi > 0.01:
-            ratio = current_eti / lagged_fssi
-            # Clamp to [0.5, 1.5]
-            return max(0.5, min(1.5, ratio))
+    for lag in [12, 24, 36, 48, 60]:
+        if len(fssi_series) > lag + corr_window:
+            lagged = fssi_series.shift(lag)
+            window_corr = lagged.rolling(corr_window).corr(eti_series).dropna()
+            if not window_corr.empty:
+                latest_corr = abs(float(window_corr.iloc[-1]))
+                best_corr = max(best_corr, latest_corr)
 
-    return 1.0
+    # Map correlation to transmission multiplier [0.5, 1.5]
+    # 0 correlation -> 1.0 (neutral)
+    # High correlation -> 1.5 (strong transmission)
+    return 0.5 + best_corr
 
 
 @register_model("fsp")

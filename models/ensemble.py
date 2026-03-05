@@ -9,18 +9,15 @@ Weight rationale (from models/README.md):
 - Georgescu SDT 0.25: Most directly applicable to developed democracies (Georgescu 2023)
 - V-Dem ERT 0.15: Primarily diagnostic (not predictive), but covers institutional dimension no other model captures
 """
+from typing import Optional
+
 import pandas as pd
-import numpy as np
-from datetime import datetime, timezone
 
 from models.models import ModelOutput, MODEL_REGISTRY
 from models.config import (
     MODEL_WEIGHTS,
     DOMAIN_WEIGHTS,
     Domain,
-    VARIABLES,
-    EVIDENCE_WEIGHTS,
-    get_variables_by_domain,
 )
 from models.pipeline import compute_domain_scores
 
@@ -53,7 +50,10 @@ def _rename_columns_for_models(unified_df: pd.DataFrame) -> pd.DataFrame:
     return unified_df.rename(columns=rename_map)
 
 
-def compute_ensemble(unified_df: pd.DataFrame) -> dict:
+def compute_ensemble(
+    unified_df: pd.DataFrame,
+    raw_df: Optional[pd.DataFrame] = None,
+) -> dict:
     """
     Run all registered models and combine their outputs.
 
@@ -62,6 +62,9 @@ def compute_ensemble(unified_df: pd.DataFrame) -> dict:
     unified_df : pd.DataFrame
         Unified DataFrame from pipeline.fetch_all() with columns named
         by catalog number (string) and values in 0.0-1.0 stress range.
+    raw_df : pd.DataFrame, optional
+        Pre-normalized raw aligned data. Passed to models that need
+        original values (e.g., V-Dem rate-of-change computation).
 
     Returns
     -------
@@ -76,13 +79,22 @@ def compute_ensemble(unified_df: pd.DataFrame) -> dict:
 
     # Rename columns for model consumption
     model_df = _rename_columns_for_models(unified_df)
+    raw_model_df = _rename_columns_for_models(raw_df) if raw_df is not None else None
 
     # --- Run all registered models ---
     model_outputs: dict[str, ModelOutput] = {}
     for model_id, model_fn in MODEL_REGISTRY.items():
         try:
-            output = model_fn(model_df)
+            output = model_fn(model_df, raw_df=raw_model_df)
             model_outputs[model_id] = output
+        except TypeError:
+            # Model doesn't accept raw_df kwarg, call without it
+            try:
+                output = model_fn(model_df)
+                model_outputs[model_id] = output
+            except Exception as e:
+                print(f"  WARNING: Model '{model_id}' failed: {e}")
+                continue
         except Exception as e:
             print(f"  WARNING: Model '{model_id}' failed: {e}")
             continue
@@ -138,7 +150,15 @@ def compute_ensemble(unified_df: pd.DataFrame) -> dict:
             factor_directions[domain_id] = "neutral"
 
     # --- Build historical time series ---
-    history = _build_raw_history(unified_df, domain_scores_df)
+    history = _build_raw_history(unified_df, domain_scores_df, raw_df=raw_df)
+
+    # Compute effective weights (after renormalization for any failed models)
+    effective_weights = {}
+    if model_outputs:
+        total_w = sum(MODEL_WEIGHTS.get(mid, 0.0) for mid in model_outputs)
+        if total_w > 0:
+            for mid in model_outputs:
+                effective_weights[mid] = MODEL_WEIGHTS.get(mid, 0.0) / total_w
 
     return {
         "composite_score": composite_score,
@@ -146,51 +166,100 @@ def compute_ensemble(unified_df: pd.DataFrame) -> dict:
         "domain_scores": current_domain_scores,
         "factor_directions": factor_directions,
         "history": history,
+        "models_expected": list(MODEL_REGISTRY.keys()),
+        "effective_weights": effective_weights,
     }
+
+
+def _run_models_on_slice(
+    model_df_slice: pd.DataFrame,
+    raw_df_slice: Optional[pd.DataFrame] = None,
+) -> Optional[float]:
+    """
+    Run all registered models on a DataFrame slice and combine with MODEL_WEIGHTS.
+
+    Returns the uncalibrated composite score (0-100), or None if no models succeed.
+    """
+    model_outputs = {}
+    for model_id, model_fn in MODEL_REGISTRY.items():
+        try:
+            output = model_fn(model_df_slice, raw_df=raw_df_slice)
+            model_outputs[model_id] = output
+        except TypeError:
+            try:
+                output = model_fn(model_df_slice)
+                model_outputs[model_id] = output
+            except Exception:
+                continue
+        except Exception:
+            continue
+
+    if not model_outputs:
+        return None
+
+    weighted_sum = 0.0
+    total_weight = 0.0
+    for model_id, output in model_outputs.items():
+        weight = MODEL_WEIGHTS.get(model_id, 0.0)
+        weighted_sum += output.score * weight
+        total_weight += weight
+
+    if total_weight <= 0:
+        return None
+
+    return weighted_sum / total_weight
 
 
 def _build_raw_history(
     unified_df: pd.DataFrame,
     domain_scores_df: pd.DataFrame,
+    raw_df: Optional[pd.DataFrame] = None,
 ) -> list[dict]:
     """
-    Build historical time series of composite scores.
+    Build historical time series of composite scores using the same
+    5-model ensemble used for the current score.
 
-    For each month in the domain_scores DataFrame, compute the weighted
-    composite score using DOMAIN_WEIGHTS. This is the uncalibrated raw
-    history that will be calibrated later by calibrate.py.
+    For each time point, slices unified_df up to that date, runs all 5
+    model functions on the slice, and combines with MODEL_WEIGHTS. This
+    ensures history, bootstrap CI, and current score all use identical
+    methodology.
 
-    For months where some domains lack data, compute from available
-    domains only (exclude missing, don't treat as zero).
-
-    Minimum coverage: at least 2 domains must have valid data for a month
-    to be included. This prevents misleading near-zero scores for early
-    years (pre-1979) when most variables lack data coverage.
+    Performance optimization: pre-2000 uses quarterly sampling (Jan, Apr,
+    Jul, Oct), post-2000 uses monthly. The domain_scores_df index is used
+    only to determine which dates to evaluate.
     """
-    MIN_DOMAINS_REQUIRED = 2  # At least 2 of 5 domains must have data
+    _ensure_models_registered()
+
+    # Rename columns once for model consumption
+    model_df = _rename_columns_for_models(unified_df)
+    raw_model_df = _rename_columns_for_models(raw_df) if raw_df is not None else None
 
     history = []
+    dates = domain_scores_df.index
 
-    for date_idx in domain_scores_df.index:
-        row = domain_scores_df.loc[date_idx]
-        weighted_sum = 0.0
-        total_weight = 0.0
-        valid_domain_count = 0
+    for date_idx in dates:
+        year = date_idx.year
+        month = date_idx.month
 
-        for domain in Domain:
-            domain_id = domain.value
-            if domain_id in row.index and not pd.isna(row[domain_id]):
-                weight = DOMAIN_WEIGHTS[domain]
-                weighted_sum += float(row[domain_id]) * weight
-                total_weight += weight
-                valid_domain_count += 1
+        # Pre-2000: quarterly only (performance optimization)
+        if year < 2000 and month not in (1, 4, 7, 10):
+            continue
 
-        if total_weight > 0 and valid_domain_count >= MIN_DOMAINS_REQUIRED:
-            # Scale domain scores (0.0-1.0) to composite (0-100)
-            composite = (weighted_sum / total_weight) * 100.0
-            date_str = date_idx.strftime("%Y-%m-%d")
+        # Slice up to this date (inclusive)
+        slice_df = model_df.loc[:date_idx]
+        if slice_df.empty:
+            continue
+
+        # Need at least some data columns with values
+        non_null_cols = slice_df.iloc[-1].dropna()
+        if len(non_null_cols) < 2:
+            continue
+
+        raw_slice = raw_model_df.loc[:date_idx] if raw_model_df is not None else None
+        composite = _run_models_on_slice(slice_df, raw_df_slice=raw_slice)
+        if composite is not None:
             history.append({
-                "date": date_str,
+                "date": date_idx.strftime("%Y-%m-%d"),
                 "score": composite,
             })
 

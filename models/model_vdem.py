@@ -115,10 +115,15 @@ def _variable_lookup():
 
 def _compute_rate_of_change_stress(
     series: pd.Series,
+    raw_series: pd.Series = None,
     window: int = ROC_WINDOW,
 ) -> float:
     """
     Compute stress from rate of change in a V-Dem indicator.
+
+    Uses raw (pre-normalized) data when available to avoid computing
+    rate-of-change on CDF-compressed values (which would be a second
+    derivative that amplifies noise and loses original signal magnitude).
 
     For variables where lower_is_worse (democratic quality):
       - Declining values = deterioration = higher stress
@@ -132,7 +137,10 @@ def _compute_rate_of_change_stress(
     Uses a sigmoid-like mapping calibrated to V-Dem index scales
     where changes of 0.05-0.20 are significant for developed democracies.
     """
-    valid = series.dropna()
+    # Prefer raw data for rate-of-change computation to avoid
+    # computing differences on already-normalized (CDF-mapped) values
+    roc_source = raw_series if raw_series is not None else series
+    valid = roc_source.dropna()
 
     if len(valid) <= window:
         # Not enough data for rate-of-change; return neutral
@@ -160,6 +168,7 @@ def _compute_rate_of_change_stress(
 def _compute_roc_components(
     unified_df: pd.DataFrame,
     var_lookup: dict,
+    raw_df: pd.DataFrame = None,
 ) -> tuple[list[ComponentScore], float, list[str], list[int]]:
     """
     Compute rate-of-change stress for all V-Dem trajectory indicators.
@@ -194,14 +203,17 @@ def _compute_roc_components(
             ))
             continue
 
-        # For V-Dem variables in the unified_df, the values are already
-        # normalized to 0-1 stress. We need the underlying trajectory
-        # (rate of change) rather than the absolute level.
-        #
-        # The stress normalization already accounts for direction, but
-        # for rate-of-change analysis we compute the 5-year rolling
-        # difference in the normalized stress values.
-        stress = _compute_rate_of_change_stress(series, ROC_WINDOW)
+        # Use raw (pre-normalized) data for rate-of-change computation
+        # to avoid computing differences on CDF-compressed values
+        raw_series = None
+        if raw_df is not None and col in raw_df.columns:
+            raw_series = raw_df[col].dropna()
+            if raw_series.empty:
+                raw_series = None
+
+        stress = _compute_rate_of_change_stress(
+            series, raw_series=raw_series, window=ROC_WINDOW,
+        )
 
         var_info = var_lookup.get(vnum)
         var_name = var_info.name if var_info else f"Variable #{vnum}"
@@ -282,7 +294,7 @@ def _compute_level_components(
 
 
 @register_model("vdem_ert")
-def compute_vdem(unified_df: pd.DataFrame) -> ModelOutput:
+def compute_vdem(unified_df: pd.DataFrame, raw_df=None) -> ModelOutput:
     """
     V-Dem ERT Institutional Quality Model.
     Tracks democratic erosion via rate-of-change analysis on V-Dem indices.
@@ -295,6 +307,8 @@ def compute_vdem(unified_df: pd.DataFrame) -> ModelOutput:
     unified_df : pd.DataFrame
         DataFrame with columns named "var_{catalog_number}" containing
         normalized 0.0-1.0 stress values. Index is DatetimeIndex.
+    raw_df : pd.DataFrame, optional
+        Pre-normalized raw aligned data for rate-of-change computation.
 
     Returns
     -------
@@ -305,7 +319,7 @@ def compute_vdem(unified_df: pd.DataFrame) -> ModelOutput:
 
     # Rate-of-change components (6 V-Dem trajectory indicators)
     roc_components, roc_avg, roc_vars, roc_nums = _compute_roc_components(
-        unified_df, var_lookup,
+        unified_df, var_lookup, raw_df=raw_df,
     )
 
     # Level components (state capacity, voter access)

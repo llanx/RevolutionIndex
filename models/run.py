@@ -40,6 +40,10 @@ def main():
         "--dry-run", action="store_true",
         help="Compute scores but don't write JSON output",
     )
+    parser.add_argument(
+        "--raw", action="store_true",
+        help="Skip calibration, show raw (uncalibrated) scores clamped to 0-100",
+    )
     args = parser.parse_args()
 
     print("=" * 70)
@@ -61,7 +65,7 @@ def main():
     # 2. Fetch and prepare data
     from models.pipeline import fetch_all, compute_domain_scores
     print("Phase 1: Fetching data...")
-    unified_df = fetch_all(api_key=api_key, start_year=1947)
+    unified_df, raw_df = fetch_all(api_key=api_key, start_year=1947)
 
     if unified_df.empty:
         print("\nERROR: Pipeline produced no data. Check errors above.")
@@ -75,27 +79,61 @@ def main():
     # 3. Run all models via ensemble
     print(f"\nPhase 3: Running ensemble models...")
     from models.ensemble import compute_ensemble
-    ensemble_result = compute_ensemble(unified_df)
+    ensemble_result = compute_ensemble(unified_df, raw_df=raw_df)
+
+    models_run = list(ensemble_result['model_outputs'].keys())
+    models_expected = ensemble_result.get('models_expected', [])
+    models_failed = [m for m in models_expected if m not in models_run]
 
     print(f"  Composite (uncalibrated): {ensemble_result['composite_score']:.1f}")
-    print(f"  Models: {', '.join(ensemble_result['model_outputs'].keys())}")
+    print(f"  Models run: {', '.join(models_run)} ({len(models_run)}/{len(models_expected)})")
+    if models_failed:
+        print(f"  Models FAILED: {', '.join(models_failed)}")
+
+    # Log effective weights
+    eff_weights = ensemble_result.get('effective_weights', {})
+    if eff_weights:
+        weight_str = ", ".join(f"{k}={v:.3f}" for k, v in eff_weights.items())
+        print(f"  Effective weights: {weight_str}")
+
+    # Confidence assessment
+    if len(models_run) < 3:
+        print(f"  WARNING: Low confidence, only {len(models_run)}/5 models produced output")
+    if "vdem_ert" not in models_run and "vdem_ert" in models_expected:
+        print(f"  WARNING: Institutional dimension unavailable (V-Dem model failed)")
 
     # 4. Calibrate scores
     print(f"\nPhase 4: Calibrating scores...")
-    from models.calibrate import calibrate, compute_bootstrap_ci, score_to_zone
+    from models.calibrate import (
+        calibrate,
+        get_calibration_coefficients,
+        compute_bootstrap_ci,
+        score_to_zone,
+    )
 
     raw_history = pd.Series(
         {row["date"]: row["score"] for row in ensemble_result["history"]}
     )
-    calibrated_history = calibrate(raw_history)
 
-    print(f"  Raw range: {raw_history.min():.1f} - {raw_history.max():.1f}")
-    print(f"  Calibrated range: {calibrated_history.min():.1f} - "
-          f"{calibrated_history.max():.1f}")
+    if args.raw:
+        # Raw mode: skip calibration, just clamp to 0-100
+        calibrated_history = raw_history.clip(0, 100)
+        cal_coeffs = (1.0, 0.0)
+        print(f"  --raw mode: skipping calibration")
+        print(f"  Raw range: {raw_history.min():.1f} - {raw_history.max():.1f}")
+    else:
+        calibrated_history = calibrate(raw_history)
+        cal_coeffs = get_calibration_coefficients(raw_history)
+        print(f"  Raw range: {raw_history.min():.1f} - {raw_history.max():.1f}")
+        print(f"  Calibrated range: {calibrated_history.min():.1f} - "
+              f"{calibrated_history.max():.1f}")
+        print(f"  Calibration: score = {cal_coeffs[0]:.4f} * raw + {cal_coeffs[1]:.4f}")
 
-    # 5. Compute bootstrap CI for current score
+    # 5. Compute bootstrap CI for current score (calibrated)
     print(f"\nPhase 5: Computing bootstrap confidence intervals...")
-    bootstrap_ci = compute_bootstrap_ci(unified_df)
+    bootstrap_ci = compute_bootstrap_ci(
+        unified_df, calibration_coeffs=cal_coeffs,
+    )
 
     # 6. Determine current values
     current_score = int(round(float(calibrated_history.iloc[-1])))
@@ -108,10 +146,19 @@ def main():
     print("=" * 70)
     print("Pipeline Results")
     print("=" * 70)
+    raw_current = round(ensemble_result['composite_score'])
     print(f"  Composite Score: {current_score}")
+    if not args.raw:
+        print(f"  Raw (uncalibrated): {raw_current}")
     print(f"  Zone: {current_zone}")
-    print(f"  Bootstrap 90% CI: "
+    print(f"  Bootstrap 90% CI (calibrated): "
           f"[{bootstrap_ci['ci_lower']:.1f}, {bootstrap_ci['ci_upper']:.1f}]")
+    # Verify CI contains or is near the point estimate
+    ci_lo = bootstrap_ci['ci_lower']
+    ci_hi = bootstrap_ci['ci_upper']
+    if current_score < ci_lo - 5 or current_score > ci_hi + 5:
+        print(f"  WARNING: Point estimate {current_score} is outside "
+              f"CI [{ci_lo:.1f}, {ci_hi:.1f}] by >5 points")
     print(f"  Models run: {len(ensemble_result['model_outputs'])}")
     print()
     print("  Domain scores:")
@@ -140,6 +187,11 @@ def main():
         # Build domain weights dict with string keys
         domain_weights = {d.value: w for d, w in DW.items()}
 
+        # Compute data coverage: fraction of 41 variables with non-null latest value
+        total_vars = len(unified_df.columns)
+        non_null_vars = sum(1 for c in unified_df.columns if not unified_df[c].dropna().empty)
+        data_coverage = non_null_vars / max(total_vars, 1)
+
         write_current_json(
             composite_score=current_score,
             zone=current_zone,
@@ -148,6 +200,13 @@ def main():
             domain_weights=domain_weights,
             timestamp=timestamp,
             bootstrap_ci=bootstrap_ci,
+            metadata={
+                "_models_run": models_run,
+                "_models_expected": len(models_expected),
+                "_data_coverage": round(data_coverage, 3),
+                "_generated_at": timestamp,
+                "_confidence": "low" if len(models_run) < 3 else "normal",
+            },
         )
 
         # Build history for JSON (sample annually pre-2000, quarterly post-2000)
