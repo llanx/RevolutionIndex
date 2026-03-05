@@ -58,8 +58,10 @@ EVIDENCE_WEIGHTS = {
     EvidenceRating.WEAK: 1.0,
 }
 
-# Inter-domain weights (from literature evidence strength and cross-framework
-# reference frequency)
+# Inter-domain weights: used ONLY for factor display values in current.json
+# (the "value" field of each factor). All scoring (current score, history,
+# bootstrap CI) uses MODEL_WEIGHTS via the 5 model functions in ensemble.py.
+# Do NOT use DOMAIN_WEIGHTS for computing composite scores.
 DOMAIN_WEIGHTS = {
     Domain.ECONOMIC_STRESS: 0.30,        # 7 Strong variables, highest evidence density
     Domain.POLITICAL_POLARIZATION: 0.22, # 4 Strong variables, central to all frameworks
@@ -69,7 +71,9 @@ DOMAIN_WEIGHTS = {
 }
 # Must sum to 1.0
 
-# Model ensemble weights (provisional, Phase 5 may adjust)
+# Model ensemble weights: used for ALL scoring (current, history, bootstrap).
+# Each model function consumes specific variables and produces a 0-100 score.
+# The ensemble combines these with these weights.
 MODEL_WEIGHTS = {
     "psi": 0.25,
     "pli": 0.20,
@@ -423,8 +427,8 @@ VARIABLES: list[Variable] = [
         catalog_number=19,
         name="Intra-Elite Wealth Gap (Top 0.1% Concentration)",
         domain=Domain.POLITICAL_POLARIZATION,
-        source_type=SourceType.FRED_API,
-        series_id="WFRBSTP1300",
+        source_type=SourceType.CONSTRUCTED,
+        series_id=None,
         evidence_rating=EvidenceRating.MODERATE,
         norm_direction=NormDirection.HIGHER_IS_WORSE,
         frequency="quarterly",
@@ -705,7 +709,7 @@ VARIABLES: list[Variable] = [
     # #26 Youth Unemployment / Disconnection
     Variable(
         catalog_number=26,
-        name="Youth Unemployment Rate (16-19 + 20-24)",
+        name="Youth Unemployment Rate (16-19)",
         domain=Domain.SOCIAL_MOBILIZATION,
         source_type=SourceType.FRED_API,
         series_id="LNS14000012",
@@ -714,10 +718,7 @@ VARIABLES: list[Variable] = [
         frequency="monthly",
         coverage_start=1948,
         short_series=False,
-        construction_recipe=(
-            "Weighted average of LNS14000012 (16-19 yr) and LNS14000036 "
-            "(20-24 yr) to approximate ILO 15-24 definition."
-        ),
+        construction_recipe=None,
         manual_source=None,
     ),
 

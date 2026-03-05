@@ -25,12 +25,13 @@ Domain structure:
   Financial: financial stress, household debt
 """
 from datetime import datetime, timezone
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 
 from models.models import ComponentScore, ModelOutput, register_model
-from models.config import VARIABLES, EVIDENCE_WEIGHTS, EvidenceRating
+from models.config import VARIABLES, EVIDENCE_WEIGHTS, EvidenceRating, NormDirection
 
 
 # ---------------------------------------------------------------------------
@@ -75,6 +76,11 @@ NUM_DOMAINS = len(PLI_DOMAINS)
 MAX_VELOCITY_BONUS = 15.0  # Maximum additive velocity bonus
 VELOCITY_LOOKBACK = 12     # Number of periods to compute rate-of-change
 
+# Prospect theory adaptation-level: people evaluate conditions relative to
+# what they recently experienced, not the all-time average. A 5-year window
+# (60 months) captures the adaptation-level reference point.
+REFERENCE_WINDOW = 60
+
 
 def _variable_lookup():
     """Build a dict of catalog_number -> Variable for quick access."""
@@ -86,20 +92,21 @@ def _compute_domain_loss(
     var_numbers: list[int],
     K: float,
     var_lookup: dict,
+    raw_df: Optional[pd.DataFrame] = None,
 ) -> tuple[float, float, list[str]]:
     """
     Compute the prospect-theory loss score for a single domain.
 
     For each variable in the domain:
-    1. Find the reference point (trailing 10-year peak stress, since we work
-       with normalized 0-1 stress values, the "peak" is the maximum stress
-       observed, and a "loss" is current stress exceeding the recent average)
-    2. Compute deviation from a baseline (average over recent history)
+    1. Find the reference point (trailing 5-year trough as the
+       adaptation-level baseline per Kahneman-Tversky: people anchor
+       to the best conditions they recently experienced)
+    2. Compute deviation from baseline (current vs best recent)
     3. Apply prospect theory value function for losses
 
-    Since the unified_df contains normalized stress values (higher = worse),
-    a "loss" in prospect theory terms means current stress is ABOVE the
-    recent baseline (conditions are worse than what people remember as normal).
+    When raw_df is available, uses raw values for reference/deviation
+    computation (avoids CDF compression of perceived loss magnitudes).
+    Falls back to normalized stress values when raw data is unavailable.
 
     Returns (loss_score, deviation_magnitude, variables_used).
     """
@@ -114,24 +121,40 @@ def _compute_domain_loss(
         if col not in unified_df.columns:
             continue
 
-        series = unified_df[col].dropna()
-        if len(series) < 2:
-            continue
-
         var_info = var_lookup.get(vnum)
         if var_info is None:
             continue
 
-        # Reference point: mean stress over available history
-        # (represents "what people consider normal")
-        reference = float(series.mean())
+        # Use raw values for reference/deviation when available
+        using_raw = raw_df is not None and col in raw_df.columns
+        series = (raw_df[col] if using_raw else unified_df[col]).dropna()
+
+        if len(series) < 2:
+            continue
+
+        # Reference point: best recent experience (5-year window trough).
+        # Kahneman-Tversky adaptation-level: people anchor to the best
+        # conditions they recently experienced, not the average.
+        window = series.iloc[-REFERENCE_WINDOW:] if len(series) > REFERENCE_WINDOW else series
+
+        if using_raw and var_info.norm_direction == NormDirection.LOWER_IS_WORSE:
+            # Raw LOWER_IS_WORSE (e.g., labor share): best = highest value
+            reference = float(window.max())
+        else:
+            # Normalized (higher=worse): best = minimum stress
+            # Raw HIGHER_IS_WORSE (e.g., unemployment): best = lowest value
+            reference = float(window.min())
+
         current = float(series.iloc[-1])
 
         # Deviation: positive means conditions are worse than reference
-        # (current stress is above historical average)
         if abs(reference) < 1e-10:
             deviation = 0.0
+        elif using_raw and var_info.norm_direction == NormDirection.LOWER_IS_WORSE:
+            # Deterioration = current below best (reference - current)
+            deviation = (reference - current) / abs(reference)
         else:
+            # Deterioration = current above best (current - reference)
             deviation = (current - reference) / abs(reference)
 
         deviation_sum += deviation
@@ -162,13 +185,19 @@ def _compute_domain_loss(
     return avg_loss, avg_deviation, variables_used
 
 
-def _compute_velocity(unified_df: pd.DataFrame, var_numbers: list[int]) -> float:
+def _compute_velocity(
+    unified_df: pd.DataFrame,
+    var_numbers: list[int],
+    raw_df: Optional[pd.DataFrame] = None,
+    var_lookup: Optional[dict] = None,
+) -> float:
     """
     Compute actual rate-of-change velocity for domain variables.
 
-    Velocity = average 12-period change in stress values across domain
-    variables. Positive velocity means stress is increasing (conditions
-    deteriorating faster).
+    Velocity = average 12-period change across domain variables.
+    Positive velocity means stress is increasing (conditions
+    deteriorating faster). Uses raw values when available to avoid
+    CDF compression of velocity magnitudes.
 
     Fixes implementation review A2: uses actual rate of change instead
     of deviation magnitude.
@@ -177,16 +206,26 @@ def _compute_velocity(unified_df: pd.DataFrame, var_numbers: list[int]) -> float
 
     for vnum in var_numbers:
         col = f"var_{vnum}"
-        if col not in unified_df.columns:
+
+        using_raw = raw_df is not None and col in raw_df.columns
+        source_df = raw_df if using_raw else unified_df
+        if col not in source_df.columns:
             continue
 
-        series = unified_df[col].dropna()
+        series = source_df[col].dropna()
         if len(series) <= VELOCITY_LOOKBACK:
             continue
 
         current = float(series.iloc[-1])
         past = float(series.iloc[-VELOCITY_LOOKBACK - 1])
         velocity = (current - past) / VELOCITY_LOOKBACK
+
+        # For raw LOWER_IS_WORSE: invert so positive = worsening
+        if using_raw and var_lookup:
+            var_info = var_lookup.get(vnum)
+            if var_info and var_info.norm_direction == NormDirection.LOWER_IS_WORSE:
+                velocity = -velocity
+
         velocities.append(velocity)
 
     if not velocities:
@@ -196,7 +235,10 @@ def _compute_velocity(unified_df: pd.DataFrame, var_numbers: list[int]) -> float
 
 
 @register_model("pli")
-def compute_pli(unified_df: pd.DataFrame) -> ModelOutput:
+def compute_pli(
+    unified_df: pd.DataFrame,
+    raw_df: Optional[pd.DataFrame] = None,
+) -> ModelOutput:
     """
     Prospect Theory Political Stress Index.
     Applies loss aversion weighting to economic deterioration.
@@ -211,6 +253,9 @@ def compute_pli(unified_df: pd.DataFrame) -> ModelOutput:
     unified_df : pd.DataFrame
         DataFrame with columns named "var_{catalog_number}" containing
         normalized 0.0-1.0 stress values. Index is DatetimeIndex.
+    raw_df : pd.DataFrame, optional
+        Pre-normalized raw aligned data. Used for reference/deviation
+        computation to avoid CDF compression of perceived losses.
 
     Returns
     -------
@@ -231,7 +276,7 @@ def compute_pli(unified_df: pd.DataFrame) -> ModelOutput:
         domain_name = domain_def["name"]
 
         loss_score, deviation, vars_used = _compute_domain_loss(
-            unified_df, var_nums, K, var_lookup,
+            unified_df, var_nums, K, var_lookup, raw_df=raw_df,
         )
 
         domain_scores.append(loss_score)
@@ -265,7 +310,9 @@ def compute_pli(unified_df: pd.DataFrame) -> ModelOutput:
     for d in PLI_DOMAINS.values():
         all_domain_vars.extend(d["variables"])
 
-    avg_velocity = _compute_velocity(unified_df, all_domain_vars)
+    avg_velocity = _compute_velocity(
+        unified_df, all_domain_vars, raw_df=raw_df, var_lookup=var_lookup,
+    )
     # Only positive velocity (increasing stress) contributes a bonus
     if avg_velocity > 0:
         velocity_bonus = min(MAX_VELOCITY_BONUS, avg_velocity * 100.0)
