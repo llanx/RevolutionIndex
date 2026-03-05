@@ -146,9 +146,27 @@ def _get_episode_score(
 ) -> Optional[float]:
     """
     Extract a score from the calibrated history for an episode date spec.
-    Uses the same logic as _get_anchor_raw_score from calibrate.py.
+
+    Enhanced version of _get_anchor_raw_score that handles month-end dates
+    in history.json (e.g., "2017-01-31") when searching for "2017-01".
+    For date ranges, extends the end date to include the full end month.
     """
-    return _get_anchor_raw_score(calibrated_history, date_spec)
+    if isinstance(date_spec, tuple):
+        start_date = pd.Timestamp(date_spec[0] + "-01")
+        # Extend end date to the last day of the end month
+        end_base = pd.Timestamp(date_spec[1] + "-01")
+        end_date = end_base + pd.offsets.MonthEnd(0)
+        mask = (calibrated_history.index >= start_date) & (
+            calibrated_history.index <= end_date
+        )
+        values = calibrated_history[mask]
+        if values.empty:
+            return None
+        return float(values.mean())
+    else:
+        # For single month spec, use the existing logic which handles
+        # nearest-within-3-months matching
+        return _get_anchor_raw_score(calibrated_history, date_spec)
 
 
 def _nearest_boundary_margin(score: float) -> tuple[int, int]:
