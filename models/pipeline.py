@@ -29,6 +29,7 @@ from config import (
     Variable,
     SourceType,
     NormDirection,
+    NormMethod,
     Domain,
     get_variables_by_domain,
 )
@@ -510,7 +511,8 @@ def fetch_all(api_key: str, start_year: int = 1947) -> pd.DataFrame:
 
         # Normalize to 0.0-1.0 stress intensity
         direction = var.norm_direction.value
-        stress = normalize_variable(monthly, direction=direction, window=window)
+        method = "percentile_rank" if var.norm_method == NormMethod.FULL_HISTORY_PERCENTILE else "rolling_zscore"
+        stress = normalize_variable(monthly, direction=direction, method=method, window=window)
 
         normalized[str(var.catalog_number)] = stress
         valid_count = stress.dropna().shape[0]

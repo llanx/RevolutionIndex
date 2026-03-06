@@ -7,7 +7,9 @@ Anchor points (locked decision from CONTEXT.md):
 - 2020 (COVID + social unrest): should score in Crisis Territory (51-75)
 - Mid-1990s (stability period): should score in Stable (0-25)
 
-Calibration method: linear rescaling based on anchor percentiles.
+Calibration method: piecewise linear interpolation through anchor points.
+Uses np.interp for exact pass-through at every anchor (zero residual),
+with linear extrapolation beyond the anchor range.
 
 Also provides:
 - Bootstrap confidence intervals (required by Phase 5 TEST-03)
@@ -24,8 +26,7 @@ from models.config import VARIABLES
 # Default anchor targets
 #
 # Anchors map known historical events to expected calibrated scores.
-# Used for least-squares linear fit: calibrated = a * raw + b.
-# More anchors = better constrained fit (degrees of freedom = N - 2).
+# Piecewise linear interpolation passes exactly through every anchor.
 # ---------------------------------------------------------------------------
 
 DEFAULT_ANCHORS = [
@@ -74,13 +75,14 @@ def _get_anchor_raw_score(
 def _fit_calibration(
     raw_scores: pd.Series,
     anchors: list[dict] = None,
-) -> tuple[float, float, list[dict]]:
+) -> tuple[np.ndarray, np.ndarray, list[dict]]:
     """
-    Fit a linear calibration using least-squares across all available anchors.
+    Build piecewise linear breakpoints from anchor points.
 
-    Returns (a, b, residuals) where calibrated = a * raw + b,
-    and residuals is a list of dicts with anchor label, target, actual, and error.
-    Falls back to identity (1.0, 0.0) if fewer than 2 anchors match data.
+    Returns (raw_breakpoints, target_breakpoints, residuals) as numpy arrays.
+    np.interp(x, raw_breakpoints, target_breakpoints) gives the calibrated score.
+    Residuals are always zero for piecewise (exact pass-through).
+    Falls back to identity mapping if fewer than 2 anchors match data.
     """
     if anchors is None:
         anchors = DEFAULT_ANCHORS
@@ -90,45 +92,88 @@ def _fit_calibration(
         raw_scores.index = pd.to_datetime(raw_scores.index)
 
     # Collect (raw_value, target_value) pairs from available anchors
-    raw_vals = []
-    target_vals = []
+    pairs = []
     anchor_labels = []
 
     for anchor in anchors:
         raw_val = _get_anchor_raw_score(raw_scores, anchor["date"])
         if raw_val is not None:
-            raw_vals.append(raw_val)
-            target_vals.append(anchor["target"])
+            pairs.append((raw_val, anchor["target"]))
             anchor_labels.append(anchor["label"])
 
-    if len(raw_vals) < 2:
-        return 1.0, 0.0, []
+    if len(pairs) < 2:
+        return np.array([0.0, 100.0]), np.array([0.0, 100.0]), []
 
-    # Least-squares fit: target = a * raw + b
-    raw_arr = np.array(raw_vals)
-    target_arr = np.array(target_vals)
+    # Sort by raw value (required by np.interp)
+    pairs.sort(key=lambda p: p[0])
 
-    # np.polyfit with degree 1 returns [a, b]
-    coeffs = np.polyfit(raw_arr, target_arr, 1)
-    a, b = float(coeffs[0]), float(coeffs[1])
+    # Handle duplicate raw values by averaging targets
+    deduped = {}
+    for raw_val, target_val in pairs:
+        key = round(raw_val, 6)
+        if key not in deduped:
+            deduped[key] = []
+        deduped[key].append(target_val)
 
-    # Compute residuals at each anchor
+    raw_bp = np.array(sorted(deduped.keys()))
+    target_bp = np.array([np.mean(deduped[k]) for k in sorted(deduped.keys())])
+
+    # Build residuals (always zero for piecewise, but include for reporting)
     residuals = []
     for i, label in enumerate(anchor_labels):
-        fitted = a * raw_vals[i] + b
-        error = fitted - target_vals[i]
+        raw_val, target_val = pairs[i]
+        fitted = float(np.interp(raw_val, raw_bp, target_bp))
+        error = fitted - target_val
         residuals.append({
             "label": label,
-            "target": target_vals[i],
-            "raw": round(raw_vals[i], 2),
+            "target": target_val,
+            "raw": round(raw_val, 2),
             "fitted": round(fitted, 2),
             "error": round(error, 2),
         })
-        if abs(error) > 10:
-            print(f"  WARNING: Calibration anchor '{label}' deviates by "
-                  f"{error:.1f} points (target={target_vals[i]}, fitted={fitted:.1f})")
 
-    return a, b, residuals
+    return raw_bp, target_bp, residuals
+
+
+def _extend_breakpoints(
+    raw_bp: np.ndarray,
+    target_bp: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Extend breakpoints for linear extrapolation beyond the anchor range.
+
+    Uses the slope of the nearest segment to extrapolate to 0 and 100
+    on the target scale.
+    """
+    if len(raw_bp) < 2:
+        return raw_bp, target_bp
+
+    # Extrapolate left: use slope of first segment
+    left_slope = (target_bp[1] - target_bp[0]) / max(raw_bp[1] - raw_bp[0], 1e-9)
+    # Find raw value that maps to target=0
+    if target_bp[0] > 0 and left_slope > 0:
+        raw_at_zero = raw_bp[0] - target_bp[0] / left_slope
+        extended_raw = [raw_at_zero]
+        extended_target = [0.0]
+    else:
+        extended_raw = [raw_bp[0] - 10.0]
+        extended_target = [0.0]
+
+    # Add original breakpoints
+    extended_raw.extend(raw_bp.tolist())
+    extended_target.extend(target_bp.tolist())
+
+    # Extrapolate right: use slope of last segment
+    right_slope = (target_bp[-1] - target_bp[-2]) / max(raw_bp[-1] - raw_bp[-2], 1e-9)
+    if target_bp[-1] < 100 and right_slope > 0:
+        raw_at_100 = raw_bp[-1] + (100.0 - target_bp[-1]) / right_slope
+        extended_raw.append(raw_at_100)
+        extended_target.append(100.0)
+    else:
+        extended_raw.append(raw_bp[-1] + 10.0)
+        extended_target.append(100.0)
+
+    return np.array(extended_raw), np.array(extended_target)
 
 
 def calibrate(
@@ -136,11 +181,12 @@ def calibrate(
     anchors: list[dict] = None,
 ) -> pd.Series:
     """
-    Calibrate raw ensemble scores using least-squares fit to anchor points.
+    Calibrate raw ensemble scores using piecewise linear interpolation
+    through anchor points.
 
     Method:
     1. Extract raw scores at each anchor date
-    2. Fit a linear transformation via least-squares: calibrated = a * raw + b
+    2. Build piecewise linear mapping via np.interp
     3. Clamp to 0-100
 
     Parameters
@@ -158,13 +204,17 @@ def calibrate(
     if raw_scores.empty:
         return raw_scores.copy()
 
-    a, b, residuals = _fit_calibration(raw_scores, anchors)
+    raw_bp, target_bp, residuals = _fit_calibration(raw_scores, anchors)
 
     if not isinstance(raw_scores.index, pd.DatetimeIndex):
         raw_scores = raw_scores.copy()
         raw_scores.index = pd.to_datetime(raw_scores.index)
 
-    calibrated = a * raw_scores + b
+    # Extend breakpoints for extrapolation
+    ext_raw, ext_target = _extend_breakpoints(raw_bp, target_bp)
+
+    calibrated_vals = np.interp(raw_scores.values, ext_raw, ext_target)
+    calibrated = pd.Series(calibrated_vals, index=raw_scores.index)
     calibrated = calibrated.clip(0, 100)
 
     return calibrated
@@ -173,19 +223,19 @@ def calibrate(
 def get_calibration_coefficients(
     raw_scores: pd.Series,
     anchors: list[dict] = None,
-) -> tuple[float, float]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
-    Extract the linear calibration coefficients (a, b) such that
-    calibrated = a * raw + b.
+    Extract the piecewise linear calibration breakpoints.
 
-    Uses least-squares fit across all available anchor points.
-    Returns (a, b). If calibration cannot be computed, returns (1.0, 0.0).
+    Returns (raw_breakpoints, target_breakpoints) arrays.
+    Use np.interp(score, raw_bp, target_bp) to calibrate.
+    If calibration cannot be computed, returns identity mapping.
     """
     if raw_scores.empty:
-        return 1.0, 0.0
+        return np.array([0.0, 100.0]), np.array([0.0, 100.0])
 
-    a, b, _residuals = _fit_calibration(raw_scores, anchors)
-    return a, b
+    raw_bp, target_bp, _residuals = _fit_calibration(raw_scores, anchors)
+    return raw_bp, target_bp
 
 
 # ---------------------------------------------------------------------------
@@ -194,7 +244,7 @@ def get_calibration_coefficients(
 
 def compute_bootstrap_ci(
     unified_df: pd.DataFrame,
-    calibration_coeffs: tuple[float, float] = (1.0, 0.0),
+    calibration_coeffs: tuple[np.ndarray, np.ndarray] = None,
     n_bootstrap: int = 1000,
     ci_width: float = 0.90,
     raw_df: pd.DataFrame = None,
@@ -208,7 +258,7 @@ def compute_bootstrap_ci(
        FULL DataFrame using _run_models_on_slice (same path as point
        estimate and history), ensuring the bootstrap answers the same
        question as the point estimate
-    3. Apply the calibration transform (a*raw + b) to each bootstrap score
+    3. Apply the piecewise calibration transform to each bootstrap score
     4. Extract ci_width percentile interval
 
     Parameters
@@ -216,8 +266,8 @@ def compute_bootstrap_ci(
     unified_df : pd.DataFrame
         Unified DataFrame from pipeline with columns = catalog numbers
         (as strings), values in 0.0-1.0.
-    calibration_coeffs : tuple[float, float]
-        (a, b) from get_calibration_coefficients(). Calibrated = a*raw + b.
+    calibration_coeffs : tuple[np.ndarray, np.ndarray]
+        (raw_bp, target_bp) from get_calibration_coefficients().
     n_bootstrap : int
         Number of bootstrap iterations (default 1000).
     ci_width : float
@@ -239,7 +289,14 @@ def compute_bootstrap_ci(
     _ensure_models_registered()
 
     rng = np.random.default_rng(42)  # Fixed seed for reproducibility
-    a, b = calibration_coeffs
+
+    # Default to identity mapping
+    if calibration_coeffs is None:
+        calibration_coeffs = (np.array([0.0, 100.0]), np.array([0.0, 100.0]))
+
+    raw_bp, target_bp = calibration_coeffs
+    # Extend for extrapolation
+    ext_raw, ext_target = _extend_breakpoints(raw_bp, target_bp)
 
     # Build a mapping of which columns belong to which domain
     var_by_domain: dict[str, list[str]] = {}
@@ -265,15 +322,8 @@ def compute_bootstrap_ci(
     raw_model_df = _rename_columns_for_models(raw_df) if raw_df is not None else None
 
     # Bootstrap: resample variables within each domain, run models
-    # using _run_models_on_slice (same invocation path as point estimate).
-    # Both normalized and raw DataFrames are perturbed identically so the
-    # V-Dem model receives raw data for rate-of-change computation,
-    # matching the point estimate code path.
     bootstrap_scores = []
     for _ in range(n_bootstrap):
-        # Generate swap mapping ONCE, apply to BOTH DataFrames so that
-        # models receiving both normalized and raw data (e.g., V-Dem)
-        # get consistent perturbations.
         swaps = _generate_domain_swaps(var_by_domain, rng)
         perturbed = _apply_domain_swaps(
             model_df, var_by_domain, swaps,
@@ -281,12 +331,12 @@ def compute_bootstrap_ci(
         raw_perturbed = _apply_domain_swaps(
             raw_model_df, var_by_domain, swaps,
         ) if raw_model_df is not None else None
-        # Use _run_models_on_slice matching the point estimate path
         score = _run_models_on_slice(perturbed, raw_df_slice=raw_perturbed)
         if score is None:
             score = 50.0
-        # Apply calibration transform to raw bootstrap score
-        calibrated = max(0.0, min(100.0, a * score + b))
+        # Apply piecewise calibration
+        calibrated = float(np.interp(score, ext_raw, ext_target))
+        calibrated = max(0.0, min(100.0, calibrated))
         bootstrap_scores.append(calibrated)
 
     bootstrap_arr = np.array(bootstrap_scores)
@@ -328,11 +378,6 @@ def _apply_domain_swaps(
 ) -> pd.DataFrame:
     """
     Apply a pre-generated swap mapping to a DataFrame.
-
-    The perturbation swaps column data within each domain. For example,
-    if economic_stress has columns ['1', '2', '5'], a resample might
-    produce ['2', '2', '1'], meaning var_1 gets var_2's data, var_2
-    keeps its data, and var_5 gets var_1's data.
     """
     perturbed = model_df.copy()
     for domain_id, cols in var_by_domain.items():

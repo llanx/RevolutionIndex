@@ -879,7 +879,7 @@ def _fetch_vdem_raw() -> Optional[pd.DataFrame]:
                 _VDEM_CACHE = df
                 return _VDEM_CACHE
             except Exception as e:
-                logger.debug(f"V-Dem RDS attempt failed ({rds_url}): {e}")
+                logger.debug(f"V-Dem RDS attempt failed ({rdata_url}): {e}")
                 continue
     except ImportError:
         logger.info("pyreadr not installed — cannot download V-Dem from GitHub")
@@ -968,6 +968,52 @@ def fetch_neighborhood_effects(catalog_number: int = 39) -> Optional[pd.Series]:
 # ---------------------------------------------------------------------------
 
 _ACLED_CACHE: Optional[pd.DataFrame] = None
+_ACLED_TOKEN: Optional[str] = None
+
+
+def _get_acled_token() -> Optional[str]:
+    """Get ACLED OAuth token, caching in memory for reuse."""
+    global _ACLED_TOKEN
+    if _ACLED_TOKEN is not None:
+        return _ACLED_TOKEN
+
+    email = os.environ.get("ACLED_EMAIL")
+    password = os.environ.get("ACLED_PASSWORD")
+    if not email or not password:
+        return None
+
+    try:
+        resp = _get_session().post(
+            "https://acleddata.com/oauth/token",
+            data={
+                "username": email,
+                "password": password,
+                "grant_type": "password",
+                "client_id": "acled",
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=30,
+        )
+        if resp.status_code == 400:
+            # Try alternative endpoint
+            resp = _get_session().post(
+                "https://api.acleddata.com/oauth/token",
+                data={
+                    "username": email,
+                    "password": password,
+                    "grant_type": "password",
+                    "client_id": "acled",
+                },
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                timeout=30,
+            )
+        resp.raise_for_status()
+        token_data = resp.json()
+        _ACLED_TOKEN = token_data.get("access_token")
+        return _ACLED_TOKEN
+    except Exception as e:
+        logger.warning(f"ACLED OAuth token request failed: {e}")
+        return None
 
 
 def _fetch_acled_raw() -> Optional[pd.DataFrame]:
@@ -991,33 +1037,39 @@ def _fetch_acled_raw() -> Optional[pd.DataFrame]:
             _ACLED_CACHE = pd.read_csv(disk_cache, parse_dates=["event_date"])
             return _ACLED_CACHE
 
-    api_key = os.environ.get("ACLED_API_KEY")
-    email = os.environ.get("ACLED_EMAIL")
-    if not api_key or not email:
+    token = _get_acled_token()
+    if not token:
         # Fall back to stale cache
         if disk_cache.exists():
-            logger.info("ACLED credentials not set — using stale cache")
+            logger.info("ACLED credentials not set, using stale cache")
             _ACLED_CACHE = pd.read_csv(disk_cache, parse_dates=["event_date"])
             return _ACLED_CACHE
         logger.warning(
-            "ACLED_API_KEY and ACLED_EMAIL not set.\n"
+            "ACLED_EMAIL and ACLED_PASSWORD not set.\n"
             "Register free at https://acleddata.com/ and set env vars."
         )
         return None
 
     url = "https://api.acleddata.com/acled/read"
     params = {
-        "key": api_key,
-        "email": email,
         "iso": 840,  # USA
         "event_type": "Protests|Riots",
         "limit": 0,  # return all
     }
+    headers = {"Authorization": f"Bearer {token}"}
 
     logger.info("Fetching ACLED US protest events...")
-    resp = _get_session().get(url, params=params, timeout=120)
-    resp.raise_for_status()
-    data = resp.json()
+    try:
+        resp = _get_session().get(url, params=params, headers=headers, timeout=120)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:
+        logger.warning(f"ACLED API request failed: {e}")
+        if disk_cache.exists():
+            logger.info("Falling back to stale ACLED cache")
+            _ACLED_CACHE = pd.read_csv(disk_cache, parse_dates=["event_date"])
+            return _ACLED_CACHE
+        return None
 
     if not data.get("data"):
         logger.warning("ACLED API returned no data")

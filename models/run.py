@@ -115,19 +115,23 @@ def main():
         {row["date"]: row["score"] for row in ensemble_result["history"]}
     )
 
+    import numpy as np
     if args.raw:
         # Raw mode: skip calibration, just clamp to 0-100
         calibrated_history = raw_history.clip(0, 100)
-        cal_coeffs = (1.0, 0.0)
+        cal_coeffs = (np.array([0.0, 100.0]), np.array([0.0, 100.0]))
         print(f"  --raw mode: skipping calibration")
         print(f"  Raw range: {raw_history.min():.1f} - {raw_history.max():.1f}")
     else:
         calibrated_history = calibrate(raw_history)
         cal_coeffs = get_calibration_coefficients(raw_history)
+        raw_bp, target_bp = cal_coeffs
         print(f"  Raw range: {raw_history.min():.1f} - {raw_history.max():.1f}")
         print(f"  Calibrated range: {calibrated_history.min():.1f} - "
               f"{calibrated_history.max():.1f}")
-        print(f"  Calibration: score = {cal_coeffs[0]:.4f} * raw + {cal_coeffs[1]:.4f}")
+        print(f"  Piecewise breakpoints:")
+        for r, t in zip(raw_bp, target_bp):
+            print(f"    raw {r:.2f} -> target {t:.1f}")
 
     # 5. Compute bootstrap CI for current score (calibrated)
     print(f"\nPhase 5: Computing bootstrap confidence intervals...")
