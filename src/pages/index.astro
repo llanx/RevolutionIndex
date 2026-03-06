@@ -34,9 +34,9 @@ const enrichedFactors = current.factors.map(f => {
   };
 });
 
-// Serialize data for client-side charts (filter to 1947+ to exclude zero-score pre-data era)
+// Filter to 1947+ and exclude zero-score entries (missing data, not real zeros)
 const MIN_HISTORY_YEAR = 1947;
-const filteredEntries = history.entries.filter(e => new Date(e.date).getFullYear() >= MIN_HISTORY_YEAR);
+const filteredEntries = history.entries.filter(e => new Date(e.date).getFullYear() >= MIN_HISTORY_YEAR && e.score > 0);
 const chartLabels = JSON.stringify(filteredEntries.map(e => e.date));
 const chartValues = JSON.stringify(filteredEntries.map(e => e.score));
 
