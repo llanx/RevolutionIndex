@@ -9,43 +9,43 @@
       "historical": [
         {
           "date": "2017-01-31",
-          "value": 0.6245
+          "value": 0.6113
         },
         {
           "date": "2018-01-31",
-          "value": 0.5592
+          "value": 0.5531
         },
         {
           "date": "2019-01-31",
-          "value": 0.566
+          "value": 0.5597
         },
         {
           "date": "2020-01-31",
-          "value": 0.6421
+          "value": 0.6153
         },
         {
           "date": "2021-01-31",
-          "value": 0.5529
+          "value": 0.5255
         },
         {
           "date": "2022-01-31",
-          "value": 0.6685
+          "value": 0.6667
         },
         {
           "date": "2023-01-31",
-          "value": 0.6322
+          "value": 0.6333
         },
         {
           "date": "2024-01-31",
-          "value": 0.5823
+          "value": 0.5796
         },
         {
           "date": "2025-01-31",
-          "value": 0.6018
+          "value": 0.5927
         },
         {
           "date": "2026-01-31",
-          "value": 0.5241
+          "value": 0.5242
         },
         {
           "date": "2026-02-28",
@@ -57,51 +57,51 @@
       "id": "political_polarization",
       "name": "Political Polarization",
       "description": "Tracks partisan division at both elite (congressional voting) and mass (public attitudes) levels, including affective polarization and anti-system sentiment.",
-      "current_value": 0.9916,
+      "current_value": 1.0,
       "historical": [
         {
           "date": "2016-01-31",
-          "value": 0.6632
+          "value": 0.6796
         },
         {
           "date": "2017-01-31",
-          "value": 0.739
+          "value": 0.7591
         },
         {
           "date": "2018-01-31",
-          "value": 0.7202
+          "value": 0.7195
         },
         {
           "date": "2019-01-31",
-          "value": 0.6744
+          "value": 0.6711
         },
         {
           "date": "2020-01-31",
-          "value": 0.6526
+          "value": 0.6658
         },
         {
           "date": "2021-01-31",
-          "value": 0.7124
+          "value": 0.7313
         },
         {
           "date": "2022-01-31",
-          "value": 0.7185
+          "value": 0.7272
         },
         {
           "date": "2023-01-31",
-          "value": 0.7441
+          "value": 0.7585
         },
         {
           "date": "2024-01-31",
-          "value": 0.7848
+          "value": 0.8079
         },
         {
           "date": "2025-01-31",
-          "value": 0.8764
+          "value": 0.9003
         },
         {
           "date": "2025-09-30",
-          "value": 0.9916
+          "value": 1.0
         }
       ]
     },
@@ -109,55 +109,55 @@
       "id": "institutional_quality",
       "name": "Institutional Quality",
       "description": "Monitors the health of democratic institutions including judicial independence, legislative constraints on executive power, electoral integrity, and freedom of expression.",
-      "current_value": 0.3541,
+      "current_value": 0.3793,
       "historical": [
         {
           "date": "2014-01-31",
-          "value": 0.1714
+          "value": 0.1523
         },
         {
           "date": "2015-01-31",
-          "value": 0.2036
+          "value": 0.1917
         },
         {
           "date": "2016-01-31",
-          "value": 0.153
+          "value": 0.1575
         },
         {
           "date": "2017-01-31",
-          "value": 0.3158
+          "value": 0.4014
         },
         {
           "date": "2018-01-31",
-          "value": 0.2973
+          "value": 0.3275
         },
         {
           "date": "2019-01-31",
-          "value": 0.3184
+          "value": 0.3594
         },
         {
           "date": "2020-01-31",
-          "value": 0.3769
+          "value": 0.4434
         },
         {
           "date": "2021-01-31",
-          "value": 0.3481
+          "value": 0.3996
         },
         {
           "date": "2022-01-31",
-          "value": 0.3468
+          "value": 0.4041
         },
         {
           "date": "2023-01-31",
-          "value": 0.3498
+          "value": 0.4015
         },
         {
           "date": "2024-01-31",
-          "value": 0.3541
+          "value": 0.3793
         },
         {
           "date": "2024-01-31",
-          "value": 0.3541
+          "value": 0.3793
         }
       ]
     },
@@ -165,55 +165,51 @@
       "id": "social_mobilization",
       "name": "Social Mobilization",
       "description": "Measures collective action capacity and social trust, including protest activity, organizational density, government trust, and democratic commitment.",
-      "current_value": 0.2494,
+      "current_value": 0.5203,
       "historical": [
         {
-          "date": "2016-01-31",
-          "value": 0.7646
-        },
-        {
           "date": "2017-01-31",
-          "value": 0.7549
+          "value": 0.7738
         },
         {
           "date": "2018-01-31",
-          "value": 0.6925
+          "value": 0.7073
         },
         {
           "date": "2019-01-31",
-          "value": 0.6953
+          "value": 0.7133
         },
         {
           "date": "2020-01-31",
-          "value": 0.6402
+          "value": 0.5724
         },
         {
           "date": "2021-01-31",
-          "value": 0.5916
+          "value": 0.5899
         },
         {
           "date": "2022-01-31",
-          "value": 0.6052
+          "value": 0.5507
         },
         {
           "date": "2023-01-31",
-          "value": 0.6894
+          "value": 0.6254
         },
         {
           "date": "2024-01-31",
-          "value": 0.6582
+          "value": 0.55
         },
         {
           "date": "2025-01-31",
-          "value": 0.6755
+          "value": 0.5531
         },
         {
           "date": "2026-01-31",
-          "value": 0.2494
+          "value": 0.746
         },
         {
-          "date": "2026-01-31",
-          "value": 0.2494
+          "date": "2026-02-28",
+          "value": 0.5203
         }
       ]
     },
@@ -221,55 +217,55 @@
       "id": "information_media",
       "name": "Information & Media",
       "description": "Tracks media trust levels and partisan media consumption gaps that academic research associates with democratic resilience.",
-      "current_value": 0.9669,
+      "current_value": 1.0,
       "historical": [
         {
           "date": "2014-01-31",
-          "value": 0.8871
+          "value": 0.8838
         },
         {
           "date": "2015-01-31",
-          "value": 0.8871
+          "value": 0.8838
         },
         {
           "date": "2016-01-31",
-          "value": 0.9615
+          "value": 0.98
         },
         {
           "date": "2017-01-31",
-          "value": 0.8732
+          "value": 0.8261
         },
         {
           "date": "2018-01-31",
-          "value": 0.806
+          "value": 0.6915
         },
         {
           "date": "2019-01-31",
-          "value": 0.8732
+          "value": 0.8261
         },
         {
           "date": "2020-01-31",
-          "value": 0.8871
+          "value": 0.8838
         },
         {
           "date": "2021-01-31",
-          "value": 0.9318
+          "value": 0.9319
         },
         {
           "date": "2022-01-31",
-          "value": 0.9483
+          "value": 0.9511
         },
         {
           "date": "2023-01-31",
-          "value": 0.9615
+          "value": 0.98
         },
         {
           "date": "2024-01-31",
-          "value": 0.9669
+          "value": 1.0
         },
         {
           "date": "2024-01-31",
-          "value": 0.9669
+          "value": 1.0
         }
       ]
     }

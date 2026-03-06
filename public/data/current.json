@@ -1,7 +1,7 @@
 {
   "_schema": "src/lib/data.ts#CurrentData",
-  "score": 45,
-  "timestamp": "2026-03-06T05:25:24.597764+00:00",
+  "score": 50,
+  "timestamp": "2026-03-06T05:25:27.297283+00:00",
   "zone": "Elevated Tension",
   "factors": [
     {
@@ -14,35 +14,35 @@
     {
       "id": "political_polarization",
       "name": "Political Polarization",
-      "value": 0.9916,
+      "value": 1.0,
       "direction": "up",
       "weight": 0.22
     },
     {
       "id": "institutional_quality",
       "name": "Institutional Quality",
-      "value": 0.3541,
-      "direction": "neutral",
+      "value": 0.3793,
+      "direction": "down",
       "weight": 0.2
     },
     {
       "id": "social_mobilization",
       "name": "Social Mobilization",
-      "value": 0.2494,
+      "value": 0.5203,
       "direction": "down",
       "weight": 0.18
     },
     {
       "id": "information_media",
       "name": "Information & Media",
-      "value": 0.9669,
-      "direction": "neutral",
+      "value": 1.0,
+      "direction": "up",
       "weight": 0.1
     }
   ],
   "_bootstrap_ci": {
-    "lower": 22.5,
-    "upper": 80.8,
+    "lower": 22.0,
+    "upper": 84.3,
     "width": 0.9,
     "n": 1000
   },
@@ -55,6 +55,6 @@
   ],
   "_models_expected": 5,
   "_data_coverage": 1.0,
-  "_generated_at": "2026-03-06T05:25:24.597764+00:00",
+  "_generated_at": "2026-03-06T05:25:27.297283+00:00",
   "_confidence": "normal"
 }

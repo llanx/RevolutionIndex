@@ -269,8 +269,11 @@ def construct_proxy(
         return ratio
 
     # #8: Elite Overproduction (education-job mismatch)
-    # This requires Census ACS and BLS JOLTS data that must be manually loaded
+    # Census ACS + BLS JOLTS via auto-fetcher, manual fallback
     if cat_num == 8:
+        result = try_auto_fetch(variable)
+        if result is not None:
+            return result
         return load_manual_source(variable)
 
     # #11: Elite Factionalism (intra-party DW-NOMINATE SD)
