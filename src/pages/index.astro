@@ -16,7 +16,7 @@ const history = historyRaw as unknown as HistoryData;
 const factors = factorsRaw as unknown as FactorsData;
 const { benchmarks } = benchmarksRaw as unknown as BenchmarksData;
 
-// Format timestamp for display (static — runs at build time)
+// Format timestamp for display (static, runs at build time)
 const dateDisplay = new Date(current.timestamp).toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
@@ -34,16 +34,26 @@ const enrichedFactors = current.factors.map(f => {
   };
 });
 
-// Serialize data for client-side charts
-const chartLabels = JSON.stringify(history.entries.map(e => e.date));
-const chartValues = JSON.stringify(history.entries.map(e => e.score));
+// Serialize data for client-side charts (filter to 1947+ to exclude zero-score pre-data era)
+const MIN_HISTORY_YEAR = 1947;
+const filteredEntries = history.entries.filter(e => new Date(e.date).getFullYear() >= MIN_HISTORY_YEAR);
+const chartLabels = JSON.stringify(filteredEntries.map(e => e.date));
+const chartValues = JSON.stringify(filteredEntries.map(e => e.score));
 
 // Single zone lookup (Fix 4: was two separate ZONES.find calls)
 const currentZone = ZONES.find(z => z.label === current.zone);
 const zoneColor = currentZone?.cssVar ?? 'var(--text-primary)';
 const zoneHex = currentZone?.color ?? '#f4a261';
 
-// Prepare gauge benchmark markers (Tier 1 only — 5 max to avoid clutter)
+// Model metadata for meta strip
+const ci = current._bootstrap_ci;
+const ciLabel = ci ? `90% CI: ${Math.round(ci.lower)}\u2013${Math.round(ci.upper)}` : null;
+const modelsRun = current._models_run?.length ?? 0;
+const modelsExpected = current._models_expected ?? 5;
+const dataCoverage = current._data_coverage != null ? Math.round(current._data_coverage * 100) : null;
+const variableCount = 41;
+
+// Prepare gauge benchmark markers (Tier 1 only, 5 max to avoid clutter)
 const tier1Ids = ['france-1789', 'russia-1917', 'iran-1979', 'arab-spring-2010', 'nepal-2025'];
 const gaugeMarkers = JSON.stringify(
   benchmarks
@@ -78,7 +88,7 @@ const topInsights = insights.slice(0, 3);
 
 // Zone-specific editorial deck text
 const zoneDeck: Record<string, string> = {
-  'Stable': 'within historical norms\u2009\u2014\u2009no significant structural pressures detected.',
+  'Stable': 'within historical norms; no significant structural pressures detected.',
   'Elevated Tension': 'where structural pressures are building but haven\u2019t reached critical mass.',
   'Crisis Territory': 'a range historically associated with severe political instability.',
   'Revolution Territory': 'a level that has preceded revolutionary upheaval in comparable nations.',
@@ -123,12 +133,18 @@ for (const factorId of comparedFactorIds) {
         <p class="hero-deck">
           The composite instability score places the United States in
           <span class="hero-zone-inline" style={`color: ${zoneColor}`}>{current.zone}</span>
-          &mdash; {zoneDeck[current.zone] ?? 'a level reflecting current structural conditions.'}
+          , {zoneDeck[current.zone] ?? 'a level reflecting current structural conditions.'}
         </p>
         <p class="hero-timestamp">
           <span class="live-dot"></span>
           Last updated: <time datetime={current.timestamp}>{dateDisplay}</time>
         </p>
+        <div class="model-meta-strip">
+          {ciLabel && <span class="meta-pill" title="Bootstrap 90% confidence interval">{ciLabel}</span>}
+          <span class="meta-pill" title={`${modelsRun} of ${modelsExpected} models contributed`}>{modelsRun}-model ensemble</span>
+          <span class="meta-pill" title="Total input variables across five domains">{variableCount} variables</span>
+          {dataCoverage != null && <span class="meta-pill" title="Percentage of variables with available data">{dataCoverage}% data coverage</span>}
+        </div>
       </div>
 
       <!-- Gauge as editorial illustration -->
@@ -202,12 +218,11 @@ for (const factorId of comparedFactorIds) {
     <!-- Disclaimer -->
     <section class="disclaimer scroll-reveal" aria-label="Score disclaimer" style="--reveal-delay: 0.15s">
       <p>
-        <strong>Note:</strong> The Revolution Index is a data-driven indicator derived from
-        publicly available social, economic, and political signals. It is <em>not</em> a prediction
-        of future events, a call to action, or a statement of political advocacy. The score
-        reflects historical patterns and structural indicators — it does not forecast specific
-        outcomes. The data displayed is currently based on demonstration data and does not reflect
-        real-time research.
+        <strong>Note:</strong> The Revolution Index is derived from 41 publicly available
+        indicators from sources including FRED, V-Dem, VoteView, ANES, and ACLED across five
+        structural domains. It is <em>not</em> a prediction of future events, a call to action,
+        or a statement of political advocacy. The score reflects historical patterns and structural
+        conditions. It does not forecast specific outcomes.
       </p>
     </section>
 
@@ -215,11 +230,11 @@ for (const factorId of comparedFactorIds) {
     <section class="about scroll-reveal" aria-label="About this project" style="--reveal-delay: 0.2s">
       <h2 class="section-title">About</h2>
       <p>
-        The Revolution Index is an analytical project that tracks structural indicators of political
-        instability in the United States. By aggregating publicly available economic, social, and
-        political data into a single composite score, it aims to make complex dynamics accessible
-        and understandable at a glance. This is a research and transparency tool — not a political
-        statement. For details on how the score is constructed, see the
+        The Revolution Index uses a five-model scoring ensemble covering Economic Stress,
+        Political Polarization, Institutional Quality, Social Mobilization, and Information &amp;
+        Media. The 41 input variables are combined into a calibrated 0-100 composite score with
+        bootstrap confidence intervals (n=1,000). This is a research and transparency tool, not a
+        political statement. For details on how the score is constructed, see the
         <a href="/methodology">Methodology</a> page.
       </p>
     </section>

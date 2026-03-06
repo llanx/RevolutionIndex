@@ -115,6 +115,38 @@
 }
 
 /* --------------------------------------------------------------------------
+   Model Meta Strip (pill badges below timestamp)
+   -------------------------------------------------------------------------- */
+
+.model-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.meta-pill {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 100px;
+  padding: 0.2rem 0.65rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: default;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.meta-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* --------------------------------------------------------------------------
    Gauge as Editorial Illustration
    -------------------------------------------------------------------------- */
 
@@ -686,6 +718,15 @@
 
   .hero-scroll-cue {
     display: none;
+  }
+
+  .model-meta-strip {
+    gap: 0.35rem;
+  }
+
+  .meta-pill {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
   }
 }
 

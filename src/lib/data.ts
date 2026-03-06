@@ -131,6 +131,24 @@ export interface CurrentData {
    * v1 UI is designed for 5–6 factors. Pipeline should respect this practical constraint.
    */
   factors: Factor[];
+
+  /** Bootstrap confidence interval from ensemble scoring. */
+  _bootstrap_ci?: {
+    lower: number;
+    upper: number;
+    width: number;
+    n: number;
+  };
+  /** List of model IDs that contributed to this score. */
+  _models_run?: string[];
+  /** Total number of models expected in the ensemble. */
+  _models_expected?: number;
+  /** Fraction of input variables with available data (0.0-1.0). */
+  _data_coverage?: number;
+  /** ISO 8601 timestamp of when the pipeline generated this file. */
+  _generated_at?: string;
+  /** Overall confidence assessment of the score. */
+  _confidence?: 'high' | 'normal' | 'low' | 'degraded';
 }
 
 // ---------------------------------------------------------------------------
