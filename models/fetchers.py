@@ -968,6 +968,7 @@ def fetch_neighborhood_effects(catalog_number: int = 39) -> Optional[pd.Series]:
 # ---------------------------------------------------------------------------
 
 _ACLED_CACHE: Optional[pd.DataFrame] = None
+_ACLED_AGGREGATED: Optional[pd.DataFrame] = None
 _ACLED_TOKEN: Optional[str] = None
 
 
@@ -994,19 +995,9 @@ def _get_acled_token() -> Optional[str]:
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             timeout=30,
         )
-        if resp.status_code == 400:
-            # Try alternative endpoint
-            resp = _get_session().post(
-                "https://api.acleddata.com/oauth/token",
-                data={
-                    "username": email,
-                    "password": password,
-                    "grant_type": "password",
-                    "client_id": "acled",
-                },
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
-                timeout=30,
-            )
+        if resp.status_code >= 400:
+            # Log the response for debugging
+            logger.warning(f"ACLED OAuth primary endpoint returned {resp.status_code}: {resp.text[:200]}")
         resp.raise_for_status()
         token_data = resp.json()
         _ACLED_TOKEN = token_data.get("access_token")
@@ -1050,7 +1041,7 @@ def _fetch_acled_raw() -> Optional[pd.DataFrame]:
         )
         return None
 
-    url = "https://api.acleddata.com/acled/read"
+    url = "https://acleddata.com/api/acled/read"
     params = {
         "iso": 840,  # USA
         "event_type": "Protests|Riots",
@@ -1083,6 +1074,39 @@ def _fetch_acled_raw() -> Optional[pd.DataFrame]:
     return _ACLED_CACHE
 
 
+def _load_acled_aggregated() -> Optional[pd.DataFrame]:
+    """
+    Load ACLED aggregated XLSX file (manually downloaded fallback).
+
+    Returns DataFrame with US protest/riot rows, columns:
+    WEEK (datetime), ADMIN1 (state), EVENTS (int), EVENT_TYPE (str).
+    """
+    global _ACLED_AGGREGATED
+    if _ACLED_AGGREGATED is not None:
+        return _ACLED_AGGREGATED
+
+    # Look for aggregated XLSX in data/raw/var_12/
+    var_dir = _CACHE_DIR / "var_12"
+    xlsx_files = sorted(var_dir.glob("*.xlsx")) if var_dir.exists() else []
+    if not xlsx_files:
+        return None
+
+    # Use the most recent file
+    path = xlsx_files[-1]
+    logger.info(f"Loading ACLED aggregated data from {path.name}")
+    df = pd.read_excel(path)
+    df["WEEK"] = pd.to_datetime(df["WEEK"])
+
+    # Filter to US protests and riots only
+    df = df[
+        (df["COUNTRY"] == "United States")
+        & (df["EVENT_TYPE"].isin(["Protests", "Riots"]))
+    ].copy()
+
+    _ACLED_AGGREGATED = df
+    return _ACLED_AGGREGATED
+
+
 def fetch_protest_frequency(catalog_number: int = 12) -> Optional[pd.Series]:
     """#12: Monthly count of US protest/riot events."""
     if _is_cache_fresh(catalog_number, max_age_days=7):
@@ -1090,14 +1114,19 @@ def fetch_protest_frequency(catalog_number: int = 12) -> Optional[pd.Series]:
         if cached is not None:
             return cached
 
+    # Try API first
     df = _fetch_acled_raw()
-    if df is None:
-        return None
+    if df is not None:
+        df = df.set_index("event_date").sort_index()
+        monthly_counts = df.resample("ME").size()
+    else:
+        # Fall back to aggregated XLSX
+        agg = _load_acled_aggregated()
+        if agg is None:
+            return None
+        monthly_counts = agg.set_index("WEEK").resample("ME")["EVENTS"].sum()
 
-    df = df.set_index("event_date").sort_index()
-    monthly_counts = df.resample("ME").size()
     monthly_counts.name = str(catalog_number)
-
     _save_to_cache(monthly_counts, catalog_number)
     return monthly_counts
 
@@ -1114,27 +1143,28 @@ def fetch_protest_diffusion(catalog_number: int = 36) -> Optional[pd.Series]:
         if cached is not None:
             return cached
 
+    # Try API first
     df = _fetch_acled_raw()
-    if df is None:
-        return None
+    if df is not None:
+        df = df.copy()
+        df = df.set_index("event_date").sort_index()
+        state_col = None
+        for col in ["admin1", "region", "location"]:
+            if col in df.columns:
+                state_col = col
+                break
+        if state_col is None:
+            logger.warning("ACLED: no state/region column found")
+            return None
+        monthly_spread = df.resample("ME")[state_col].nunique()
+    else:
+        # Fall back to aggregated XLSX (has ADMIN1 column)
+        agg = _load_acled_aggregated()
+        if agg is None:
+            return None
+        monthly_spread = agg.set_index("WEEK").resample("ME")["ADMIN1"].nunique()
 
-    df = df.copy()
-    df = df.set_index("event_date").sort_index()
-
-    # Use admin1 (state) as geographic unit
-    state_col = None
-    for col in ["admin1", "region", "location"]:
-        if col in df.columns:
-            state_col = col
-            break
-
-    if state_col is None:
-        logger.warning("ACLED: no state/region column found")
-        return None
-
-    monthly_spread = df.resample("ME")[state_col].nunique()
     monthly_spread.name = str(catalog_number)
-
     _save_to_cache(monthly_spread, catalog_number)
     return monthly_spread
 
@@ -1146,12 +1176,18 @@ def fetch_prior_protest_experience(catalog_number: int = 37) -> Optional[pd.Seri
         if cached is not None:
             return cached
 
+    # Try API first
     df = _fetch_acled_raw()
-    if df is None:
-        return None
+    if df is not None:
+        df = df.set_index("event_date").sort_index()
+        monthly_counts = df.resample("ME").size()
+    else:
+        # Fall back to aggregated XLSX
+        agg = _load_acled_aggregated()
+        if agg is None:
+            return None
+        monthly_counts = agg.set_index("WEEK").resample("ME")["EVENTS"].sum()
 
-    df = df.set_index("event_date").sort_index()
-    monthly_counts = df.resample("ME").size()
     cumulative = monthly_counts.cumsum()
     log_cumulative = np.log1p(cumulative)
     log_cumulative.name = str(catalog_number)
@@ -1384,12 +1420,183 @@ def fetch_conspiratorial_thinking(catalog_number: int = 34) -> Optional[pd.Serie
     return series
 
 
+# ---------------------------------------------------------------------------
+# #8: Elite Overproduction (Census ACS + BLS JOLTS)
+# ---------------------------------------------------------------------------
+
+def fetch_elite_overproduction(catalog_number: int = 8) -> Optional[pd.Series]:
+    """
+    #8: Elite Overproduction = (advanced degree holders per capita) /
+        (professional/business services job openings rate).
+
+    Census ACS B15003: educational attainment for population 25+.
+      B15003_001E = total pop 25+
+      B15003_023E = master's degree
+      B15003_024E = professional school degree
+      B15003_025E = doctorate degree
+
+    BLS JOLTS: JTS540000000000000JOR = professional/business services
+    job openings rate (monthly, annualized by averaging).
+
+    Higher ratio = more credential holders chasing fewer openings = more
+    elite overproduction stress.
+
+    Coverage: 2005+ (annual, limited by ACS 1-year availability).
+    """
+    if _is_cache_fresh(catalog_number):
+        cached = _load_from_cache(catalog_number)
+        if cached is not None:
+            return cached
+
+    census_key = os.environ.get("CENSUS_API_KEY", "")
+    bls_key = os.environ.get("BLS_API_KEY", "")
+
+    if not bls_key:
+        logger.warning("[8] BLS_API_KEY not set, cannot fetch elite overproduction")
+        return None
+    # Census API works without a key (lower rate limit); key is optional
+
+    # --- Census ACS: advanced degree holders per capita by year ---
+    session = _get_session()
+    current_year = datetime.now().year
+    degree_ratios = {}
+
+    for year in range(2005, current_year + 1):
+        # ACS 1-year was not released in 2020 (COVID)
+        if year == 2020:
+            continue
+        # Latest available ACS is typically 2 years behind
+        url = f"https://api.census.gov/data/{year}/acs/acs1"
+        params = {
+            "get": "B15003_001E,B15003_023E,B15003_024E,B15003_025E",
+            "for": "us:*",
+        }
+        if census_key:
+            params["key"] = census_key
+        try:
+            resp = session.get(url, params=params, timeout=30)
+            if resp.status_code == 404:
+                # Year not yet available
+                logger.debug(f"[8] Census ACS {year} not available (404)")
+                continue
+            resp.raise_for_status()
+            data = resp.json()
+            # Response: [header_row, data_row]
+            # data_row: [total_25plus, masters, professional, doctorate, "1"]
+            if len(data) < 2:
+                continue
+            row = data[1]
+            total = float(row[0])
+            masters = float(row[1])
+            professional = float(row[2])
+            doctorate = float(row[3])
+            if total > 0:
+                advanced_per_capita = (masters + professional + doctorate) / total
+                degree_ratios[year] = advanced_per_capita
+                logger.debug(f"[8] Census ACS {year}: {advanced_per_capita:.4f}")
+        except Exception as e:
+            logger.debug(f"[8] Census ACS {year} failed: {e}")
+            continue
+
+    if not degree_ratios:
+        logger.warning("[8] No Census ACS data retrieved")
+        return None
+
+    logger.info(f"[8] Census ACS: {len(degree_ratios)} years of degree data")
+
+    # --- BLS JOLTS: professional/business services openings rate ---
+    # BLS v2 API: POST with JSON, max 20 years per request
+    # Note: config.py lists JTS540000000000000JOR but the actual BLS series
+    # ID is JTS540099000000000JOR (professional and business services)
+    jolts_series_id = "JTS540099000000000JOR"
+    bls_url = "https://api.bls.gov/publicAPI/v2/timeseries/data/"
+    start_year = min(degree_ratios.keys())
+    end_year = max(degree_ratios.keys())
+
+    bls_payload = {
+        "seriesid": [jolts_series_id],
+        "startyear": str(start_year),
+        "endyear": str(end_year),
+        "registrationkey": bls_key,
+    }
+
+    try:
+        resp = session.post(bls_url, json=bls_payload, timeout=30)
+        resp.raise_for_status()
+        bls_data = resp.json()
+    except Exception as e:
+        logger.warning(f"[8] BLS JOLTS request failed: {e}")
+        return None
+
+    if bls_data.get("status") != "REQUEST_SUCCEEDED":
+        msg = bls_data.get("message", [])
+        logger.warning(f"[8] BLS API error: {msg}")
+        return None
+
+    # Parse monthly JOLTS data and annualize (average per year)
+    jolts_monthly = {}
+    for series_block in bls_data.get("Results", {}).get("series", []):
+        for obs in series_block.get("data", []):
+            year = int(obs["year"])
+            period = obs["period"]
+            if not period.startswith("M"):
+                continue
+            month = int(period[1:])
+            if month < 1 or month > 12:
+                continue
+            val = obs.get("value", "")
+            if val == "-" or val == "":
+                continue
+            jolts_monthly.setdefault(year, []).append(float(val))
+
+    # Annual average openings rate
+    jolts_annual = {}
+    for year, values in jolts_monthly.items():
+        if len(values) >= 6:  # need at least half a year
+            jolts_annual[year] = np.mean(values)
+
+    if not jolts_annual:
+        logger.warning("[8] No BLS JOLTS data retrieved")
+        return None
+
+    logger.info(f"[8] BLS JOLTS: {len(jolts_annual)} years of openings rate data")
+
+    # --- Compute ratio: degree_per_capita / openings_rate ---
+    results = []
+    common_years = sorted(set(degree_ratios.keys()) & set(jolts_annual.keys()))
+
+    for year in common_years:
+        openings_rate = jolts_annual[year]
+        if openings_rate <= 0:
+            continue
+        # openings_rate is a percentage (e.g., 4.5 = 4.5%)
+        # degree_per_capita is a fraction (e.g., 0.12 = 12%)
+        # Multiply degree ratio by 100 so both are percentages before dividing
+        ratio = (degree_ratios[year] * 100) / openings_rate
+        results.append({
+            "date": pd.Timestamp(f"{year}-01-01"),
+            "value": ratio,
+        })
+
+    if not results:
+        logger.warning("[8] No overlapping years between Census and BLS data")
+        return None
+
+    series = pd.DataFrame(results).set_index("date")["value"]
+    series.name = str(catalog_number)
+    _save_to_cache(series, catalog_number)
+    logger.info(f"[8] Elite Overproduction: {len(series)} years, "
+                f"range [{series.min():.3f}, {series.max():.3f}]")
+    return series
+
+
 # =========================================================================
 # FETCHER REGISTRY
 # =========================================================================
 
 FETCHER_REGISTRY: dict[int, Callable[[], Optional[pd.Series]]] = {
-    # Tier 1: No auth
+    # Tier 1: No auth (+ Census/BLS API key)
+    8: fetch_elite_overproduction,
     3: fetch_congressional_polarization,
     11: fetch_elite_factionalism,
     15: fetch_racial_income_ratio,
