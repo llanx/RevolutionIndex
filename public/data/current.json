@@ -1,48 +1,48 @@
 {
   "_schema": "src/lib/data.ts#CurrentData",
-  "score": 50,
-  "timestamp": "2026-03-06T05:25:27.297283+00:00",
-  "zone": "Elevated Tension",
+  "score": 55,
+  "timestamp": "2026-03-10T04:46:45.030542+00:00",
+  "zone": "Crisis Territory",
   "factors": [
     {
       "id": "economic_stress",
       "name": "Economic Stress",
-      "value": 0.3488,
+      "value": 0.5957,
       "direction": "down",
       "weight": 0.3
     },
     {
       "id": "political_polarization",
       "name": "Political Polarization",
-      "value": 1.0,
-      "direction": "up",
+      "value": 0.784,
+      "direction": "neutral",
       "weight": 0.22
     },
     {
       "id": "institutional_quality",
       "name": "Institutional Quality",
-      "value": 0.3793,
-      "direction": "down",
+      "value": 0.3861,
+      "direction": "neutral",
       "weight": 0.2
     },
     {
       "id": "social_mobilization",
       "name": "Social Mobilization",
-      "value": 0.5203,
+      "value": 0.6657,
       "direction": "down",
       "weight": 0.18
     },
     {
       "id": "information_media",
       "name": "Information & Media",
-      "value": 1.0,
-      "direction": "up",
+      "value": 0.9669,
+      "direction": "neutral",
       "weight": 0.1
     }
   ],
   "_bootstrap_ci": {
-    "lower": 22.0,
-    "upper": 84.3,
+    "lower": 13.3,
+    "upper": 65.0,
     "width": 0.9,
     "n": 1000
   },
@@ -55,6 +55,6 @@
   ],
   "_models_expected": 5,
   "_data_coverage": 1.0,
-  "_generated_at": "2026-03-06T05:25:27.297283+00:00",
+  "_generated_at": "2026-03-10T04:46:45.030542+00:00",
   "_confidence": "normal"
 }

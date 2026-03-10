@@ -529,9 +529,16 @@ def fetch_all(api_key: str, start_year: int = 1947) -> pd.DataFrame:
 
     unified = pd.DataFrame(normalized)
     unified = unified.sort_index()
+    # LOCF: carry forward the last known value for each variable so that
+    # series ending earlier than the most recent date (e.g., annual V-Dem
+    # data through 2024 vs. weekly FRED data through 2026) don't create
+    # NaN gaps at the trailing edge.  This is consistent with the LOCF
+    # principle already used in align_to_monthly().
+    unified = unified.ffill()
 
     raw_unified = pd.DataFrame(raw_aligned)
     raw_unified = raw_unified.sort_index()
+    raw_unified = raw_unified.ffill()
 
     print(f"\nUnified DataFrame: {unified.shape[0]} months x "
           f"{unified.shape[1]} variables")

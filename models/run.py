@@ -109,9 +109,10 @@ def main():
     if "vdem_ert" not in models_run and "vdem_ert" in models_expected:
         print(f"  WARNING: Institutional dimension unavailable (V-Dem model failed)")
 
-    # 4. Calibrate scores
-    print(f"\nPhase 4: Calibrating scores...")
+    # 4. Apply velocity overlay + calibrate scores
+    print(f"\nPhase 4: Velocity overlay + calibration...")
     from models.calibrate import (
+        apply_velocity_overlay,
         calibrate,
         get_calibration_coefficients,
         compute_bootstrap_ci,
@@ -130,10 +131,19 @@ def main():
         print(f"  --raw mode: skipping calibration")
         print(f"  Raw range: {raw_history.min():.1f} - {raw_history.max():.1f}")
     else:
-        calibrated_history = calibrate(raw_history)
-        cal_coeffs = get_calibration_coefficients(raw_history)
+        # Apply multi-scale velocity overlay before calibration
+        adjusted_history = apply_velocity_overlay(
+            raw_history, domain_scores_df,
+            anomaly_scale=150.0, ema_span=120,
+        )
+        print(f"  Raw range (pre-velocity): {raw_history.min():.1f} - {raw_history.max():.1f}")
+        print(f"  Adjusted range (post-velocity): {adjusted_history.min():.1f} - "
+              f"{adjusted_history.max():.1f}")
+
+        # Calibrate the velocity-adjusted scores
+        calibrated_history = calibrate(adjusted_history)
+        cal_coeffs = get_calibration_coefficients(adjusted_history)
         raw_bp, target_bp = cal_coeffs
-        print(f"  Raw range: {raw_history.min():.1f} - {raw_history.max():.1f}")
         print(f"  Calibrated range: {calibrated_history.min():.1f} - "
               f"{calibrated_history.max():.1f}")
         print(f"  Piecewise breakpoints:")
@@ -245,9 +255,9 @@ def main():
 def build_history_entries(calibrated: pd.Series) -> list[dict]:
     """
     Sample history at appropriate frequency:
-    - Annual (January) for pre-2000
-    - Quarterly (Jan, Apr, Jul, Oct) for post-2000
-    Keep file size manageable while providing sufficient resolution.
+    - Quarterly (Jan, Apr, Jul, Oct) for pre-2000
+    - Monthly for post-2000 (needed because velocity overlay creates
+      sharp temporal features around events like 9/11, 2008, COVID)
 
     Parameters
     ----------
@@ -272,20 +282,19 @@ def build_history_entries(calibrated: pd.Series) -> list[dict]:
         year = date_idx.year
         month = date_idx.month
 
-        # Pre-2000: annual (January only)
+        # Pre-2000: quarterly (Jan, Apr, Jul, Oct)
         if year < 2000:
-            if month == 1:
-                entries.append({
-                    "date": date_idx.strftime("%Y-%m-%d"),
-                    "score": int(round(max(0, min(100, float(score))))),
-                })
-        else:
-            # Post-2000: quarterly (Jan, Apr, Jul, Oct)
             if month in (1, 4, 7, 10):
                 entries.append({
                     "date": date_idx.strftime("%Y-%m-%d"),
                     "score": int(round(max(0, min(100, float(score))))),
                 })
+        else:
+            # Post-2000: monthly (velocity overlay needs monthly resolution)
+            entries.append({
+                "date": date_idx.strftime("%Y-%m-%d"),
+                "score": int(round(max(0, min(100, float(score))))),
+            })
 
     # Always include the latest entry if not already included
     last_date = calibrated.index[-1]
